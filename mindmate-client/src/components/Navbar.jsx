@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { FaBrain, FaBars, FaTimes, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaTimes, FaUser, FaSignOutAlt } from "react-icons/fa";
+import mindmateLogo from "../assets/mindmate_logo.png";
 
 const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -8,7 +9,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
 
   const publicLinks = [
     { name: "Home", path: "/" },
-    { name: "Features", path: "/#features" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -29,9 +29,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-              <FaBrain className="text-white text-xl" />
-            </div>
+            <img src={mindmateLogo} alt="MindMate" className="w-10 h-10 rounded-xl" />
             <span className="text-xl font-bold text-slate-800">MindMate</span>
           </Link>
 

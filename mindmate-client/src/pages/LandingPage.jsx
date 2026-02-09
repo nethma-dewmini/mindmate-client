@@ -6,48 +6,10 @@ import {
   FaUsers,
   FaChartLine,
   FaBook,
-  FaBrain,
 } from "react-icons/fa";
+import mindmateLogo from "../assets/mindmate_logo.png";
 
 const LandingPage = () => {
-  const features = [
-    {
-      icon: FaShieldAlt,
-      title: "Privacy First",
-      description: "Your data is encrypted and completely confidential",
-      color: "bg-teal-100 text-[#5bb5a1]",
-    },
-    {
-      icon: FaRobot,
-      title: "AI Support",
-      description: "24/7 mental health support powered by AI",
-      color: "bg-blue-100 text-blue-600",
-    },
-    {
-      icon: FaUserMd,
-      title: "Expert Access",
-      description: "Connect with licensed mental health professionals",
-      color: "bg-purple-100 text-purple-600",
-    },
-    {
-      icon: FaUsers,
-      title: "Peer Support",
-      description: "Join moderated groups with fellow students",
-      color: "bg-orange-100 text-orange-600",
-    },
-    {
-      icon: FaChartLine,
-      title: "Track Progress",
-      description: "Monitor your mental wellness journey",
-      color: "bg-green-100 text-green-600",
-    },
-    {
-      icon: FaBook,
-      title: "Resources",
-      description: "Access curated mental health content",
-      color: "bg-pink-100 text-pink-600",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-[#f9f5e7]">
@@ -55,9 +17,7 @@ const LandingPage = () => {
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <div className="mb-8 flex justify-center">
-            <div className="w-20 h-20 bg-[#5bb5a1] rounded-2xl flex items-center justify-center">
-              <FaBrain className="text-4xl text-white" />
-            </div>
+            <img src={mindmateLogo} alt="MindMate" className="w-50 h-50 rounded-2xl" />
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
@@ -83,31 +43,6 @@ const LandingPage = () => {
             >
               I Have an Account
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-12">
-            Everything You Need for Mental Wellness
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <div key={index} className="p-6 bg-gray-50 rounded-2xl">
-                <div
-                  className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4`}
-                >
-                  <feature.icon className="text-xl" />
-                </div>
-                <h3 className="font-semibold text-gray-800 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -164,7 +99,7 @@ const LandingPage = () => {
       <footer className="py-8 px-6 bg-gray-50 border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <FaBrain className="text-[#5bb5a1] text-xl" />
+            <img src={mindmateLogo} alt="MindMate" className="w-6 h-6" />
             <span className="font-semibold text-gray-800">MindMate</span>
           </div>
           <p className="text-sm text-gray-500">
