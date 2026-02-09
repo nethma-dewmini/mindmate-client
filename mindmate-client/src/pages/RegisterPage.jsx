@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGraduationCap, FaUserMd, FaArrowLeft } from "react-icons/fa";
+import mindmateLogo from "../assets/mindmate_logo.png";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -110,7 +111,7 @@ const RegisterPage = () => {
             {/* Illustration placeholder */}
             <div className="mt-8 flex justify-center">
               <div className="w-48 h-32 bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl flex items-center justify-center">
-                <span className="text-6xl">🧠</span>
+                <img src={mindmateLogo} alt="MindMate" className="w-20 h-20" />
               </div>
             </div>
 
