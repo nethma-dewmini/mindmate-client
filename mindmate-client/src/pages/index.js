@@ -9,3 +9,4 @@ export { default as MoodTrackerPage } from "./MoodTrackerPage";
 export { default as ResourcesPage } from "./ResourcesPage";
 export { default as ExpertsPage } from "./ExpertsPage";
 export { default as PeerSupportPage } from "./PeerSupportPage";
+export { default as ForgotPasswordPage } from "./ForgotPasswordPage";

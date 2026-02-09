@@ -13,6 +13,7 @@ import {
   ResourcesPage,
   ExpertsPage,
   PeerSupportPage,
+  ForgotPasswordPage,
 } from "./pages";
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
   const location = useLocation();
 
   // Pages where we don't show navbar/footer
-  const authPages = ["/login", "/register"];
+  const authPages = ["/login", "/register", "/forgot-password"];
   const appPages = [
     "/dashboard",
     "/chat",
@@ -60,6 +61,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
