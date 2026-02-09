@@ -1,10 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-  FaFacebook,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedin,
-} from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
 
 const Footer = () => {
@@ -44,7 +39,11 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
-              <img src={mindmateLogo} alt="MindMate" className="w-10 h-10 rounded-xl" />
+              <img
+                src={mindmateLogo}
+                alt="MindMate"
+                className="w-10 h-10 rounded-xl"
+              />
               <span className="text-xl font-bold">MindMate</span>
             </Link>
             <p className="text-slate-400 text-sm mb-4">

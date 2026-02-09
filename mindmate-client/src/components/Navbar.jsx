@@ -29,7 +29,11 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src={mindmateLogo} alt="MindMate" className="w-10 h-10 rounded-xl" />
+            <img
+              src={mindmateLogo}
+              alt="MindMate"
+              className="w-10 h-10 rounded-xl"
+            />
             <span className="text-xl font-bold text-slate-800">MindMate</span>
           </Link>
 

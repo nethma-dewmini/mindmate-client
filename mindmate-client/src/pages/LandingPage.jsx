@@ -10,14 +10,17 @@ import {
 import mindmateLogo from "../assets/mindmate_logo.png";
 
 const LandingPage = () => {
-
   return (
     <div className="min-h-screen bg-[#f9f5e7]">
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <div className="mb-8 flex justify-center">
-            <img src={mindmateLogo} alt="MindMate" className="w-50 h-50 rounded-2xl" />
+            <img
+              src={mindmateLogo}
+              alt="MindMate"
+              className="w-50 h-50 rounded-2xl"
+            />
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
