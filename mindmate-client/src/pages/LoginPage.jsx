@@ -123,6 +123,14 @@ const LoginPage = () => {
               Register here
             </Link>
           </p>
+          <p className="mt-6 text-center text-gray-60">
+            <Link
+              to="/forgot-password"
+              className="text-[#5bb5a1] hover:underline font-medium"
+            >
+              Forgot Password
+            </Link>
+          </p>
         </div>
       </div>
     </div>

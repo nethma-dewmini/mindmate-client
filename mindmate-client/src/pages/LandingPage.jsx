@@ -50,35 +50,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-[#5bb5a1] rounded-2xl p-8 text-center text-white">
-            <h2 className="text-2xl font-bold mb-8">
-              Trusted by Students Across Sri Lanka
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
-                <div className="text-3xl font-bold">5,000+</div>
-                <div className="text-teal-100 text-sm">Active Users</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold">50+</div>
-                <div className="text-teal-100 text-sm">Verified Experts</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold">10,000+</div>
-                <div className="text-teal-100 text-sm">Chat Sessions</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold">4.8</div>
-                <div className="text-teal-100 text-sm">User Rating</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaComments,
   FaChartLine,
@@ -10,7 +10,12 @@ import {
 } from "react-icons/fa";
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
   const user = { name: "Nethma" };
+
+  const handleLogout = () => {
+    navigate("/");
+  };
 
   const quickActions = [
     {
@@ -95,7 +100,10 @@ const DashboardPage = () => {
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#5bb5a1]">
               {user.name.charAt(0)}
             </div>
-            <button className="px-4 py-2 bg-red-400 text-white rounded-lg flex items-center space-x-2 hover:bg-red-500">
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-white text-red-400 rounded-lg flex items-center space-x-2 hover:bg-red-300"
+            >
               <span>Logout</span>
             </button>
           </div>
