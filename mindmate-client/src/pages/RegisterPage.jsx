@@ -111,7 +111,7 @@ const RegisterPage = () => {
             {/* Illustration placeholder */}
             <div className="mt-8 flex justify-center">
               <div className="w-48 h-32 bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl flex items-center justify-center">
-                <img src={mindmateLogo} alt="MindMate" className="w-20 h-20" />
+                <img src={mindmateLogo} alt="MindMate" className="w-40 h-40" />
               </div>
             </div>
 
