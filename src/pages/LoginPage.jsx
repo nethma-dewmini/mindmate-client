@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/authService";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -38,10 +39,17 @@ const LoginPage = () => {
 
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      navigate("/dashboard");
+      const response = await authService.login(
+        formData.email,
+        formData.password,
+      );
+
+      if (response.user) {
+        // Store user info and redirect to dashboard
+        navigate("/dashboard");
+      }
     } catch (error) {
-      setErrors({ general: "Invalid email or password" });
+      setErrors({ general: error.message || "Invalid email or password" });
     } finally {
       setIsLoading(false);
     }

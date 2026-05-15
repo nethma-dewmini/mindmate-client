@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGraduationCap, FaUserMd, FaArrowLeft } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
+import { authService } from "../services/authService";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const RegisterPage = () => {
   const [studentData, setStudentData] = useState({
     name: "",
     email: "",
-    university: "",
+    studentId: "",
     password: "",
     confirmPassword: "",
   });
@@ -41,11 +42,75 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      navigate("/dashboard");
+      if (step === "student") {
+        // Validate form
+        if (
+          !studentData.name ||
+          !studentData.email ||
+          !studentData.studentId ||
+          !studentData.password ||
+          !studentData.confirmPassword
+        ) {
+          setErrors({ general: "All fields are required" });
+          setIsLoading(false);
+          return;
+        }
+
+        if (studentData.password !== studentData.confirmPassword) {
+          setErrors({ general: "Passwords do not match" });
+          setIsLoading(false);
+          return;
+        }
+
+        // Call backend
+        const response = await authService.registerStudent(
+          studentData.name,
+          studentData.email,
+          studentData.studentId,
+          studentData.password,
+        );
+
+        // Success - redirect to login or dashboard
+        navigate("/login");
+      } else if (step === "expert") {
+        // Validate form
+        if (
+          !expertData.name ||
+          !expertData.email ||
+          !expertData.password ||
+          !expertData.confirmPassword
+        ) {
+          setErrors({ general: "Name, email, and password are required" });
+          setIsLoading(false);
+          return;
+        }
+
+        if (expertData.password !== expertData.confirmPassword) {
+          setErrors({ general: "Passwords do not match" });
+          setIsLoading(false);
+          return;
+        }
+
+        // Call backend
+        const response = await authService.registerExpert(
+          expertData.name,
+          expertData.email,
+          expertData.password,
+          expertData.specialization,
+          expertData.qualifications,
+          expertData.licenseNumber,
+        );
+
+        // Success - redirect to login
+        navigate("/login");
+      }
     } catch (error) {
-      setErrors({ general: "Registration failed. Please try again." });
+      setErrors({
+        general: error.message || "Registration failed. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +205,9 @@ const RegisterPage = () => {
               <h1 className="text-2xl font-bold text-gray-800 mb-1">
                 Create Your Account
               </h1>
-              <p className="text-gray-500">Register as Student</p>
+              <p className="text-gray-500">
+                Register as University of Moratuwa Student
+              </p>
               <button
                 onClick={() => setStep("select")}
                 className="text-[#5bb5a1] text-sm mt-2 hover:underline flex items-center justify-center mx-auto"
@@ -152,13 +219,14 @@ const RegisterPage = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
+                  Name with Initials
                 </label>
                 <input
                   type="text"
                   name="name"
                   value={studentData.name}
                   onChange={handleStudentChange}
+                  placeholder="R.M.N.D. Rathnayaka"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
@@ -172,19 +240,24 @@ const RegisterPage = () => {
                   name="email"
                   value={studentData.email}
                   onChange={handleStudentChange}
+                  placeholder="rathnayakarmnd.22@uom.lk"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use your University of Moratuwa email address
+                </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  University
+                  Registration No
                 </label>
                 <input
                   type="text"
-                  name="university"
-                  value={studentData.university}
+                  name="studentId"
+                  value={studentData.studentId}
                   onChange={handleStudentChange}
+                  placeholder="221234X"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
