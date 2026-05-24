@@ -14,26 +14,17 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
   ];
 
   const authLinks = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Chat", path: "/chat" },
-    { name: "Assessment", path: "/assessment" },
-    { name: "Resources", path: "/resources" },
+    // Removed individual app links — replaced by a single admin access button when appropriate
   ];
 
-  const adminLinks = [{ name: "Registry", path: "/admin/student-registry" }];
-
-  const links = isAuthenticated
-    ? user?.role === "admin"
-      ? adminLinks
-      : authLinks
-    : publicLinks;
-
+  const links = isAuthenticated ? authLinks : publicLinks;
   const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img
               src={mindmateLogo}
@@ -43,6 +34,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             <span className="text-xl font-bold text-slate-800">MindMate</span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {links.map((link) => (
               <Link
@@ -59,44 +51,32 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             ))}
           </div>
 
+          {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <Link
-                  to="/profile"
-                  className="flex items-center space-x-2 text-slate-600 hover:text-indigo-600"
-                >
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                    <FaUser className="text-indigo-600 text-sm" />
-                  </div>
-                  <span className="font-medium">{user?.name || "Profile"}</span>
-                </Link>
-                <button
-                  onClick={onLogout}
-                  className="flex items-center space-x-1 text-slate-500 hover:text-red-500"
-                >
-                  <FaSignOutAlt />
-                  <span>Logout</span>
-                </button>
+                {user?.role === "admin" && (
+                  <Link
+                    to="/admin/student-registry"
+                    className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
+                  >
+                    Admin
+                  </Link>
+                )}
               </div>
             ) : (
-              <>
+              <div>
                 <Link
-                  to="/login"
-                  className="text-slate-600 hover:text-indigo-600 font-medium transition-colors"
+                  to="/admin/student-registry"
+                  className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
                 >
-                  Sign In
+                  Admin
                 </Link>
-                <Link
-                  to="/register"
-                  className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm"
-                >
-                  Get Started
-                </Link>
-              </>
+              </div>
             )}
           </div>
 
+          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-slate-600"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -105,6 +85,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
           </button>
         </div>
 
+        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200">
             <div className="flex flex-col space-y-3">
@@ -125,39 +106,25 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
               {!isAuthenticated && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
                   <Link
-                    to="/login"
+                    to="/admin/student-registry"
                     className="text-center py-2.5 text-indigo-600 font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="text-center py-2.5 bg-indigo-600 text-white rounded-lg font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Get Started
+                    Admin
                   </Link>
                 </div>
               )}
               {isAuthenticated && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
-                  <Link
-                    to="/profile"
-                    className="text-slate-600 hover:text-indigo-600 font-medium py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={() => {
-                      onLogout?.();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="text-left text-red-500 font-medium py-2"
-                  >
-                    Logout
-                  </button>
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/admin/student-registry"
+                      className="text-slate-600 hover:text-indigo-600 font-medium py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Admin
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

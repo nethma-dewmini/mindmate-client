@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Footer } from "./components";
 import { authService } from "./services/authService";
 import {
@@ -22,7 +16,7 @@ import {
   PeerSupportPage,
   ForgotPasswordPage,
   ResetPasswordPage,
-  AdminStudentRegistryPage,
+  AdminStudentRegistry,
   AboutPage,
 } from "./pages";
 
@@ -92,27 +86,15 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              user?.role === "admin" ? (
-                <Navigate to="/admin/student-registry" replace />
-              ) : (
-                <DashboardPage />
-              )
-            }
-          />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin/student-registry" element={<AdminStudentRegistry />} />
           <Route path="/mood" element={<MoodTrackerPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/experts" element={<ExpertsPage />} />
           <Route path="/peer-support" element={<PeerSupportPage />} />
-          <Route
-            path="/admin/student-registry"
-            element={<AdminStudentRegistryPage />}
-          />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </main>

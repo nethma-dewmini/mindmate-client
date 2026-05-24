@@ -148,50 +148,6 @@ export const authService = {
   },
 
   /**
-   * Fetch student registry entries for admins
-   */
-  async getStudentRegistry({ q = "", limit = 50, offset = 0 } = {}) {
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    params.set("limit", String(limit));
-    params.set("offset", String(offset));
-
-    const response = await fetch(
-      `${API_BASE_URL}/student-registry?${params.toString()}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...this.getAuthHeaders(),
-        },
-      },
-    );
-
-    const data = await response.json();
-    if (!response.ok)
-      throw new Error(data.message || "Failed to fetch registry");
-    return data;
-  },
-
-  /**
-   * Add a student registry entry for admins
-   */
-  async createStudentRegistryEntry(registrationNo, email) {
-    const response = await fetch(`${API_BASE_URL}/student-registry`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...this.getAuthHeaders(),
-      },
-      body: JSON.stringify({ registration_no: registrationNo, email }),
-    });
-
-    const data = await response.json();
-    if (!response.ok)
-      throw new Error(data.message || "Failed to create registry entry");
-    return data;
-  },
-
-  /**
    * Get current user from localStorage
    */
   getCurrentUser() {

@@ -11,5 +11,5 @@ export { default as ExpertsPage } from "./ExpertsPage";
 export { default as PeerSupportPage } from "./PeerSupportPage";
 export { default as ForgotPasswordPage } from "./ForgotPasswordPage";
 export { default as ResetPasswordPage } from "./ResetPasswordPage";
-export { default as AdminStudentRegistryPage } from "./AdminStudentRegistryPage";
+export { default as AdminStudentRegistry } from "./AdminStudentRegistry";
 export { default as AboutPage } from "./AboutPage";
