@@ -31,14 +31,6 @@ const RegisterPage = () => {
         return "No matching student record was found for the entered registration number and email. Please check your details and try again.";
       }
 
-      if (
-        normalizedMessage.includes(
-          "name does not match the university registry record",
-        )
-      ) {
-        return "The name you entered does not match the university registry. Please use the exact name added by the admin.";
-      }
-
       if (normalizedMessage.includes("user with that email already exists")) {
         return "This email is already registered. Please sign in instead.";
       }
