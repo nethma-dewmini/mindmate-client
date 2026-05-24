@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Footer } from "./components";
+import { authService } from "./services/authService";
 import {
   LandingPage,
   LoginPage,
@@ -18,10 +19,26 @@ import {
 } from "./pages";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() =>
+    authService.isAuthenticated(),
+  );
+  const [user, setUser] = useState(() => authService.getCurrentUser());
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const syncAuthState = () => {
+      setIsAuthenticated(authService.isAuthenticated());
+      setUser(authService.getCurrentUser());
+    };
+
+    syncAuthState();
+    window.addEventListener("mindmate-auth-change", syncAuthState);
+
+    return () => {
+      window.removeEventListener("mindmate-auth-change", syncAuthState);
+    };
+  }, []);
 
   // Pages where we don't show navbar/footer
   const authPages = ["/login", "/register", "/forgot-password"];
@@ -45,8 +62,7 @@ function App() {
     location.pathname !== "/about";
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
+    authService.logout();
     navigate("/");
   };
 
