@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { Navbar, Footer } from "./components";
 import { authService } from "./services/authService";
 import {
@@ -86,7 +92,16 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              user?.role === "admin" ? (
+                <Navigate to="/admin/student-registry" replace />
+              ) : (
+                <DashboardPage />
+              )
+            }
+          />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
           <Route path="/profile" element={<ProfilePage />} />

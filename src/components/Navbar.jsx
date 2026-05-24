@@ -20,19 +20,20 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
     { name: "Resources", path: "/resources" },
   ];
 
-  const adminLinks =
-    user?.role === "admin"
-      ? [{ name: "Registry", path: "/admin/student-registry" }]
-      : [];
+  const adminLinks = [{ name: "Registry", path: "/admin/student-registry" }];
 
-  const links = isAuthenticated ? [...authLinks, ...adminLinks] : publicLinks;
+  const links = isAuthenticated
+    ? user?.role === "admin"
+      ? adminLinks
+      : authLinks
+    : publicLinks;
+
   const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img
               src={mindmateLogo}
@@ -42,7 +43,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             <span className="text-xl font-bold text-slate-800">MindMate</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {links.map((link) => (
               <Link
@@ -59,7 +59,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             ))}
           </div>
 
-          {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
@@ -98,7 +97,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-slate-600"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -107,7 +105,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200">
             <div className="flex flex-col space-y-3">
