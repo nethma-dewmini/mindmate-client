@@ -16,6 +16,7 @@ import {
   PeerSupportPage,
   ForgotPasswordPage,
   ResetPasswordPage,
+  AdminStudentRegistryPage,
   AboutPage,
 } from "./pages";
 
@@ -52,6 +53,7 @@ function App() {
     "/resources",
     "/experts",
     "/peer-support",
+    "/admin/student-registry",
   ];
   const showNavbar =
     !authPages.includes(location.pathname) &&
@@ -92,6 +94,10 @@ function App() {
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/experts" element={<ExpertsPage />} />
           <Route path="/peer-support" element={<PeerSupportPage />} />
+          <Route
+            path="/admin/student-registry"
+            element={<AdminStudentRegistryPage />}
+          />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </main>

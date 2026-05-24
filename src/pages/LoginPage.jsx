@@ -45,8 +45,12 @@ const LoginPage = () => {
       );
 
       if (response.user) {
-        // Store user info and redirect to dashboard
-        navigate("/dashboard");
+        const nextPath =
+          response.user.role === "admin"
+            ? "/admin/student-registry"
+            : "/dashboard";
+
+        navigate(nextPath);
       }
     } catch (error) {
       setErrors({ general: error.message || "Invalid email or password" });

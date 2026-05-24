@@ -20,7 +20,12 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
     { name: "Resources", path: "/resources" },
   ];
 
-  const links = isAuthenticated ? authLinks : publicLinks;
+  const adminLinks =
+    user?.role === "admin"
+      ? [{ name: "Registry", path: "/admin/student-registry" }]
+      : [];
+
+  const links = isAuthenticated ? [...authLinks, ...adminLinks] : publicLinks;
   const isActive = (path) => location.pathname === path;
 
   return (

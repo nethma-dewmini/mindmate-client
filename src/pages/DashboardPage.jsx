@@ -7,6 +7,7 @@ import {
   FaBook,
   FaUserMd,
   FaSignOutAlt,
+  FaShieldAlt,
 } from "react-icons/fa";
 import { authService } from "../services/authService";
 
@@ -87,6 +88,8 @@ const DashboardPage = () => {
     },
   ];
 
+  const isAdmin = user.role === "admin";
+
   return (
     <div className="min-h-screen bg-[#f9f5e7]">
       {/* Header */}
@@ -114,6 +117,37 @@ const DashboardPage = () => {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
+        {isAdmin && (
+          <div className="mb-8 rounded-3xl bg-slate-900 text-white p-6 shadow-lg">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <FaShieldAlt className="text-xl text-[#5bb5a1]" />
+                </div>
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-white/60">
+                    Admin Access
+                  </p>
+                  <h2 className="text-xl font-semibold mt-1">
+                    Manage student whitelist and approvals
+                  </h2>
+                  <p className="text-sm text-white/70 mt-2 max-w-2xl">
+                    Use the registry screen to add approved student emails and
+                    registration numbers before they can register.
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                to="/admin/student-registry"
+                className="inline-flex items-center justify-center px-4 py-3 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b]"
+              >
+                Open Registry
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {quickActions.map((action, index) => (
