@@ -15,6 +15,7 @@ import {
   ExpertsPage,
   PeerSupportPage,
   ForgotPasswordPage,
+  ResetPasswordPage,
   AboutPage,
 } from "./pages";
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />

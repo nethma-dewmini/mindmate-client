@@ -118,6 +118,36 @@ export const authService = {
   },
 
   /**
+   * Request password reset link
+   */
+  async forgotPassword(email) {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Request failed");
+    return data;
+  },
+
+  /**
+   * Reset password using token
+   */
+  async resetPassword(token, password) {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Reset failed");
+    return data;
+  },
+
+  /**
    * Get current user from localStorage
    */
   getCurrentUser() {
