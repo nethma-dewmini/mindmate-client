@@ -273,20 +273,23 @@ const AdminStudentRegistry = () => {
             )}
           </div>
 
-          <div className="mb-4 flex items-center gap-2">
+          <form
+            className="mb-4 flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              loadRegistry(query);
+            }}
+          >
             <input
               placeholder="Search registration or email"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="px-4 py-3 border rounded flex-grow"
             />
-            <button
-              onClick={() => loadRegistry(query)}
-              className="px-4 py-2 bg-slate-100 rounded"
-            >
+            <button type="submit" className="px-4 py-2 bg-slate-100 rounded">
               Search
             </button>
-          </div>
+          </form>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left table-auto">

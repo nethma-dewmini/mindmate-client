@@ -17,7 +17,9 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
     // Removed individual app links — replaced by a single admin access button when appropriate
   ];
 
-  const links = isAuthenticated ? authLinks : publicLinks;
+  // Show public links only on the homepage; otherwise use auth links when logged in
+  const links =
+    location.pathname === "/" ? publicLinks : isAuthenticated ? authLinks : [];
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -57,7 +59,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
               <div className="flex items-center space-x-4">
                 {user?.role === "admin" && (
                   <Link
-                    to="/admin/student-registry"
+                    to="/admin"
                     className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
                   >
                     Admin
@@ -67,7 +69,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             ) : (
               <div>
                 <Link
-                  to="/admin/student-registry"
+                  to="/admin"
                   className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
                 >
                   Admin
@@ -106,7 +108,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
               {!isAuthenticated && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
                   <Link
-                    to="/admin/student-registry"
+                    to="/admin"
                     className="text-center py-2.5 text-indigo-600 font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -118,7 +120,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
                 <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
                   {user?.role === "admin" && (
                     <Link
-                      to="/admin/student-registry"
+                      to="/admin"
                       className="text-slate-600 hover:text-indigo-600 font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

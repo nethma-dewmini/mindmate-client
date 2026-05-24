@@ -17,6 +17,9 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
   AdminStudentRegistry,
+  AdminEntry,
+  AdminLoginPage,
+  AdminDashboard,
   AboutPage,
 } from "./pages";
 
@@ -53,7 +56,9 @@ function App() {
     "/resources",
     "/experts",
     "/peer-support",
-    "/admin/student-registry",
+    "/admin",
+    "/admin/login",
+    "/admin/dashboard",
   ];
   const showNavbar =
     !authPages.includes(location.pathname) &&
@@ -90,7 +95,9 @@ function App() {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin/student-registry" element={<AdminStudentRegistry />} />
+          <Route path="/admin" element={<AdminEntry />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/mood" element={<MoodTrackerPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/experts" element={<ExpertsPage />} />

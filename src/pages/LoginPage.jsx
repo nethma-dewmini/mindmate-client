@@ -45,8 +45,12 @@ const LoginPage = () => {
       );
 
       if (response.user) {
-        // Store user info and redirect to dashboard
-        navigate("/dashboard");
+        // Redirect admins to admin dashboard, others to user dashboard
+        if (response.user.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       setErrors({ general: error.message || "Invalid email or password" });

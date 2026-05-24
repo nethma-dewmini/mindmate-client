@@ -60,12 +60,7 @@ const LandingPage = () => {
             Join thousands of students who are taking control of their mental
             health.
           </p>
-          <Link
-            to="/register"
-            className="inline-block px-8 py-4 bg-[#f0b429] text-white rounded-xl font-semibold hover:bg-[#d9a41f] transition-colors"
-          >
-            Create Free Account
-          </Link>
+          {/* CTA button removed per request */}
         </div>
       </section>
 

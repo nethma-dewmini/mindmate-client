@@ -12,4 +12,7 @@ export { default as PeerSupportPage } from "./PeerSupportPage";
 export { default as ForgotPasswordPage } from "./ForgotPasswordPage";
 export { default as ResetPasswordPage } from "./ResetPasswordPage";
 export { default as AdminStudentRegistry } from "./AdminStudentRegistry";
+export { default as AdminEntry } from "./AdminEntry";
+export { default as AdminLoginPage } from "./AdminLoginPage";
+export { default as AdminDashboard } from "./AdminDashboard";
 export { default as AboutPage } from "./AboutPage";
