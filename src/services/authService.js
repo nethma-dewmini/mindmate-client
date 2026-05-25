@@ -84,6 +84,41 @@ export const authService = {
   },
 
   /**
+   * Submit an expert application with supporting documents
+   */
+  async submitExpertApplication({
+    name,
+    email,
+    specialization,
+    experience,
+    documents,
+  }) {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("role_requested", "expert");
+    if (specialization) formData.append("specialization", specialization);
+    if (experience) formData.append("experience", experience);
+
+    (documents || []).forEach((document) => {
+      formData.append("documents", document);
+    });
+
+    const response = await fetch(`${API_BASE_URL}/expert-applications/apply`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Application submission failed");
+    }
+
+    return data;
+  },
+
+  /**
    * Login user
    */
   async login(email, password) {

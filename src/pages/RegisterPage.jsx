@@ -9,6 +9,7 @@ const RegisterPage = () => {
   const [step, setStep] = useState("select"); // 'select', 'student', 'expert'
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   const isValidUomEmail = (value) =>
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
@@ -46,6 +47,7 @@ const RegisterPage = () => {
   };
 
   const [studentData, setStudentData] = useState({
+    title: "",
     name: "",
     email: "",
     studentId: "",
@@ -54,15 +56,13 @@ const RegisterPage = () => {
   });
 
   const [expertData, setExpertData] = useState({
+    title: "",
     name: "",
     email: "",
     specialization: "",
-    qualifications: "",
     experience: "",
-    licenseNumber: "",
-    password: "",
-    confirmPassword: "",
   });
+  const [expertDocuments, setExpertDocuments] = useState([]);
 
   const handleStudentChange = (e) => {
     const { name, value } = e.target;
@@ -103,10 +103,15 @@ const RegisterPage = () => {
     setExpertData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleExpertDocumentChange = (e) => {
+    setExpertDocuments(Array.from(e.target.files || []));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
+    setSuccessMessage("");
 
     try {
       if (step === "student") {
@@ -147,9 +152,10 @@ const RegisterPage = () => {
           return;
         }
 
-        // Call backend
+        // Prepare name with title and call backend
+        const studentDisplayName = `${studentData.title ? studentData.title + " " : ""}${studentData.name}`;
         const response = await authService.registerStudent(
-          studentData.name,
+          studentDisplayName,
           studentData.email,
           studentData.studentId,
           studentData.password,
@@ -162,32 +168,34 @@ const RegisterPage = () => {
         if (
           !expertData.name ||
           !expertData.email ||
-          !expertData.password ||
-          !expertData.confirmPassword
+          !expertData.specialization ||
+          !expertData.experience ||
+          !expertDocuments.length
         ) {
-          setErrors({ general: "Name, email, and password are required" });
+          setErrors({
+            general:
+              "Name, email, specialization, experience, and at least one document are required",
+          });
           setIsLoading(false);
           return;
         }
 
-        if (expertData.password !== expertData.confirmPassword) {
-          setErrors({ general: "Passwords do not match" });
-          setIsLoading(false);
-          return;
-        }
+        // Submit expert application with documents (include title)
+        const expertDisplayName = `${expertData.title ? expertData.title + " " : ""}${expertData.name}`;
+        const response = await authService.submitExpertApplication({
+          name: expertDisplayName,
+          email: expertData.email,
+          specialization: expertData.specialization,
+          experience: expertData.experience,
+          documents: expertDocuments,
+        });
 
-        // Call backend
-        const response = await authService.registerExpert(
-          expertData.name,
-          expertData.email,
-          expertData.password,
-          expertData.specialization,
-          expertData.qualifications,
-          expertData.licenseNumber,
+        // Success - show message and redirect to login
+        setSuccessMessage(
+          response.message ||
+            "Application submitted successfully. Please wait for admin review.",
         );
-
-        // Success - redirect to login
-        navigate("/login");
+        setTimeout(() => navigate("/login"), 1500);
       }
     } catch (error) {
       setErrors({
@@ -304,24 +312,51 @@ const RegisterPage = () => {
               </div>
             )}
 
+            {successMessage && (
+              <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {successMessage}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name with Initials
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={studentData.name}
-                  onChange={handleStudentChange}
-                  placeholder="R.M.N.D. Rathnayaka"
-                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
-                    errors.name ? "border-red-300" : "border-gray-200"
-                  }`}
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                )}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <select
+                    name="title"
+                    value={studentData.title}
+                    onChange={handleStudentChange}
+                    className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Select</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Ms">Ms</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Miss">Miss</option>
+                    <option value="Dr">Dr</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name with Initials
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={studentData.name}
+                    onChange={handleStudentChange}
+                    placeholder="R.M.N.D. Rathnayaka"
+                    className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                      errors.name ? "border-red-300" : "border-gray-200"
+                    }`}
+                  />
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -444,17 +479,38 @@ const RegisterPage = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={expertData.name}
-                  onChange={handleExpertChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <select
+                    name="title"
+                    value={expertData.title}
+                    onChange={handleExpertChange}
+                    className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Select</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Ms">Ms</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Miss">Miss</option>
+                    <option value="Dr">Dr</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={expertData.name}
+                    onChange={handleExpertChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
               </div>
 
               <div>
@@ -483,20 +539,7 @@ const RegisterPage = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Qualifications
-                </label>
-                <input
-                  type="text"
-                  name="qualifications"
-                  value={expertData.qualifications}
-                  onChange={handleExpertChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Years of Experience
                 </label>
@@ -507,46 +550,23 @@ const RegisterPage = () => {
                   onChange={handleExpertChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  License Number
+                  Supporting Documents
                 </label>
                 <input
-                  type="text"
-                  name="licenseNumber"
-                  value={expertData.licenseNumber}
-                  onChange={handleExpertChange}
+                  type="file"
+                  multiple
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  onChange={handleExpertDocumentChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={expertData.password}
-                    onChange={handleExpertChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={expertData.confirmPassword}
-                    onChange={handleExpertChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload your CV, license, certificates, or other verification
+                  documents.
+                </p>
               </div>
 
               <button
@@ -554,7 +574,7 @@ const RegisterPage = () => {
                 disabled={isLoading}
                 className="w-full py-3 bg-[#e74c3c] text-white rounded-xl font-medium hover:bg-[#c0392b] transition-colors disabled:opacity-50"
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? "Submitting Application..." : "Submit Application"}
               </button>
             </form>
 
