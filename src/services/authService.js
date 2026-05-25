@@ -88,6 +88,7 @@ export const authService = {
    */
   async submitExpertApplication({
     name,
+    title,
     email,
     specialization,
     experience,
@@ -95,8 +96,8 @@ export const authService = {
   }) {
     const formData = new FormData();
     formData.append("name", name);
+    if (title) formData.append("title", title);
     formData.append("email", email);
-    formData.append("role_requested", "expert");
     if (specialization) formData.append("specialization", specialization);
     if (experience) formData.append("experience", experience);
 

@@ -10,6 +10,7 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [submittedApplication, setSubmittedApplication] = useState(null);
 
   const isValidUomEmail = (value) =>
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
@@ -60,7 +61,7 @@ const RegisterPage = () => {
     name: "",
     email: "",
     specialization: "",
-    experience: "",
+    specializationOther: "",
   });
   const [expertDocuments, setExpertDocuments] = useState([]);
 
@@ -169,33 +170,40 @@ const RegisterPage = () => {
           !expertData.name ||
           !expertData.email ||
           !expertData.specialization ||
-          !expertData.experience ||
+          (expertData.specialization === "Other" &&
+            !expertData.specializationOther) ||
           !expertDocuments.length
         ) {
           setErrors({
             general:
-              "Name, email, specialization, experience, and at least one document are required",
+              "Name, email, specialization (or specify), and at least one document are required",
           });
           setIsLoading(false);
           return;
         }
 
         // Submit expert application with documents (include title)
-        const expertDisplayName = `${expertData.title ? expertData.title + " " : ""}${expertData.name}`;
+        const resolvedSpecialization =
+          expertData.specialization === "Other"
+            ? expertData.specializationOther
+            : expertData.specialization;
+
         const response = await authService.submitExpertApplication({
-          name: expertDisplayName,
+          name: expertData.name,
+          title: expertData.title,
           email: expertData.email,
-          specialization: expertData.specialization,
-          experience: expertData.experience,
+          specialization: resolvedSpecialization,
           documents: expertDocuments,
         });
 
-        // Success - show message and redirect to login
+        // Success - show message and display pending status
         setSuccessMessage(
           response.message ||
             "Application submitted successfully. Please wait for admin review.",
         );
-        setTimeout(() => navigate("/login"), 1500);
+        if (response.application) {
+          setSubmittedApplication(response.application);
+        }
       }
     } catch (error) {
       setErrors({
@@ -530,13 +538,45 @@ const RegisterPage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Specialization
                 </label>
-                <input
-                  type="text"
+                <select
                   name="specialization"
                   value={expertData.specialization}
                   onChange={handleExpertChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+                  className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  <option value="">Select specialization</option>
+                  <option value="Clinical Psychology">
+                    Clinical Psychology
+                  </option>
+                  <option value="Counseling Psychology">
+                    Counseling Psychology
+                  </option>
+                  <option value="Psychiatry">Psychiatry</option>
+                  <option value="Social Work">Social Work</option>
+                  <option value="Psychiatric Nursing">
+                    Psychiatric Nursing
+                  </option>
+                  <option value="Marriage & Family Therapy">
+                    Marriage & Family Therapy
+                  </option>
+                  <option value="Other">Other</option>
+                </select>
+
+                {expertData.specialization === "Other" && (
+                  <div className="mt-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Please specify
+                    </label>
+                    <input
+                      type="text"
+                      name="specializationOther"
+                      value={expertData.specializationOther}
+                      onChange={handleExpertChange}
+                      placeholder="e.g. Neuropsychology"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* <div>
@@ -571,13 +611,48 @@ const RegisterPage = () => {
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || submittedApplication}
                 className="w-full py-3 bg-[#e74c3c] text-white rounded-xl font-medium hover:bg-[#c0392b] transition-colors disabled:opacity-50"
               >
-                {isLoading ? "Submitting Application..." : "Submit Application"}
+                {isLoading
+                  ? "Submitting Application..."
+                  : submittedApplication
+                    ? "Application Pending"
+                    : "Submit Application"}
               </button>
             </form>
 
+            {submittedApplication && (
+              <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                <h3 className="font-semibold text-gray-800 mb-1">
+                  Application Submitted — Pending Review
+                </h3>
+                <p className="text-sm text-gray-700 mb-2">
+                  Your application is pending admin review. We'll notify you
+                  when it's reviewed.
+                </p>
+                <div className="text-xs text-gray-600">
+                  <div>
+                    <strong>Application ID:</strong> {submittedApplication.id}
+                  </div>
+                  <div>
+                    <strong>Submitted:</strong>{" "}
+                    {new Date(submittedApplication.created_at).toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Status:</strong> {submittedApplication.status}
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <Link
+                    to="/login"
+                    className="text-sm text-[#5bb5a1] hover:underline"
+                  >
+                    Go to Sign in
+                  </Link>
+                </div>
+              </div>
+            )}
             <p className="mt-6 text-center text-gray-600">
               Already have an account?{" "}
               <Link
