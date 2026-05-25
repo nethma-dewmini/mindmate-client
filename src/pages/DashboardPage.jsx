@@ -8,12 +8,14 @@ import {
   FaUserMd,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { authService } from "../services/authService";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const user = { name: "Nethma" };
+  const user = authService.getCurrentUser() || { name: "Student" };
 
   const handleLogout = () => {
+    authService.logout();
     navigate("/");
   };
 

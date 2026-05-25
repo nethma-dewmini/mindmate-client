@@ -14,13 +14,12 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
   ];
 
   const authLinks = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Chat", path: "/chat" },
-    { name: "Assessment", path: "/assessment" },
-    { name: "Resources", path: "/resources" },
+    // Removed individual app links — replaced by a single admin access button when appropriate
   ];
 
-  const links = isAuthenticated ? authLinks : publicLinks;
+  // Show public links only on the homepage; otherwise use auth links when logged in
+  const links =
+    location.pathname === "/" ? publicLinks : isAuthenticated ? authLinks : [];
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -58,38 +57,24 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <Link
-                  to="/profile"
-                  className="flex items-center space-x-2 text-slate-600 hover:text-indigo-600"
-                >
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                    <FaUser className="text-indigo-600 text-sm" />
-                  </div>
-                  <span className="font-medium">{user?.name || "Profile"}</span>
-                </Link>
-                <button
-                  onClick={onLogout}
-                  className="flex items-center space-x-1 text-slate-500 hover:text-red-500"
-                >
-                  <FaSignOutAlt />
-                  <span>Logout</span>
-                </button>
+                {user?.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
+                  >
+                    Admin
+                  </Link>
+                )}
               </div>
             ) : (
-              <>
+              <div>
                 <Link
-                  to="/login"
-                  className="text-slate-600 hover:text-indigo-600 font-medium transition-colors"
+                  to="/admin"
+                  className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
                 >
-                  Sign In
+                  Admin
                 </Link>
-                <Link
-                  to="/register"
-                  className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm"
-                >
-                  Get Started
-                </Link>
-              </>
+              </div>
             )}
           </div>
 
@@ -123,39 +108,25 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
               {!isAuthenticated && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
                   <Link
-                    to="/login"
+                    to="/admin"
                     className="text-center py-2.5 text-indigo-600 font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="text-center py-2.5 bg-indigo-600 text-white rounded-lg font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Get Started
+                    Admin
                   </Link>
                 </div>
               )}
               {isAuthenticated && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
-                  <Link
-                    to="/profile"
-                    className="text-slate-600 hover:text-indigo-600 font-medium py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={() => {
-                      onLogout?.();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="text-left text-red-500 font-medium py-2"
-                  >
-                    Logout
-                  </button>
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      className="text-slate-600 hover:text-indigo-600 font-medium py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Admin
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

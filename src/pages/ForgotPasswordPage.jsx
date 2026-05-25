@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaEnvelope, FaCheck } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
+import { authService } from "../services/authService";
 
 const ForgotPasswordPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -24,11 +26,23 @@ const ForgotPasswordPage = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const resp = await authService.forgotPassword(email);
+      const resetLink = resp?.resetLink || "";
+      const token = resp?.token || "";
+
+      if (resetLink) {
+        window.location.assign(resetLink);
+        return;
+      }
+
+      if (token) {
+        navigate(`/reset-password?token=${encodeURIComponent(token)}`);
+        return;
+      }
+
       setIsSubmitted(true);
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }

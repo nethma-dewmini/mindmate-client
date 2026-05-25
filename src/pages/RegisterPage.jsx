@@ -10,6 +10,41 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const isValidUomEmail = (value) =>
+    /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
+
+  const isValidRegistrationNo = (value) =>
+    /^\d{6}[A-Za-z]$/.test(String(value || "").trim());
+
+  const getFriendlyErrorMessage = (message, role) => {
+    const normalizedMessage = String(message || "").toLowerCase();
+
+    if (role === "student") {
+      if (
+        normalizedMessage.includes(
+          "student record not found in university registry",
+        ) ||
+        normalizedMessage.includes(
+          "no matching student record was found for the entered registration number and email",
+        )
+      ) {
+        return "No matching student record was found for the entered registration number and email. Please check your details and try again.";
+      }
+
+      if (normalizedMessage.includes("user with that email already exists")) {
+        return "This email is already registered. Please sign in instead.";
+      }
+
+      if (
+        normalizedMessage.includes("this registration no is already registered")
+      ) {
+        return "This registration number is already linked to an account. Please sign in instead.";
+      }
+    }
+
+    return message || "Registration failed. Please try again.";
+  };
+
   const [studentData, setStudentData] = useState({
     name: "",
     email: "",
@@ -32,6 +67,35 @@ const RegisterPage = () => {
   const handleStudentChange = (e) => {
     const { name, value } = e.target;
     setStudentData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "email") {
+      setErrors((prev) => ({
+        ...prev,
+        email:
+          value && !isValidUomEmail(value)
+            ? "Enter a valid University of Moratuwa email ending with @uom.lk"
+            : "",
+      }));
+      return;
+    }
+
+    if (name === "studentId") {
+      setErrors((prev) => ({
+        ...prev,
+        studentId:
+          value && !isValidRegistrationNo(value)
+            ? "Enter a valid registration number like 221234X"
+            : "",
+      }));
+      return;
+    }
+
+    if (name === "name") {
+      setErrors((prev) => ({ ...prev, name: value ? "" : prev.name }));
+      return;
+    }
+
+    setErrors((prev) => ({ ...prev, general: "" }));
   };
 
   const handleExpertChange = (e) => {
@@ -47,14 +111,32 @@ const RegisterPage = () => {
     try {
       if (step === "student") {
         // Validate form
-        if (
-          !studentData.name ||
-          !studentData.email ||
-          !studentData.studentId ||
-          !studentData.password ||
-          !studentData.confirmPassword
-        ) {
-          setErrors({ general: "All fields are required" });
+        const nextErrors = {};
+
+        if (!studentData.name) {
+          nextErrors.name = "Name is required";
+        }
+
+        if (!studentData.email) {
+          nextErrors.email = "Email is required";
+        } else if (!isValidUomEmail(studentData.email)) {
+          nextErrors.email =
+            "Enter a valid University of Moratuwa email ending with @uom.lk";
+        }
+
+        if (!studentData.studentId) {
+          nextErrors.studentId = "Registration number is required";
+        } else if (!isValidRegistrationNo(studentData.studentId)) {
+          nextErrors.studentId =
+            "Enter a valid registration number like 221234X";
+        }
+
+        if (!studentData.password || !studentData.confirmPassword) {
+          nextErrors.general = "All fields are required";
+        }
+
+        if (Object.keys(nextErrors).length > 0) {
+          setErrors(nextErrors);
           setIsLoading(false);
           return;
         }
@@ -109,7 +191,7 @@ const RegisterPage = () => {
       }
     } catch (error) {
       setErrors({
-        general: error.message || "Registration failed. Please try again.",
+        general: getFriendlyErrorMessage(error.message, step),
       });
     } finally {
       setIsLoading(false);
@@ -216,6 +298,12 @@ const RegisterPage = () => {
               </button>
             </div>
 
+            {errors.general && (
+              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {errors.general}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -227,8 +315,13 @@ const RegisterPage = () => {
                   value={studentData.name}
                   onChange={handleStudentChange}
                   placeholder="R.M.N.D. Rathnayaka"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    errors.name ? "border-red-300" : "border-gray-200"
+                  }`}
                 />
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                )}
               </div>
 
               <div>
@@ -241,11 +334,16 @@ const RegisterPage = () => {
                   value={studentData.email}
                   onChange={handleStudentChange}
                   placeholder="rathnayakarmnd.22@uom.lk"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    errors.email ? "border-red-300" : "border-gray-200"
+                  }`}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Use your University of Moratuwa email address
                 </p>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
               </div>
 
               <div>
@@ -258,8 +356,15 @@ const RegisterPage = () => {
                   value={studentData.studentId}
                   onChange={handleStudentChange}
                   placeholder="221234X"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    errors.studentId ? "border-red-300" : "border-gray-200"
+                  }`}
                 />
+                {errors.studentId && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.studentId}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -331,6 +436,12 @@ const RegisterPage = () => {
                 <FaArrowLeft className="mr-1" /> Change account type
               </button>
             </div>
+
+            {errors.general && (
+              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {errors.general}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
