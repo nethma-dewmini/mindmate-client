@@ -20,6 +20,8 @@ import {
   AdminEntry,
   AdminLoginPage,
   AdminDashboard,
+  AdminExpertApplicationsPage,
+  AdminStudentRegistryPage,
   AboutPage,
 } from "./pages";
 
@@ -59,6 +61,8 @@ function App() {
     "/admin",
     "/admin/login",
     "/admin/dashboard",
+    "/admin/expert-applications",
+    "/admin/student-registry",
   ];
   const showNavbar =
     !authPages.includes(location.pathname) &&
@@ -98,6 +102,14 @@ function App() {
           <Route path="/admin" element={<AdminEntry />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route
+            path="/admin/expert-applications"
+            element={<AdminExpertApplicationsPage />}
+          />
+          <Route
+            path="/admin/student-registry"
+            element={<AdminStudentRegistryPage />}
+          />
           <Route path="/mood" element={<MoodTrackerPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/experts" element={<ExpertsPage />} />
