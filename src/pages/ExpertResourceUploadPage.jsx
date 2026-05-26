@@ -15,6 +15,8 @@ const ExpertResourceUploadPage = () => {
     category: "",
     summary: "",
     type: "GUIDE",
+    videoUrl: "",
+    audioUrl: "",
   });
   const [resourceFile, setResourceFile] = useState(null);
   const [savingResource, setSavingResource] = useState(false);
@@ -53,8 +55,17 @@ const ExpertResourceUploadPage = () => {
     }
 
     if (!resourceFile) {
-      setResourceError("Please attach a document to upload.");
-      return;
+      if (
+        (resourceForm.type === "VIDEO" && resourceForm.videoUrl.trim()) ||
+        (resourceForm.type === "AUDIO" && resourceForm.audioUrl.trim())
+      ) {
+        // allow URL instead of a file for video/audio
+      } else {
+        setResourceError(
+          "Please attach a document to upload or provide a video/audio URL for media resources.",
+        );
+        return;
+      }
     }
 
     setSavingResource(true);
@@ -66,6 +77,8 @@ const ExpertResourceUploadPage = () => {
         summary: resourceForm.summary,
         type: resourceForm.type,
         document: resourceFile,
+        videoUrl: resourceForm.videoUrl?.trim() || undefined,
+        audioUrl: resourceForm.audioUrl?.trim() || undefined,
       });
 
       setResourceMessage("Resource uploaded successfully.");
@@ -74,6 +87,8 @@ const ExpertResourceUploadPage = () => {
         category: "",
         summary: "",
         type: "GUIDE",
+        videoUrl: "",
+        audioUrl: "",
       });
       setResourceFile(null);
       event.target.reset();
@@ -214,14 +229,60 @@ const ExpertResourceUploadPage = () => {
                 </label>
                 <input
                   type="file"
-                  accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
+                  accept={
+                    resourceForm.type === "VIDEO"
+                      ? ".mp4,.webm,.mov,.mkv,video/*"
+                      : resourceForm.type === "AUDIO"
+                        ? ".mp3,.wav,.ogg,.webm,audio/*"
+                        : ".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
+                  }
                   onChange={handleResourceFileChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-[#5bb5a1] hover:file:bg-teal-100"
-                  required
                 />
+
+                {resourceForm.type === "VIDEO" && (
+                  <div className="mt-3">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Video URL (optional)
+                    </label>
+                    <input
+                      type="url"
+                      name="videoUrl"
+                      value={resourceForm.videoUrl}
+                      onChange={handleResourceChange}
+                      placeholder="https://youtube.com/watch?v=... or direct mp4 URL"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    />
+                    <p className="mt-2 text-xs text-gray-500">
+                      Provide a video URL if you prefer linking to an external
+                      video instead of uploading a file.
+                    </p>
+                  </div>
+                )}
+
+                {resourceForm.type === "AUDIO" && (
+                  <div className="mt-3">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Audio URL (optional)
+                    </label>
+                    <input
+                      type="url"
+                      name="audioUrl"
+                      value={resourceForm.audioUrl}
+                      onChange={handleResourceChange}
+                      placeholder="https://example.com/audio.mp3 or soundcloud/spotify link"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    />
+                    <p className="mt-2 text-xs text-gray-500">
+                      Provide an audio URL if you prefer linking instead of
+                      uploading a file.
+                    </p>
+                  </div>
+                )}
+
                 <p className="mt-2 text-xs text-gray-500">
-                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, and WEBP files are
-                  supported.
+                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, WEBP files, video files
+                  (MP4/WEBM/MOV), and audio files (MP3/WAV/OGG) are supported.
                 </p>
               </div>
             </div>

@@ -4,18 +4,9 @@ import { authService } from "../services/authService";
 import { FaSearch, FaClock, FaThumbsUp } from "react-icons/fa";
 
 const ResourcesPage = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-
-  const categories = [
-    { id: "all", label: "All" },
-    { id: "academic-stress", label: "Academic Stress" },
-    { id: "anxiety-relief", label: "Anxiety Relief" },
-    { id: "wellness", label: "Wellness" },
-    { id: "academic-success", label: "Academic Success" },
-    { id: "meditation", label: "Meditation" },
-    { id: "social-support", label: "Social Support" },
-  ];
+  const [typeFilter, setTypeFilter] = useState("ALL");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,19 +38,27 @@ const ResourcesPage = () => {
     };
   }, []);
 
+  // debounce search input to avoid filtering on every keystroke
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 250);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   const filteredResources = resources.filter((resource) => {
-    const matchesCategory =
-      activeCategory === "all" ||
-      !resource.category ||
-      resource.category === activeCategory ||
-      (typeof resource.category === "string" &&
-        resource.category.toLowerCase().includes(activeCategory));
+    const q = (debouncedSearch || "").toLowerCase();
 
-    const matchesSearch = resource.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      !q ||
+      (resource.title && resource.title.toLowerCase().includes(q)) ||
+      (resource.summary && resource.summary.toLowerCase().includes(q)) ||
+      (resource.authorName && resource.authorName.toLowerCase().includes(q)) ||
+      (resource.author && resource.author.toLowerCase().includes(q)) ||
+      (resource.category && resource.category.toLowerCase().includes(q));
 
-    return matchesCategory && matchesSearch;
+    const matchesType =
+      typeFilter === "ALL" || !resource.type || resource.type === typeFilter;
+
+    return matchesSearch && matchesType;
   });
 
   const getTypeColor = (type) => {
@@ -94,6 +93,43 @@ const ResourcesPage = () => {
     }
   };
 
+  const escapeRegExp = (string = "") =>
+    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const highlightMatch = (text = "", q = "") => {
+    if (!q) return text;
+    const parts = String(text).split(new RegExp(`(${escapeRegExp(q)})`, "i"));
+    return parts.map((part, i) => {
+      if (part.toLowerCase() === q.toLowerCase()) {
+        return (
+          <mark
+            key={i}
+            className="bg-yellow-200 text-yellow-900 rounded px-0.5"
+          >
+            {part}
+          </mark>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
+  const isYouTube = (url = "") => /youtu(?:\.be|be\.com)/i.test(String(url));
+
+  const toYouTubeEmbed = (url = "") => {
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes("youtu.be")) {
+        return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
+      }
+      const v = u.searchParams.get("v");
+      if (v) return `https://www.youtube.com/embed/${v}`;
+    } catch (e) {
+      // fallthrough
+    }
+    return url;
+  };
+
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-6xl mx-auto">
@@ -119,22 +155,37 @@ const ResourcesPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1]"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Categories */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {categories.map((category) => (
+        {/* Type filters */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { id: "ALL", label: "All" },
+            { id: "ARTICLE", label: "Article" },
+            { id: "GUIDE", label: "Guide" },
+            { id: "VIDEO", label: "Video" },
+            { id: "AUDIO", label: "Audio" },
+          ].map((t) => (
             <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              key={t.id}
+              onClick={() => setTypeFilter(t.id)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeCategory === category.id
+                typeFilter === t.id
                   ? "bg-[#5bb5a1] text-white"
                   : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
               }`}
             >
-              {category.label}
+              {t.label}
             </button>
           ))}
         </div>
@@ -174,24 +225,66 @@ const ResourcesPage = () => {
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded ${getCategoryColor(resource.category)}`}
                 >
-                  {resource.category || "General"}
+                  {highlightMatch(
+                    resource.category || "General",
+                    debouncedSearch,
+                  )}
                 </span>
                 <h3 className="font-semibold text-gray-800 mt-3 mb-1">
-                  {resource.title}
+                  {highlightMatch(resource.title, debouncedSearch)}
                 </h3>
                 <p className="text-sm text-gray-500 mb-3">
-                  By {resource.authorName || resource.author || "Expert"}
+                  By{" "}
+                  {highlightMatch(
+                    resource.authorName || resource.author || "Expert",
+                    debouncedSearch,
+                  )}
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-400">
-                  {resource.contentUrl && (
-                    <a
-                      href={`http://localhost:5000${resource.contentUrl}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#5bb5a1] font-medium"
-                    >
-                      View file
-                    </a>
+                  {resource.type === "VIDEO" ? (
+                    resource.contentUrl ? (
+                      isYouTube(resource.contentUrl) ? (
+                        <div className="w-full mt-3">
+                          <iframe
+                            title={`video-${resource.id}`}
+                            src={toYouTubeEmbed(resource.contentUrl)}
+                            className="w-full h-40 rounded-lg border"
+                            allowFullScreen
+                          />
+                        </div>
+                      ) : String(resource.contentUrl).startsWith("/api") ? (
+                        <div className="w-full mt-3">
+                          <video
+                            controls
+                            className="w-full max-h-48 rounded-lg"
+                            src={`http://localhost:5000${resource.contentUrl}`}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      ) : (
+                        <div className="w-full mt-3">
+                          <video
+                            controls
+                            className="w-full max-h-48 rounded-lg"
+                            src={resource.contentUrl}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      )
+                    ) : null
+                  ) : (
+                    resource.contentUrl && (
+                      <a
+                        href={`http://localhost:5000${resource.contentUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[#5bb5a1] font-medium"
+                      >
+                        View file
+                      </a>
+                    )
                   )}
                 </div>
               </div>
@@ -199,31 +292,7 @@ const ResourcesPage = () => {
           )}
         </div>
 
-        {/* CTA Banner */}
-        <div className="bg-[#5bb5a1] rounded-2xl p-8 text-center">
-          <div className="flex justify-center mb-4">
-            <span className="text-4xl">💡</span>
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Need More Help?</h2>
-          <p className="text-teal-100 mb-6">
-            Can't find what you're looking for? Our AI assistant and mental
-            health experts are here to help.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Link
-              to="/chat"
-              className="px-6 py-3 bg-white text-[#5bb5a1] rounded-lg font-medium hover:bg-gray-100"
-            >
-              Chat with AI
-            </Link>
-            <Link
-              to="/experts"
-              className="px-6 py-3 bg-[#4a9d8b] text-white rounded-lg font-medium hover:bg-[#3d8a79]"
-            >
-              Book Expert
-            </Link>
-          </div>
-        </div>
+        {/* CTA Banner removed per request */}
       </div>
     </div>
   );
