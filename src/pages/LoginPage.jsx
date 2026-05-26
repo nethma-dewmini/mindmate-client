@@ -45,9 +45,11 @@ const LoginPage = () => {
       );
 
       if (response.user) {
-        // Redirect admins to admin dashboard, others to user dashboard
+        // Redirect users by role
         if (response.user.role === "admin") {
           navigate("/admin/dashboard");
+        } else if (response.user.role === "expert") {
+          navigate("/expert/dashboard");
         } else {
           navigate("/dashboard");
         }

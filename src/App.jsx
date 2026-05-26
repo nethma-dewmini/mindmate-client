@@ -7,6 +7,7 @@ import {
   LoginPage,
   RegisterPage,
   DashboardPage,
+  ExpertDashboardPage,
   ChatPage,
   AssessmentPage,
   ProfilePage,
@@ -53,6 +54,7 @@ function App() {
   const expertPages = ["/expert/register"];
   const appPages = [
     "/dashboard",
+    "/expert/dashboard",
     "/chat",
     "/assessment",
     "/profile",
@@ -103,6 +105,7 @@ function App() {
             element={<ExpertAccountRegisterPage />}
           />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/expert/dashboard" element={<ExpertDashboardPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
           <Route path="/profile" element={<ProfilePage />} />
