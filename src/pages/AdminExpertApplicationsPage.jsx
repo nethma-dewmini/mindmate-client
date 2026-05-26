@@ -20,7 +20,10 @@ const AdminExpertApplicationsPage = () => {
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto mb-6">
-        <Link to="/admin/dashboard" className="text-sm text-[#5bb5a1] hover:underline">
+        <Link
+          to="/admin/dashboard"
+          className="text-sm text-[#5bb5a1] hover:underline"
+        >
           ← Back to Admin Dashboard
         </Link>
       </div>

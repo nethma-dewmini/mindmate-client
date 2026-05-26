@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGraduationCap, FaUserMd, FaArrowLeft } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
@@ -11,6 +11,16 @@ const RegisterPage = () => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [submittedApplication, setSubmittedApplication] = useState(null);
+  const [applicationLookupStatus, setApplicationLookupStatus] = useState("");
+  const [applicationLookupMessage, setApplicationLookupMessage] = useState("");
+  const [checkingApplicationStatus, setCheckingApplicationStatus] =
+    useState(false);
+  const [expertAccountPassword, setExpertAccountPassword] = useState("");
+  const [expertAccountConfirmPassword, setExpertAccountConfirmPassword] =
+    useState("");
+  const [registeringExpertAccount, setRegisteringExpertAccount] =
+    useState(false);
+  const [expertAccountMessage, setExpertAccountMessage] = useState("");
 
   const isValidUomEmail = (value) =>
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
@@ -107,6 +117,97 @@ const RegisterPage = () => {
   const handleExpertDocumentChange = (e) => {
     setExpertDocuments(Array.from(e.target.files || []));
   };
+
+  const handleExpertAccountRegister = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    setExpertAccountMessage("");
+
+    if (applicationLookupStatus !== "approved") {
+      setErrors({
+        general: "Your application must be approved before you can register.",
+      });
+      return;
+    }
+
+    if (!expertAccountPassword || !expertAccountConfirmPassword) {
+      setErrors({ general: "Password and confirm password are required" });
+      return;
+    }
+
+    if (expertAccountPassword !== expertAccountConfirmPassword) {
+      setErrors({ general: "Passwords do not match" });
+      return;
+    }
+
+    setRegisteringExpertAccount(true);
+    try {
+      const response = await authService.registerExpert(
+        expertData.name,
+        expertData.title,
+        expertData.email,
+        expertAccountPassword,
+      );
+
+      setExpertAccountMessage(
+        response.message ||
+          "You are approved. Your expert account has been created. Please sign in.",
+      );
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (error) {
+      setErrors({
+        general: getFriendlyErrorMessage(error.message, "expert"),
+      });
+    } finally {
+      setRegisteringExpertAccount(false);
+    }
+  };
+
+  useEffect(() => {
+    const email = String(expertData.email || "").trim();
+    const timeoutId = setTimeout(async () => {
+      if (
+        step !== "expert" ||
+        (!isValidUomEmail(email) && !email.includes("@"))
+      ) {
+        return;
+      }
+
+      setCheckingApplicationStatus(true);
+      setApplicationLookupStatus("");
+      setApplicationLookupMessage("");
+
+      try {
+        const response = await authService.getExpertApplicationStatus(email);
+        const application = response.application;
+
+        if (application?.status === "approved") {
+          setApplicationLookupStatus("approved");
+          setApplicationLookupMessage(
+            "You are approved. Please sign in to continue using your expert account.",
+          );
+        } else if (application?.status === "pending") {
+          setApplicationLookupStatus("pending");
+          setApplicationLookupMessage(
+            "Your application is pending admin review. Please wait for approval.",
+          );
+        } else if (application?.status === "rejected") {
+          setApplicationLookupStatus("rejected");
+          setApplicationLookupMessage(
+            "Your application was rejected. Please contact the admin team for more information.",
+          );
+        }
+      } catch (err) {
+        // No application yet is fine; keep the form clear.
+        setApplicationLookupStatus("");
+        setApplicationLookupMessage("");
+      } finally {
+        setCheckingApplicationStatus(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [expertData.email, step]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -320,6 +421,24 @@ const RegisterPage = () => {
               </div>
             )}
 
+            {applicationLookupMessage && (
+              <div
+                className={`mb-5 rounded-xl px-4 py-3 text-sm ${
+                  applicationLookupStatus === "approved"
+                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : applicationLookupStatus === "rejected"
+                      ? "border border-rose-200 bg-rose-50 text-rose-700"
+                      : "border border-amber-200 bg-amber-50 text-amber-700"
+                }`}
+              >
+                <div className="font-medium">
+                  {checkingApplicationStatus
+                    ? "Checking application status..."
+                    : applicationLookupMessage}
+                </div>
+              </div>
+            )}
+
             {successMessage && (
               <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
                 {successMessage}
@@ -409,7 +528,6 @@ const RegisterPage = () => {
                   </p>
                 )}
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -472,6 +590,15 @@ const RegisterPage = () => {
                 Create Your Account
               </h1>
               <p className="text-gray-500">Register as Mental Health Expert</p>
+              <p className="mt-2 text-sm text-gray-600">
+                Approved expert?{" "}
+                <Link
+                  to="/expert/register"
+                  className="text-[#5bb5a1] hover:underline font-medium"
+                >
+                  Create your expert account
+                </Link>
+              </p>
               <button
                 onClick={() => setStep("select")}
                 className="text-[#5bb5a1] text-sm mt-2 hover:underline flex items-center justify-center mx-auto"
@@ -484,6 +611,81 @@ const RegisterPage = () => {
               <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {errors.general}
               </div>
+            )}
+
+            {applicationLookupMessage && (
+              <div
+                className={`mb-5 rounded-xl px-4 py-3 text-sm ${
+                  applicationLookupStatus === "approved"
+                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : applicationLookupStatus === "rejected"
+                      ? "border border-rose-200 bg-rose-50 text-rose-700"
+                      : "border border-amber-200 bg-amber-50 text-amber-700"
+                }`}
+              >
+                <div className="font-medium">
+                  {checkingApplicationStatus
+                    ? "Checking application status..."
+                    : applicationLookupMessage}
+                </div>
+              </div>
+            )}
+
+            {applicationLookupStatus === "approved" && (
+              <form
+                onSubmit={handleExpertAccountRegister}
+                className="mb-5 space-y-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-4"
+              >
+                <div className="text-sm font-semibold text-emerald-800">
+                  Approved application detected
+                </div>
+                <div className="text-sm text-emerald-700">
+                  Set a password to create your expert account.
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={expertAccountPassword}
+                      onChange={(e) => setExpertAccountPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={expertAccountConfirmPassword}
+                      onChange={(e) =>
+                        setExpertAccountConfirmPassword(e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={registeringExpertAccount}
+                  className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
+                >
+                  {registeringExpertAccount
+                    ? "Creating Account..."
+                    : "Create Expert Account"}
+                </button>
+
+                {expertAccountMessage && (
+                  <div className="rounded-lg border border-emerald-200 bg-white px-4 py-3 text-sm text-emerald-700">
+                    {expertAccountMessage}
+                  </div>
+                )}
+              </form>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -618,7 +820,9 @@ const RegisterPage = () => {
                   ? "Submitting Application..."
                   : submittedApplication
                     ? "Application Pending"
-                    : "Submit Application"}
+                    : applicationLookupStatus === "approved"
+                      ? "Application Approved"
+                      : "Submit Application"}
               </button>
             </form>
 

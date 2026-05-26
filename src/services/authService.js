@@ -50,14 +50,7 @@ export const authService = {
   /**
    * Register a new expert
    */
-  async registerExpert(
-    name,
-    email,
-    password,
-    specialization,
-    qualifications,
-    licenseNumber,
-  ) {
+  async registerExpert(name, title, email, password) {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: {
@@ -65,11 +58,9 @@ export const authService = {
       },
       body: JSON.stringify({
         name,
+        title,
         email,
         password,
-        specialization,
-        qualifications,
-        licenseNumber,
         role: "expert",
       }),
     });
@@ -114,6 +105,29 @@ export const authService = {
 
     if (!response.ok) {
       throw new Error(data.message || "Application submission failed");
+    }
+
+    return data;
+  },
+
+  /**
+   * Check the latest expert application status by email
+   */
+  async getExpertApplicationStatus(email) {
+    const response = await fetch(
+      `${API_BASE_URL}/expert-applications/status?email=${encodeURIComponent(email)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to check application status");
     }
 
     return data;
