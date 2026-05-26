@@ -220,14 +220,16 @@ const ExpertResourceUploadPage = () => {
                   required
                 />
                 <p className="mt-2 text-xs text-gray-500">
-                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, and WEBP files are supported.
+                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, and WEBP files are
+                  supported.
                 </p>
               </div>
             </div>
 
             <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <p className="text-sm text-gray-500 max-w-md">
-                The document will be stored securely and made available in the student resource library.
+                The document will be stored securely and made available in the
+                student resource library.
               </p>
               <div className="flex items-center gap-3 self-end sm:self-auto">
                 <Link

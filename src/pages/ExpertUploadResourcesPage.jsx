@@ -1,5 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaBook, FaFileUpload, FaFolderOpen } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaBook,
+  FaFileUpload,
+  FaFolderOpen,
+} from "react-icons/fa";
 import { authService } from "../services/authService";
 
 const ExpertUploadResourcesPage = () => {

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaEdit, FaExternalLinkAlt, FaFileAlt, FaSpinner, FaTrash } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaEdit,
+  FaExternalLinkAlt,
+  FaFileAlt,
+  FaSpinner,
+  FaTrash,
+} from "react-icons/fa";
 import { authService } from "../services/authService";
 
 const RESOURCE_TYPES = ["GUIDE", "ARTICLE", "AUDIO", "VIDEO"];
@@ -128,7 +135,9 @@ const ExpertResourceLibraryPage = () => {
   };
 
   const handleResourceDelete = async (resourceId) => {
-    const confirmed = window.confirm("Delete this resource? This cannot be undone.");
+    const confirmed = window.confirm(
+      "Delete this resource? This cannot be undone.",
+    );
 
     if (!confirmed) {
       return;
@@ -287,7 +296,9 @@ const ExpertResourceLibraryPage = () => {
                       </div>
                     ) : (
                       <form
-                        onSubmit={(event) => handleResourceUpdate(resource.id, event)}
+                        onSubmit={(event) =>
+                          handleResourceUpdate(resource.id, event)
+                        }
                         className="space-y-4"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,7 +310,9 @@ const ExpertResourceLibraryPage = () => {
                               type="text"
                               name="title"
                               value={editForm.title || ""}
-                              onChange={(event) => handleEditChange(resource.id, event)}
+                              onChange={(event) =>
+                                handleEditChange(resource.id, event)
+                              }
                               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                             />
                           </div>
@@ -312,7 +325,9 @@ const ExpertResourceLibraryPage = () => {
                               type="text"
                               name="category"
                               value={editForm.category || ""}
-                              onChange={(event) => handleEditChange(resource.id, event)}
+                              onChange={(event) =>
+                                handleEditChange(resource.id, event)
+                              }
                               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                             />
                           </div>
@@ -325,7 +340,9 @@ const ExpertResourceLibraryPage = () => {
                           <textarea
                             name="summary"
                             value={editForm.summary || ""}
-                            onChange={(event) => handleEditChange(resource.id, event)}
+                            onChange={(event) =>
+                              handleEditChange(resource.id, event)
+                            }
                             rows={3}
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                           />
@@ -339,7 +356,9 @@ const ExpertResourceLibraryPage = () => {
                             <select
                               name="type"
                               value={editForm.type || "GUIDE"}
-                              onChange={(event) => handleEditChange(resource.id, event)}
+                              onChange={(event) =>
+                                handleEditChange(resource.id, event)
+                              }
                               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white"
                             >
                               {RESOURCE_TYPES.map((option) => (
@@ -357,7 +376,9 @@ const ExpertResourceLibraryPage = () => {
                             <input
                               type="file"
                               accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
-                              onChange={(event) => handleEditFileChange(resource.id, event)}
+                              onChange={(event) =>
+                                handleEditFileChange(resource.id, event)
+                              }
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-[#5bb5a1] hover:file:bg-teal-100"
                             />
                           </div>
@@ -366,7 +387,8 @@ const ExpertResourceLibraryPage = () => {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
                           <div className="flex items-center gap-2 text-sm text-gray-500">
                             <FaFileAlt className="text-[#5bb5a1]" />
-                            Current file stays unchanged unless you upload a new one.
+                            Current file stays unchanged unless you upload a new
+                            one.
                           </div>
                           <div className="flex items-center gap-2 self-end sm:self-auto">
                             <button
