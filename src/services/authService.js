@@ -134,16 +134,55 @@ export const authService = {
   },
 
   /**
+   * Upload a clinical resource document
+   */
+  async addClinicalResource({
+    title,
+    category,
+    summary,
+    document,
+    type = "GUIDE",
+  }) {
+    const formData = new FormData();
+    formData.append("title", title);
+    if (category) formData.append("category", category);
+    if (summary) formData.append("summary", summary);
+    formData.append("type", type);
+    formData.append("visibility", "public");
+    formData.append("document", document);
+
+    const response = await fetch(`${API_BASE_URL}/resources`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Resource upload failed");
+    }
+
+    return data;
+  },
+
+  /**
    * Login user
    */
   async login(email, password) {
+    const normalizedEmail = String(email || "")
+      .trim()
+      .toLowerCase();
+
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email,
+        email: normalizedEmail,
         password,
       }),
     });
