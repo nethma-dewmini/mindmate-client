@@ -286,6 +286,48 @@ const ExpertResourceLibraryPage = () => {
                           </button>
                           <button
                             type="button"
+                            onClick={async () => {
+                              const newVis =
+                                resource.visibility === "public"
+                                  ? "private"
+                                  : "public";
+                              setResourcesError("");
+                              setMessage("");
+                              setSavingResourceId(resource.id);
+                              try {
+                                await authService.updateClinicalResource(
+                                  resource.id,
+                                  {
+                                    title: resource.title,
+                                    category: resource.category,
+                                    summary: resource.summary,
+                                    type: resource.type,
+                                    visibility: newVis,
+                                  },
+                                );
+                                setMessage(
+                                  newVis === "public"
+                                    ? "Resource published."
+                                    : "Resource hidden.",
+                                );
+                                await loadMyResources();
+                              } catch (err) {
+                                setResourcesError(
+                                  err.message || "Failed to change visibility.",
+                                );
+                              } finally {
+                                setSavingResourceId("");
+                              }
+                            }}
+                            disabled={savingResourceId === resource.id}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-gray-700 border border-gray-200 font-medium hover:bg-gray-50 transition-colors"
+                          >
+                            {resource.visibility === "public"
+                              ? "Hide"
+                              : "Publish"}
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleResourceDelete(resource.id)}
                             disabled={isDeleting}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 text-red-600 font-medium hover:bg-red-100 transition-colors disabled:opacity-50"

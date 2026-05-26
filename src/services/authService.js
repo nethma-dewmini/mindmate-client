@@ -142,6 +142,7 @@ export const authService = {
     summary,
     document,
     videoUrl,
+    audioUrl,
     type = "GUIDE",
   }) {
     const formData = new FormData();
@@ -155,6 +156,8 @@ export const authService = {
       formData.append("document", document);
     } else if (videoUrl) {
       formData.append("videoUrl", videoUrl);
+    } else if (audioUrl) {
+      formData.append("audioUrl", audioUrl);
     }
 
     const response = await fetch(`${API_BASE_URL}/resources`, {
@@ -233,6 +236,7 @@ export const authService = {
       summary,
       document,
       videoUrl,
+      audioUrl,
       type = "GUIDE",
       visibility = "public",
     },
@@ -248,6 +252,8 @@ export const authService = {
       formData.append("document", document);
     } else if (videoUrl) {
       formData.append("videoUrl", videoUrl);
+    } else if (audioUrl) {
+      formData.append("audioUrl", audioUrl);
     }
 
     const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`, {
