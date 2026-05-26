@@ -26,6 +26,8 @@ import {
   ExpertAccountRegisterPage,
   AboutPage,
   ExpertUploadResourcesPage,
+  ExpertResourceUploadPage,
+  ExpertResourceLibraryPage,
 } from "./pages";
 
 function App() {
@@ -57,6 +59,8 @@ function App() {
     "/dashboard",
     "/expert/dashboard",
     "/expert/upload-resources",
+    "/expert/resource-upload",
+    "/expert/resource-library",
     "/chat",
     "/assessment",
     "/profile",
@@ -111,6 +115,14 @@ function App() {
           <Route
             path="/expert/upload-resources"
             element={<ExpertUploadResourcesPage />}
+          />
+          <Route
+            path="/expert/resource-upload"
+            element={<ExpertResourceUploadPage />}
+          />
+          <Route
+            path="/expert/resource-library"
+            element={<ExpertResourceLibraryPage />}
           />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />

@@ -61,7 +61,7 @@ const ExpertDashboardPage = () => {
     },
     {
       icon: FaBook,
-      title: "Clinical Resources",
+      title: "Resource Management",
       description: "Upload materials for the student resource library",
       path: "/expert/upload-resources",
     },
@@ -182,8 +182,6 @@ const ExpertDashboardPage = () => {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   );

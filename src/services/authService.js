@@ -169,6 +169,116 @@ export const authService = {
   },
 
   /**
+   * Fetch resources uploaded by experts
+   */
+  async getExpertResources({ category, type } = {}) {
+    const params = new URLSearchParams({ authorRole: "expert" });
+
+    if (category) params.set("category", category);
+    if (type) params.set("type", type);
+
+    const response = await fetch(
+      `${API_BASE_URL}/resources?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load resources");
+    }
+
+    return data;
+  },
+
+  /**
+   * Fetch resources uploaded by the current expert
+   */
+  async getMyClinicalResources() {
+    const response = await fetch(`${API_BASE_URL}/resources/me`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load your resources");
+    }
+
+    return data;
+  },
+
+  /**
+   * Update an expert resource
+   */
+  async updateClinicalResource(
+    resourceId,
+    {
+      title,
+      category,
+      summary,
+      document,
+      type = "GUIDE",
+      visibility = "public",
+    },
+  ) {
+    const formData = new FormData();
+    formData.append("title", title);
+    if (category !== undefined) formData.append("category", category);
+    if (summary !== undefined) formData.append("summary", summary);
+    formData.append("type", type);
+    formData.append("visibility", visibility);
+
+    if (document) {
+      formData.append("document", document);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`, {
+      method: "PATCH",
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Resource update failed");
+    }
+
+    return data;
+  },
+
+  /**
+   * Delete an expert resource
+   */
+  async deleteClinicalResource(resourceId) {
+    const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`, {
+      method: "DELETE",
+      headers: {
+        ...this.getAuthHeaders(),
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Resource delete failed");
+    }
+
+    return data;
+  },
+
+  /**
    * Login user
    */
   async login(email, password) {
