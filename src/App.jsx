@@ -20,6 +20,9 @@ import {
   AdminEntry,
   AdminLoginPage,
   AdminDashboard,
+  AdminExpertApplicationsPage,
+  AdminStudentRegistryPage,
+  ExpertAccountRegisterPage,
   AboutPage,
 } from "./pages";
 
@@ -47,6 +50,7 @@ function App() {
 
   // Pages where we don't show navbar/footer
   const authPages = ["/login", "/register", "/forgot-password"];
+  const expertPages = ["/expert/register"];
   const appPages = [
     "/dashboard",
     "/chat",
@@ -59,6 +63,9 @@ function App() {
     "/admin",
     "/admin/login",
     "/admin/dashboard",
+    "/admin/expert-applications",
+    "/admin/student-registry",
+    ...expertPages,
   ];
   const showNavbar =
     !authPages.includes(location.pathname) &&
@@ -91,6 +98,10 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route
+            path="/expert/register"
+            element={<ExpertAccountRegisterPage />}
+          />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
@@ -98,6 +109,14 @@ function App() {
           <Route path="/admin" element={<AdminEntry />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route
+            path="/admin/expert-applications"
+            element={<AdminExpertApplicationsPage />}
+          />
+          <Route
+            path="/admin/student-registry"
+            element={<AdminStudentRegistryPage />}
+          />
           <Route path="/mood" element={<MoodTrackerPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/experts" element={<ExpertsPage />} />

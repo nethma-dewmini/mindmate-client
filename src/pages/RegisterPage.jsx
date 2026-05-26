@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGraduationCap, FaUserMd, FaArrowLeft } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
@@ -9,6 +9,18 @@ const RegisterPage = () => {
   const [step, setStep] = useState("select"); // 'select', 'student', 'expert'
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [submittedApplication, setSubmittedApplication] = useState(null);
+  const [applicationLookupStatus, setApplicationLookupStatus] = useState("");
+  const [applicationLookupMessage, setApplicationLookupMessage] = useState("");
+  const [checkingApplicationStatus, setCheckingApplicationStatus] =
+    useState(false);
+  const [expertAccountPassword, setExpertAccountPassword] = useState("");
+  const [expertAccountConfirmPassword, setExpertAccountConfirmPassword] =
+    useState("");
+  const [registeringExpertAccount, setRegisteringExpertAccount] =
+    useState(false);
+  const [expertAccountMessage, setExpertAccountMessage] = useState("");
 
   const isValidUomEmail = (value) =>
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
@@ -46,6 +58,7 @@ const RegisterPage = () => {
   };
 
   const [studentData, setStudentData] = useState({
+    title: "",
     name: "",
     email: "",
     studentId: "",
@@ -54,15 +67,13 @@ const RegisterPage = () => {
   });
 
   const [expertData, setExpertData] = useState({
+    title: "",
     name: "",
     email: "",
     specialization: "",
-    qualifications: "",
-    experience: "",
-    licenseNumber: "",
-    password: "",
-    confirmPassword: "",
+    specializationOther: "",
   });
+  const [expertDocuments, setExpertDocuments] = useState([]);
 
   const handleStudentChange = (e) => {
     const { name, value } = e.target;
@@ -103,10 +114,106 @@ const RegisterPage = () => {
     setExpertData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleExpertDocumentChange = (e) => {
+    setExpertDocuments(Array.from(e.target.files || []));
+  };
+
+  const handleExpertAccountRegister = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    setExpertAccountMessage("");
+
+    if (applicationLookupStatus !== "approved") {
+      setErrors({
+        general: "Your application must be approved before you can register.",
+      });
+      return;
+    }
+
+    if (!expertAccountPassword || !expertAccountConfirmPassword) {
+      setErrors({ general: "Password and confirm password are required" });
+      return;
+    }
+
+    if (expertAccountPassword !== expertAccountConfirmPassword) {
+      setErrors({ general: "Passwords do not match" });
+      return;
+    }
+
+    setRegisteringExpertAccount(true);
+    try {
+      const response = await authService.registerExpert(
+        expertData.name,
+        expertData.title,
+        expertData.email,
+        expertAccountPassword,
+      );
+
+      setExpertAccountMessage(
+        response.message ||
+          "You are approved. Your expert account has been created. Please sign in.",
+      );
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (error) {
+      setErrors({
+        general: getFriendlyErrorMessage(error.message, "expert"),
+      });
+    } finally {
+      setRegisteringExpertAccount(false);
+    }
+  };
+
+  useEffect(() => {
+    const email = String(expertData.email || "").trim();
+    const timeoutId = setTimeout(async () => {
+      if (
+        step !== "expert" ||
+        (!isValidUomEmail(email) && !email.includes("@"))
+      ) {
+        return;
+      }
+
+      setCheckingApplicationStatus(true);
+      setApplicationLookupStatus("");
+      setApplicationLookupMessage("");
+
+      try {
+        const response = await authService.getExpertApplicationStatus(email);
+        const application = response.application;
+
+        if (application?.status === "approved") {
+          setApplicationLookupStatus("approved");
+          setApplicationLookupMessage(
+            "You are approved. Please sign in to continue using your expert account.",
+          );
+        } else if (application?.status === "pending") {
+          setApplicationLookupStatus("pending");
+          setApplicationLookupMessage(
+            "Your application is pending admin review. Please wait for approval.",
+          );
+        } else if (application?.status === "rejected") {
+          setApplicationLookupStatus("rejected");
+          setApplicationLookupMessage(
+            "Your application was rejected. Please contact the admin team for more information.",
+          );
+        }
+      } catch (err) {
+        // No application yet is fine; keep the form clear.
+        setApplicationLookupStatus("");
+        setApplicationLookupMessage("");
+      } finally {
+        setCheckingApplicationStatus(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [expertData.email, step]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
+    setSuccessMessage("");
 
     try {
       if (step === "student") {
@@ -147,9 +254,10 @@ const RegisterPage = () => {
           return;
         }
 
-        // Call backend
+        // Prepare name with title and call backend
+        const studentDisplayName = `${studentData.title ? studentData.title + " " : ""}${studentData.name}`;
         const response = await authService.registerStudent(
-          studentData.name,
+          studentDisplayName,
           studentData.email,
           studentData.studentId,
           studentData.password,
@@ -162,32 +270,41 @@ const RegisterPage = () => {
         if (
           !expertData.name ||
           !expertData.email ||
-          !expertData.password ||
-          !expertData.confirmPassword
+          !expertData.specialization ||
+          (expertData.specialization === "Other" &&
+            !expertData.specializationOther) ||
+          !expertDocuments.length
         ) {
-          setErrors({ general: "Name, email, and password are required" });
+          setErrors({
+            general:
+              "Name, email, specialization (or specify), and at least one document are required",
+          });
           setIsLoading(false);
           return;
         }
 
-        if (expertData.password !== expertData.confirmPassword) {
-          setErrors({ general: "Passwords do not match" });
-          setIsLoading(false);
-          return;
-        }
+        // Submit expert application with documents (include title)
+        const resolvedSpecialization =
+          expertData.specialization === "Other"
+            ? expertData.specializationOther
+            : expertData.specialization;
 
-        // Call backend
-        const response = await authService.registerExpert(
-          expertData.name,
-          expertData.email,
-          expertData.password,
-          expertData.specialization,
-          expertData.qualifications,
-          expertData.licenseNumber,
+        const response = await authService.submitExpertApplication({
+          name: expertData.name,
+          title: expertData.title,
+          email: expertData.email,
+          specialization: resolvedSpecialization,
+          documents: expertDocuments,
+        });
+
+        // Success - show message and display pending status
+        setSuccessMessage(
+          response.message ||
+            "Application submitted successfully. Please wait for admin review.",
         );
-
-        // Success - redirect to login
-        navigate("/login");
+        if (response.application) {
+          setSubmittedApplication(response.application);
+        }
       }
     } catch (error) {
       setErrors({
@@ -304,24 +421,69 @@ const RegisterPage = () => {
               </div>
             )}
 
+            {applicationLookupMessage && (
+              <div
+                className={`mb-5 rounded-xl px-4 py-3 text-sm ${
+                  applicationLookupStatus === "approved"
+                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : applicationLookupStatus === "rejected"
+                      ? "border border-rose-200 bg-rose-50 text-rose-700"
+                      : "border border-amber-200 bg-amber-50 text-amber-700"
+                }`}
+              >
+                <div className="font-medium">
+                  {checkingApplicationStatus
+                    ? "Checking application status..."
+                    : applicationLookupMessage}
+                </div>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {successMessage}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name with Initials
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={studentData.name}
-                  onChange={handleStudentChange}
-                  placeholder="R.M.N.D. Rathnayaka"
-                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
-                    errors.name ? "border-red-300" : "border-gray-200"
-                  }`}
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                )}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <select
+                    name="title"
+                    value={studentData.title}
+                    onChange={handleStudentChange}
+                    className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Select</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Ms">Ms</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Miss">Miss</option>
+                    <option value="Dr">Dr</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name with Initials
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={studentData.name}
+                    onChange={handleStudentChange}
+                    placeholder="R.M.N.D. Rathnayaka"
+                    className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                      errors.name ? "border-red-300" : "border-gray-200"
+                    }`}
+                  />
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -366,7 +528,6 @@ const RegisterPage = () => {
                   </p>
                 )}
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -429,6 +590,15 @@ const RegisterPage = () => {
                 Create Your Account
               </h1>
               <p className="text-gray-500">Register as Mental Health Expert</p>
+              <p className="mt-2 text-sm text-gray-600">
+                Approved expert?{" "}
+                <Link
+                  to="/expert/register"
+                  className="text-[#5bb5a1] hover:underline font-medium"
+                >
+                  Create your expert account
+                </Link>
+              </p>
               <button
                 onClick={() => setStep("select")}
                 className="text-[#5bb5a1] text-sm mt-2 hover:underline flex items-center justify-center mx-auto"
@@ -443,18 +613,114 @@ const RegisterPage = () => {
               </div>
             )}
 
+            {applicationLookupMessage && (
+              <div
+                className={`mb-5 rounded-xl px-4 py-3 text-sm ${
+                  applicationLookupStatus === "approved"
+                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : applicationLookupStatus === "rejected"
+                      ? "border border-rose-200 bg-rose-50 text-rose-700"
+                      : "border border-amber-200 bg-amber-50 text-amber-700"
+                }`}
+              >
+                <div className="font-medium">
+                  {checkingApplicationStatus
+                    ? "Checking application status..."
+                    : applicationLookupMessage}
+                </div>
+              </div>
+            )}
+
+            {applicationLookupStatus === "approved" && (
+              <form
+                onSubmit={handleExpertAccountRegister}
+                className="mb-5 space-y-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-4"
+              >
+                <div className="text-sm font-semibold text-emerald-800">
+                  Approved application detected
+                </div>
+                <div className="text-sm text-emerald-700">
+                  Set a password to create your expert account.
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={expertAccountPassword}
+                      onChange={(e) => setExpertAccountPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={expertAccountConfirmPassword}
+                      onChange={(e) =>
+                        setExpertAccountConfirmPassword(e.target.value)
+                      }
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={registeringExpertAccount}
+                  className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
+                >
+                  {registeringExpertAccount
+                    ? "Creating Account..."
+                    : "Create Expert Account"}
+                </button>
+
+                {expertAccountMessage && (
+                  <div className="rounded-lg border border-emerald-200 bg-white px-4 py-3 text-sm text-emerald-700">
+                    {expertAccountMessage}
+                  </div>
+                )}
+              </form>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={expertData.name}
-                  onChange={handleExpertChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <select
+                    name="title"
+                    value={expertData.title}
+                    onChange={handleExpertChange}
+                    className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Select</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Ms">Ms</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Miss">Miss</option>
+                    <option value="Dr">Dr</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={expertData.name}
+                    onChange={handleExpertChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
               </div>
 
               <div>
@@ -474,29 +740,48 @@ const RegisterPage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Specialization
                 </label>
-                <input
-                  type="text"
+                <select
                   name="specialization"
                   value={expertData.specialization}
                   onChange={handleExpertChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+                  className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  <option value="">Select specialization</option>
+                  <option value="Clinical Psychology">
+                    Clinical Psychology
+                  </option>
+                  <option value="Counseling Psychology">
+                    Counseling Psychology
+                  </option>
+                  <option value="Psychiatry">Psychiatry</option>
+                  <option value="Social Work">Social Work</option>
+                  <option value="Psychiatric Nursing">
+                    Psychiatric Nursing
+                  </option>
+                  <option value="Marriage & Family Therapy">
+                    Marriage & Family Therapy
+                  </option>
+                  <option value="Other">Other</option>
+                </select>
+
+                {expertData.specialization === "Other" && (
+                  <div className="mt-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Please specify
+                    </label>
+                    <input
+                      type="text"
+                      name="specializationOther"
+                      value={expertData.specializationOther}
+                      onChange={handleExpertChange}
+                      placeholder="e.g. Neuropsychology"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Qualifications
-                </label>
-                <input
-                  type="text"
-                  name="qualifications"
-                  value={expertData.qualifications}
-                  onChange={handleExpertChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Years of Experience
                 </label>
@@ -507,57 +792,71 @@ const RegisterPage = () => {
                   onChange={handleExpertChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  License Number
+                  Supporting Documents
                 </label>
                 <input
-                  type="text"
-                  name="licenseNumber"
-                  value={expertData.licenseNumber}
-                  onChange={handleExpertChange}
+                  type="file"
+                  multiple
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  onChange={handleExpertDocumentChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={expertData.password}
-                    onChange={handleExpertChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={expertData.confirmPassword}
-                    onChange={handleExpertChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload your CV, license, certificates, or other verification
+                  documents.
+                </p>
               </div>
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || submittedApplication}
                 className="w-full py-3 bg-[#e74c3c] text-white rounded-xl font-medium hover:bg-[#c0392b] transition-colors disabled:opacity-50"
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading
+                  ? "Submitting Application..."
+                  : submittedApplication
+                    ? "Application Pending"
+                    : applicationLookupStatus === "approved"
+                      ? "Application Approved"
+                      : "Submit Application"}
               </button>
             </form>
 
+            {submittedApplication && (
+              <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                <h3 className="font-semibold text-gray-800 mb-1">
+                  Application Submitted — Pending Review
+                </h3>
+                <p className="text-sm text-gray-700 mb-2">
+                  Your application is pending admin review. We'll notify you
+                  when it's reviewed.
+                </p>
+                <div className="text-xs text-gray-600">
+                  <div>
+                    <strong>Application ID:</strong> {submittedApplication.id}
+                  </div>
+                  <div>
+                    <strong>Submitted:</strong>{" "}
+                    {new Date(submittedApplication.created_at).toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Status:</strong> {submittedApplication.status}
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <Link
+                    to="/login"
+                    className="text-sm text-[#5bb5a1] hover:underline"
+                  >
+                    Go to Sign in
+                  </Link>
+                </div>
+              </div>
+            )}
             <p className="mt-6 text-center text-gray-600">
               Already have an account?{" "}
               <Link

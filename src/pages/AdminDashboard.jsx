@@ -1,7 +1,7 @@
-import AdminStudentRegistry from "./AdminStudentRegistry";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
-import { useEffect } from "react";
+import AdminSectionCard from "../components/AdminSectionCard";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -22,11 +22,18 @@ const AdminDashboard = () => {
           <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
         </div>
 
-        <div className="space-y-6">
-          {/* Student registry as a component within admin dashboard */}
-          <AdminStudentRegistry />
+        <div className="flex flex-col gap-4 mb-6 max-w-3xl">
+          <AdminSectionCard
+            title="Expert Applications"
+            description="Review expert submissions, inspect attached documents, and approve or reject applications."
+            onClick={() => navigate("/admin/expert-applications")}
+          />
 
-          {/* Future admin components can be added here */}
+          <AdminSectionCard
+            title="Student Registry"
+            description="Manage approved student registry entries and import records in bulk using CSV."
+            onClick={() => navigate("/admin/student-registry")}
+          />
         </div>
       </div>
     </div>
