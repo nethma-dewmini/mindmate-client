@@ -114,6 +114,22 @@ const ResourcesPage = () => {
     });
   };
 
+  const isYouTube = (url = "") => /youtu(?:\.be|be\.com)/i.test(String(url));
+
+  const toYouTubeEmbed = (url = "") => {
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes("youtu.be")) {
+        return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
+      }
+      const v = u.searchParams.get("v");
+      if (v) return `https://www.youtube.com/embed/${v}`;
+    } catch (e) {
+      // fallthrough
+    }
+    return url;
+  };
+
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-6xl mx-auto">
@@ -225,15 +241,50 @@ const ResourcesPage = () => {
                   )}
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-400">
-                  {resource.contentUrl && (
-                    <a
-                      href={`http://localhost:5000${resource.contentUrl}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#5bb5a1] font-medium"
-                    >
-                      View file
-                    </a>
+                  {resource.type === "VIDEO" ? (
+                    resource.contentUrl ? (
+                      isYouTube(resource.contentUrl) ? (
+                        <div className="w-full mt-3">
+                          <iframe
+                            title={`video-${resource.id}`}
+                            src={toYouTubeEmbed(resource.contentUrl)}
+                            className="w-full h-40 rounded-lg border"
+                            allowFullScreen
+                          />
+                        </div>
+                      ) : String(resource.contentUrl).startsWith("/api") ? (
+                        <div className="w-full mt-3">
+                          <video
+                            controls
+                            className="w-full max-h-48 rounded-lg"
+                            src={`http://localhost:5000${resource.contentUrl}`}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      ) : (
+                        <div className="w-full mt-3">
+                          <video
+                            controls
+                            className="w-full max-h-48 rounded-lg"
+                            src={resource.contentUrl}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      )
+                    ) : null
+                  ) : (
+                    resource.contentUrl && (
+                      <a
+                        href={`http://localhost:5000${resource.contentUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[#5bb5a1] font-medium"
+                      >
+                        View file
+                      </a>
+                    )
                   )}
                 </div>
               </div>
