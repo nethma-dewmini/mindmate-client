@@ -19,3 +19,7 @@ export { default as AdminDashboard } from "./AdminDashboard";
 export { default as AdminExpertApplicationsPage } from "./AdminExpertApplicationsPage";
 export { default as AboutPage } from "./AboutPage";
 export { default as ExpertAccountRegisterPage } from "./ExpertAccountRegisterPage";
+export { default as ExpertDashboardPage } from "./ExpertDashboardPage";
+export { default as ExpertUploadResourcesPage } from "./ExpertUploadResourcesPage";
+export { default as ExpertResourceUploadPage } from "./ExpertResourceUploadPage";
+export { default as ExpertResourceLibraryPage } from "./ExpertResourceLibraryPage";

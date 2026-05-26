@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { authService } from "../services/authService";
 import { FaSearch, FaClock, FaThumbsUp } from "react-icons/fa";
 
 const ResourcesPage = () => {
@@ -16,65 +17,48 @@ const ResourcesPage = () => {
     { id: "social-support", label: "Social Support" },
   ];
 
-  const resources = [
-    {
-      id: 1,
-      title: "Managing Exam Anxiety: A Complete Guide",
-      author: "Dr. Priya Wijesinghe",
-      type: "ARTICLE",
-      category: "academic-stress",
-      duration: "8 min read",
-      likes: 234,
-      icon: "📝",
-    },
-    {
-      id: 2,
-      title: "Breathing Exercises for Instant Calm",
-      author: "Dr. Amaya Perera",
-      type: "VIDEO",
-      category: "anxiety-relief",
-      duration: "5 min",
-      likes: 456,
-      icon: "🎥",
-    },
-    {
-      id: 3,
-      title: "Sleep Better: Improve Your Mental Health",
-      author: "Dr. Kasun Fernando",
-      type: "ARTICLE",
-      category: "wellness",
-      duration: "6 min read",
-      likes: 187,
-      icon: "📝",
-    },
-    {
-      id: 4,
-      title: "Building Healthy Study Habits",
-      author: "Dr. Ranil Silva",
-      type: "GUIDE",
-      category: "academic-success",
-      duration: "10 min read",
-      likes: 298,
-      icon: "📚",
-    },
-    {
-      id: 5,
-      title: "Mindfulness Meditation for Beginners",
-      author: "Dr. Amaya Perera",
-      type: "AUDIO",
-      category: "meditation",
-      duration: "15 min",
-      likes: 367,
-      icon: "🎧",
-    },
-  ];
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      setLoading(true);
+      setLoadError("");
+
+      try {
+        const data = await authService.getExpertResources();
+        if (!mounted) return;
+        setResources((data && data.resources) || []);
+      } catch (err) {
+        if (!mounted) return;
+        setLoadError(err.message || "Failed to load resources");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredResources = resources.filter((resource) => {
     const matchesCategory =
-      activeCategory === "all" || resource.category === activeCategory;
+      activeCategory === "all" ||
+      !resource.category ||
+      resource.category === activeCategory ||
+      (typeof resource.category === "string" &&
+        resource.category.toLowerCase().includes(activeCategory));
+
     const matchesSearch = resource.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
+
     return matchesCategory && matchesSearch;
   });
 
@@ -157,12 +141,29 @@ const ResourcesPage = () => {
 
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {filteredResources.map((resource) => (
-            <Link key={resource.id} to={`/resources/${resource.id}`}>
-              <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+          {loading ? (
+            <div className="col-span-full text-center text-gray-500 py-12">
+              Loading resources...
+            </div>
+          ) : loadError ? (
+            <div className="col-span-full text-center text-red-600 py-12">
+              {loadError}
+            </div>
+          ) : (
+            filteredResources.map((resource) => (
+              <div
+                key={resource.id}
+                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">{resource.icon}</span>
+                    <span className="text-2xl">
+                      {resource.type === "VIDEO"
+                        ? "🎥"
+                        : resource.type === "AUDIO"
+                          ? "🎧"
+                          : "📄"}
+                    </span>
                   </div>
                   <span
                     className={`text-xs font-medium px-2 py-1 rounded ${getTypeColor(resource.type)}`}
@@ -173,25 +174,29 @@ const ResourcesPage = () => {
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded ${getCategoryColor(resource.category)}`}
                 >
-                  {categories.find((c) => c.id === resource.category)?.label}
+                  {resource.category || "General"}
                 </span>
                 <h3 className="font-semibold text-gray-800 mt-3 mb-1">
                   {resource.title}
                 </h3>
                 <p className="text-sm text-gray-500 mb-3">
-                  By {resource.author}
+                  By {resource.authorName || resource.author || "Expert"}
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-400">
-                  <span className="flex items-center">
-                    <FaClock className="mr-1" /> {resource.duration}
-                  </span>
-                  <span className="flex items-center">
-                    <FaThumbsUp className="mr-1" /> {resource.likes}
-                  </span>
+                  {resource.contentUrl && (
+                    <a
+                      href={`http://localhost:5000${resource.contentUrl}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[#5bb5a1] font-medium"
+                    >
+                      View file
+                    </a>
+                  )}
                 </div>
               </div>
-            </Link>
-          ))}
+            ))
+          )}
         </div>
 
         {/* CTA Banner */}
