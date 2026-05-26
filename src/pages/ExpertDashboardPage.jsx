@@ -17,17 +17,6 @@ const ExpertDashboardPage = () => {
     name: "Expert",
     role: "expert",
   };
-  const [resourceForm, setResourceForm] = useState({
-    title: "",
-    category: "",
-    summary: "",
-    type: "GUIDE",
-  });
-  const [resourceFile, setResourceFile] = useState(null);
-  const [savingResource, setSavingResource] = useState(false);
-  const [resourceMessage, setResourceMessage] = useState("");
-  const [resourceError, setResourceError] = useState("");
-
   useEffect(() => {
     if (!authService.isAuthenticated()) {
       navigate("/login");
@@ -43,57 +32,6 @@ const ExpertDashboardPage = () => {
   const handleLogout = () => {
     authService.logout();
     navigate("/");
-  };
-
-  const handleResourceChange = (event) => {
-    const { name, value } = event.target;
-    setResourceForm((previous) => ({ ...previous, [name]: value }));
-  };
-
-  const handleResourceFileChange = (event) => {
-    setResourceFile(event.target.files?.[0] || null);
-  };
-
-  const handleResourceSubmit = async (event) => {
-    event.preventDefault();
-    setResourceError("");
-    setResourceMessage("");
-
-    if (!resourceForm.title.trim()) {
-      setResourceError("Resource title is required.");
-      return;
-    }
-
-    if (!resourceFile) {
-      setResourceError("Please attach a document to upload.");
-      return;
-    }
-
-    setSavingResource(true);
-
-    try {
-      await authService.addClinicalResource({
-        title: resourceForm.title,
-        category: resourceForm.category,
-        summary: resourceForm.summary,
-        type: resourceForm.type,
-        document: resourceFile,
-      });
-
-      setResourceMessage("Resource uploaded successfully.");
-      setResourceForm({
-        title: "",
-        category: "",
-        summary: "",
-        type: "GUIDE",
-      });
-      setResourceFile(null);
-      event.target.reset();
-    } catch (error) {
-      setResourceError(error.message || "Failed to upload resource.");
-    } finally {
-      setSavingResource(false);
-    }
   };
 
   const quickActions = [
@@ -125,7 +63,7 @@ const ExpertDashboardPage = () => {
       icon: FaBook,
       title: "Clinical Resources",
       description: "Upload materials for the student resource library",
-      path: "#clinical-resources",
+      path: "/expert/upload-resources",
     },
     {
       icon: FaUserMd,
@@ -245,134 +183,7 @@ const ExpertDashboardPage = () => {
           </div>
         </div>
 
-        <div
-          id="clinical-resources"
-          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
-        >
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Clinical Resources
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Upload documents that will later appear in the student resources
-                library.
-              </p>
-            </div>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-teal-50 text-[#5bb5a1]">
-              Documents only for now
-            </span>
-          </div>
 
-          {resourceError && (
-            <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {resourceError}
-            </div>
-          )}
-
-          {resourceMessage && (
-            <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              {resourceMessage}
-            </div>
-          )}
-
-          <form
-            onSubmit={handleResourceSubmit}
-            className="grid grid-cols-1 gap-4"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Resource Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={resourceForm.title}
-                  onChange={handleResourceChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="e.g. Coping with Exam Stress"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category
-                </label>
-                <input
-                  type="text"
-                  name="category"
-                  value={resourceForm.category}
-                  onChange={handleResourceChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="e.g. Stress Management"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Summary
-              </label>
-              <textarea
-                name="summary"
-                value={resourceForm.summary}
-                onChange={handleResourceChange}
-                rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="Short description for students"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Document Type
-                </label>
-                <select
-                  name="type"
-                  value={resourceForm.type}
-                  onChange={handleResourceChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                >
-                  <option value="GUIDE">Guide</option>
-                  <option value="ARTICLE">Article</option>
-                  <option value="AUDIO">Audio</option>
-                  <option value="VIDEO">Video</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Document
-                </label>
-                <input
-                  type="file"
-                  accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
-                  onChange={handleResourceFileChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-                <p className="mt-2 text-xs text-gray-500">
-                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, and WEBP are supported.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <button
-                type="submit"
-                disabled={savingResource}
-                className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
-              >
-                {savingResource ? "Uploading..." : "Add Document"}
-              </button>
-              <p className="text-sm text-gray-500">
-                The document will be stored as a public clinical resource for
-                students.
-              </p>
-            </div>
-          </form>
-        </div>
       </div>
     </div>
   );

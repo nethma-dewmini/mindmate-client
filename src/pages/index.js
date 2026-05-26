@@ -20,3 +20,4 @@ export { default as AdminExpertApplicationsPage } from "./AdminExpertApplication
 export { default as AboutPage } from "./AboutPage";
 export { default as ExpertAccountRegisterPage } from "./ExpertAccountRegisterPage";
 export { default as ExpertDashboardPage } from "./ExpertDashboardPage";
+export { default as ExpertUploadResourcesPage } from "./ExpertUploadResourcesPage";
