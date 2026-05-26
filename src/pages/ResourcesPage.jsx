@@ -6,6 +6,7 @@ import { FaSearch, FaClock, FaThumbsUp } from "react-icons/fa";
 const ResourcesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,10 +38,22 @@ const ResourcesPage = () => {
     };
   }, []);
 
+  // debounce search input to avoid filtering on every keystroke
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 250);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   const filteredResources = resources.filter((resource) => {
-    const matchesSearch = resource.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const q = (debouncedSearch || "").toLowerCase();
+
+    const matchesSearch =
+      !q ||
+      (resource.title && resource.title.toLowerCase().includes(q)) ||
+      (resource.summary && resource.summary.toLowerCase().includes(q)) ||
+      (resource.authorName && resource.authorName.toLowerCase().includes(q)) ||
+      (resource.author && resource.author.toLowerCase().includes(q)) ||
+      (resource.category && resource.category.toLowerCase().includes(q));
 
     const matchesType =
       typeFilter === "ALL" || !resource.type || resource.type === typeFilter;
@@ -80,6 +93,27 @@ const ResourcesPage = () => {
     }
   };
 
+  const escapeRegExp = (string = "") =>
+    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const highlightMatch = (text = "", q = "") => {
+    if (!q) return text;
+    const parts = String(text).split(new RegExp(`(${escapeRegExp(q)})`, "i"));
+    return parts.map((part, i) => {
+      if (part.toLowerCase() === q.toLowerCase()) {
+        return (
+          <mark
+            key={i}
+            className="bg-yellow-200 text-yellow-900 rounded px-0.5"
+          >
+            {part}
+          </mark>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-6xl mx-auto">
@@ -105,6 +139,15 @@ const ResourcesPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1]"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
@@ -166,13 +209,20 @@ const ResourcesPage = () => {
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded ${getCategoryColor(resource.category)}`}
                 >
-                  {resource.category || "General"}
+                  {highlightMatch(
+                    resource.category || "General",
+                    debouncedSearch,
+                  )}
                 </span>
                 <h3 className="font-semibold text-gray-800 mt-3 mb-1">
-                  {resource.title}
+                  {highlightMatch(resource.title, debouncedSearch)}
                 </h3>
                 <p className="text-sm text-gray-500 mb-3">
-                  By {resource.authorName || resource.author || "Expert"}
+                  By{" "}
+                  {highlightMatch(
+                    resource.authorName || resource.author || "Expert",
+                    debouncedSearch,
+                  )}
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-400">
                   {resource.contentUrl && (
