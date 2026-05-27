@@ -21,6 +21,9 @@ const PeerSupportPage = () => {
   const [groupLoading, setGroupLoading] = useState(false);
   const [groupError, setGroupError] = useState("");
   const [joining, setJoining] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [leaveFeedback, setLeaveFeedback] = useState(null);
   const [posting, setPosting] = useState(false);
 
   const currentUser = authService.getCurrentUser();
@@ -112,6 +115,37 @@ const PeerSupportPage = () => {
   );
   const canParticipate = isStudent && isMember;
 
+  const handleLeaveGroup = async () => {
+    if (!currentUserId) {
+      setLeaveFeedback({
+        type: "error",
+        message: "Please log in as a student first.",
+      });
+      return;
+    }
+
+    setLeaving(true);
+    setLeaveFeedback(null);
+
+    try {
+      await authService.leavePeerGroup(selectedGroup, currentUserId);
+
+      const detail = await authService.getPeerGroup(selectedGroup);
+      const messages = await authService.getPeerGroupMessages(selectedGroup);
+      setGroupDetails(detail);
+      setGroupMessages(Array.isArray(messages) ? messages : []);
+      setLeaveFeedback({ type: "success", message: "You left the group." });
+    } catch (err) {
+      setLeaveFeedback({
+        type: "error",
+        message: err.message || "Failed to leave group",
+      });
+    } finally {
+      setLeaving(false);
+      setShowLeaveConfirm(false);
+    }
+  };
+
   if (selectedGroup) {
     if (!activeGroup) {
       return (
@@ -195,14 +229,64 @@ const PeerSupportPage = () => {
                     </div>
                   )}
                   {isStudent && isMember && (
-                    <div className="inline-flex items-center rounded-full bg-green-100 text-green-700 px-3 py-1 text-sm font-medium">
-                      Joined
+                    <div className="flex items-center space-x-3">
+                      <div className="inline-flex items-center rounded-full bg-green-100 text-green-700 px-3 py-1 text-sm font-medium">
+                        Joined
+                      </div>
+                      <button
+                        onClick={() => setShowLeaveConfirm(true)}
+                        disabled={leaving}
+                        className="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 disabled:opacity-60"
+                      >
+                        {leaving ? "Leaving..." : "Leave Group"}
+                      </button>
                     </div>
                   )}
                 </div>
+                {leaveFeedback && (
+                  <div
+                    className={`mt-4 rounded-lg px-4 py-2 text-sm ${
+                      leaveFeedback.type === "success"
+                        ? "bg-green-50 text-green-700 border border-green-200"
+                        : "bg-red-50 text-red-700 border border-red-200"
+                    }`}
+                  >
+                    {leaveFeedback.message}
+                  </div>
+                )}
               </div>
             </div>
           </div>
+
+          {showLeaveConfirm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Leave this group?
+                </h3>
+                <p className="text-sm text-gray-600 mb-5">
+                  You can rejoin later, but you will lose access to posting until
+                  you join again.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowLeaveConfirm(false)}
+                    disabled={leaving}
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleLeaveGroup}
+                    disabled={leaving}
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+                  >
+                    {leaving ? "Leaving..." : "Yes, Leave"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {canParticipate && (
             <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
