@@ -399,4 +399,139 @@ export const authService = {
   isAuthenticated() {
     return !!this.getToken();
   },
+  /**
+   * Public: fetch peer groups (optionally publicOnly)
+   */
+  async getPeerGroups({ publicOnly = true } = {}) {
+    const params = new URLSearchParams();
+    if (publicOnly) params.set("publicOnly", "true");
+    const resp = await fetch(
+      `${API_BASE_URL}/peer-groups?${params.toString()}`,
+    );
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load groups");
+    return data;
+  },
+
+  // Admin: list all groups
+  async adminGetPeerGroups() {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups`, {
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load groups");
+    return data;
+  },
+
+  async adminCreatePeerGroup({ name, description, is_public = true }) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description, is_public }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to create group");
+    return data;
+  },
+
+  async adminUpdatePeerGroup(id, updates) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}`, {
+      method: "PATCH",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to update group");
+    return data;
+  },
+
+  async adminDeletePeerGroup(id) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}`, {
+      method: "DELETE",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to delete group");
+    return data;
+  },
+
+  async getPeerGroup(id) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load group");
+    return data;
+  },
+
+  async getPeerGroupMessages(id) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/messages`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load messages");
+    return data;
+  },
+
+  async joinPeerGroup(id, userId) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/join`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to join group");
+    return data;
+  },
+
+  async leavePeerGroup(id, userId) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/leave`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to leave group");
+    return data;
+  },
+
+  async postPeerGroupMessage(id, { userId, content, metadata = {} }) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/messages`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId, content, metadata }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to post message");
+    return data;
+  },
+
+  async reactToPeerGroupMessage(id, messageId, { userId, type }) {
+    const resp = await fetch(
+      `${API_BASE_URL}/peer-groups/${id}/messages/${messageId}/reactions`,
+      {
+        method: "POST",
+        headers: {
+          ...this.getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId, type }),
+      },
+    );
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to react");
+    return data;
+  },
+
+  async adminDeletePeerGroupMessage(groupId, messageId) {
+    const resp = await fetch(
+      `${API_BASE_URL}/peer-groups/${groupId}/messages/${messageId}`,
+      {
+        method: "DELETE",
+        headers: {
+          ...this.getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to delete message");
+    return data;
+  },
 };

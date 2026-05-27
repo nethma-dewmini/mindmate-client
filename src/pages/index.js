@@ -17,6 +17,7 @@ export { default as AdminEntry } from "./AdminEntry";
 export { default as AdminLoginPage } from "./AdminLoginPage";
 export { default as AdminDashboard } from "./AdminDashboard";
 export { default as AdminExpertApplicationsPage } from "./AdminExpertApplicationsPage";
+export { default as AdminPeerGroups } from "./AdminPeerGroups";
 export { default as AboutPage } from "./AboutPage";
 export { default as ExpertAccountRegisterPage } from "./ExpertAccountRegisterPage";
 export { default as ExpertDashboardPage } from "./ExpertDashboardPage";
