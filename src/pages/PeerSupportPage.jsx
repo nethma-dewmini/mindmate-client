@@ -276,7 +276,9 @@ const PeerSupportPage = () => {
                 Recent Discussions
               </h2>
               {groupLoading && (
-                <div className="text-sm text-gray-500">Loading discussion...</div>
+                <div className="text-sm text-gray-500">
+                  Loading discussion...
+                </div>
               )}
               {!groupLoading && groupError && (
                 <div className="text-sm text-red-600">{groupError}</div>

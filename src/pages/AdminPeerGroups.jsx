@@ -8,7 +8,17 @@ const AdminPeerGroups = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [groupMessages, setGroupMessages] = useState([]);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [messageText, setMessageText] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
   const navigate = useNavigate();
+
+  const currentUser = authService.getCurrentUser();
+  const currentUserId = currentUser?.id || currentUser?.user_id || null;
+  const selectedGroup =
+    groups.find((group) => group.id === selectedGroupId) || null;
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -19,6 +29,40 @@ const AdminPeerGroups = () => {
 
     fetchGroups();
   }, []);
+
+  useEffect(() => {
+    if (!selectedGroupId) {
+      setGroupMessages([]);
+      setMessageText("");
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadMessages = async () => {
+      setMessagesLoading(true);
+      try {
+        const data = await authService.getPeerGroupMessages(selectedGroupId);
+        if (isMounted) {
+          setGroupMessages(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        if (isMounted) {
+          alert(err.message || "Failed to load group messages");
+        }
+      } finally {
+        if (isMounted) {
+          setMessagesLoading(false);
+        }
+      }
+    };
+
+    loadMessages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedGroupId]);
 
   const fetchGroups = async () => {
     setLoading(true);
@@ -66,14 +110,44 @@ const AdminPeerGroups = () => {
     try {
       await authService.adminDeletePeerGroup(id);
       setGroups((s) => s.filter((g) => g.id !== id));
+      if (selectedGroupId === id) {
+        setSelectedGroupId(null);
+      }
     } catch (err) {
       alert(err.message || "Delete failed");
     }
   };
 
+  const handleSendMessage = async () => {
+    if (!selectedGroup || !currentUserId) {
+      alert("Select a group and make sure you are logged in.");
+      return;
+    }
+
+    if (!messageText.trim()) {
+      alert("Write a message before sending.");
+      return;
+    }
+
+    setSendingMessage(true);
+    try {
+      const posted = await authService.postPeerGroupMessage(selectedGroup.id, {
+        userId: currentUserId,
+        content: messageText.trim(),
+        metadata: { fromAdmin: true },
+      });
+      setGroupMessages((currentMessages) => [posted, ...currentMessages]);
+      setMessageText("");
+    } catch (err) {
+      alert(err.message || "Failed to send message");
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-slate-800">
             Peer Support Groups
@@ -112,7 +186,7 @@ const AdminPeerGroups = () => {
         {loading ? (
           <div>Loading...</div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 mb-8">
             {groups.map((g) => (
               <div key={g.id} className="p-3 bg-white rounded shadow">
                 <div className="flex items-start justify-between">
@@ -124,6 +198,12 @@ const AdminPeerGroups = () => {
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
+                    <button
+                      className="px-3 py-1 bg-slate-700 text-white rounded text-sm"
+                      onClick={() => setSelectedGroupId(g.id)}
+                    >
+                      Manage Messages
+                    </button>
                     <button
                       className="px-3 py-1 bg-green-600 text-white rounded text-sm"
                       onClick={() => togglePublic(g)}
@@ -140,6 +220,83 @@ const AdminPeerGroups = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {selectedGroup && (
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-800">
+                  Message Group: {selectedGroup.name}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Send a message to the selected group as an admin.
+                </p>
+              </div>
+              <button
+                className="px-3 py-1 text-sm rounded border border-slate-300 text-slate-700"
+                onClick={() => setSelectedGroupId(null)}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <textarea
+                className="w-full p-3 border rounded min-h-28"
+                placeholder="Write an admin message to this group..."
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+              />
+              <div className="flex justify-end mt-3">
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-60"
+                  onClick={handleSendMessage}
+                  disabled={sendingMessage}
+                >
+                  {sendingMessage ? "Sending..." : "Send Message"}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-slate-800 mb-3">
+                Recent Messages
+              </h3>
+              {messagesLoading ? (
+                <div className="text-sm text-slate-500">
+                  Loading messages...
+                </div>
+              ) : groupMessages.length === 0 ? (
+                <div className="text-sm text-slate-500">
+                  No messages in this group yet.
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                  {groupMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className="border rounded p-3 bg-slate-50"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-slate-800">
+                          {message.metadata?.fromAdmin ? "Admin" : "Student"}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          {message.created_at
+                            ? new Date(message.created_at).toLocaleString()
+                            : "Just now"}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-700">
+                        {message.content}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
