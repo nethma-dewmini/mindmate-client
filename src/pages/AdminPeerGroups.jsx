@@ -160,7 +160,9 @@ const AdminPeerGroups = () => {
 
     setSelectedMessageIds((currentSelected) => {
       const visibleIds = groupMessages.map((message) => message.id);
-      const allSelected = visibleIds.every((id) => currentSelected.includes(id));
+      const allSelected = visibleIds.every((id) =>
+        currentSelected.includes(id),
+      );
       return allSelected ? [] : visibleIds;
     });
   };
@@ -197,7 +199,10 @@ const AdminPeerGroups = () => {
         });
       } else if (deleteConfirm.kind === "bulk-messages" && selectedGroup) {
         for (const messageId of deleteConfirm.ids) {
-          await authService.adminDeletePeerGroupMessage(selectedGroup.id, messageId);
+          await authService.adminDeletePeerGroupMessage(
+            selectedGroup.id,
+            messageId,
+          );
         }
         setGroupMessages((currentMessages) =>
           currentMessages.filter(
@@ -402,7 +407,9 @@ const AdminPeerGroups = () => {
 
             <div>
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h3 className="font-semibold text-slate-800">Recent Messages</h3>
+                <h3 className="font-semibold text-slate-800">
+                  Recent Messages
+                </h3>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -410,7 +417,8 @@ const AdminPeerGroups = () => {
                     onClick={toggleSelectAllMessages}
                     disabled={groupMessages.length === 0}
                   >
-                    {selectedMessageIds.length === groupMessages.length && groupMessages.length > 0
+                    {selectedMessageIds.length === groupMessages.length &&
+                    groupMessages.length > 0
                       ? "Clear Selection"
                       : "Select All"}
                   </button>
@@ -449,7 +457,9 @@ const AdminPeerGroups = () => {
                           />
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-medium text-slate-800">
-                              {message.metadata?.fromAdmin ? "Admin" : "Student"}
+                              {message.metadata?.fromAdmin
+                                ? "Admin"
+                                : "Student"}
                             </span>
                             {message.metadata?.fromAdmin && (
                               <span className="text-[11px] rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">
