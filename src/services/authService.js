@@ -502,6 +502,23 @@ export const authService = {
     return data;
   },
 
+  async reactToPeerGroupMessage(id, messageId, { userId, type }) {
+    const resp = await fetch(
+      `${API_BASE_URL}/peer-groups/${id}/messages/${messageId}/reactions`,
+      {
+        method: "POST",
+        headers: {
+          ...this.getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId, type }),
+      },
+    );
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to react");
+    return data;
+  },
+
   async adminDeletePeerGroupMessage(groupId, messageId) {
     const resp = await fetch(
       `${API_BASE_URL}/peer-groups/${groupId}/messages/${messageId}`,
