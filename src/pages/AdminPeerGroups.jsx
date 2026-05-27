@@ -145,6 +145,23 @@ const AdminPeerGroups = () => {
     }
   };
 
+  const handleDeleteMessage = async (messageId) => {
+    if (!selectedGroup) return;
+    if (!confirm("Delete this message?")) return;
+
+    try {
+      await authService.adminDeletePeerGroupMessage(
+        selectedGroup.id,
+        messageId,
+      );
+      setGroupMessages((currentMessages) =>
+        currentMessages.filter((message) => message.id !== messageId),
+      );
+    } catch (err) {
+      alert(err.message || "Failed to delete message");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
@@ -280,9 +297,16 @@ const AdminPeerGroups = () => {
                       className="border rounded p-3 bg-slate-50"
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-slate-800">
-                          {message.metadata?.fromAdmin ? "Admin" : "Student"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-slate-800">
+                            {message.metadata?.fromAdmin ? "Admin" : "Student"}
+                          </span>
+                          {message.metadata?.fromAdmin && (
+                            <span className="text-[11px] rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">
+                              Official
+                            </span>
+                          )}
+                        </div>
                         <span className="text-xs text-slate-500">
                           {message.created_at
                             ? new Date(message.created_at).toLocaleString()
@@ -292,6 +316,14 @@ const AdminPeerGroups = () => {
                       <p className="text-sm text-slate-700">
                         {message.content}
                       </p>
+                      <div className="flex justify-end mt-2">
+                        <button
+                          className="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                          onClick={() => handleDeleteMessage(message.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

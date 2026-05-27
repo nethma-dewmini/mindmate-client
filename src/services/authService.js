@@ -501,4 +501,20 @@ export const authService = {
     if (!resp.ok) throw new Error(data.message || "Failed to post message");
     return data;
   },
+
+  async adminDeletePeerGroupMessage(groupId, messageId) {
+    const resp = await fetch(
+      `${API_BASE_URL}/peer-groups/${groupId}/messages/${messageId}`,
+      {
+        method: "DELETE",
+        headers: {
+          ...this.getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to delete message");
+    return data;
+  },
 };
