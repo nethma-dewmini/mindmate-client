@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const AdminPeerGroups = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notice, setNotice] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
@@ -13,6 +14,7 @@ const AdminPeerGroups = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const navigate = useNavigate();
 
   const currentUser = authService.getCurrentUser();
@@ -48,7 +50,10 @@ const AdminPeerGroups = () => {
         }
       } catch (err) {
         if (isMounted) {
-          alert(err.message || "Failed to load group messages");
+          setNotice({
+            type: "error",
+            message: err.message || "Failed to load group messages",
+          });
         }
       } finally {
         if (isMounted) {
@@ -71,7 +76,10 @@ const AdminPeerGroups = () => {
       setGroups(data);
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to load groups");
+      setNotice({
+        type: "error",
+        message: err.message || "Failed to load groups",
+      });
     } finally {
       setLoading(false);
     }
@@ -80,7 +88,7 @@ const AdminPeerGroups = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const g = await authService.adminCreatePeerGroup({
+      const group = await authService.adminCreatePeerGroup({
         name,
         description,
         is_public: isPublic,
@@ -88,9 +96,10 @@ const AdminPeerGroups = () => {
       setName("");
       setDescription("");
       setIsPublic(true);
-      setGroups((s) => [g, ...s]);
+      setGroups((currentGroups) => [group, ...currentGroups]);
+      setNotice({ type: "success", message: "Group created successfully." });
     } catch (err) {
-      alert(err.message || "Create failed");
+      setNotice({ type: "error", message: err.message || "Create failed" });
     }
   };
 
@@ -99,33 +108,76 @@ const AdminPeerGroups = () => {
       const updated = await authService.adminUpdatePeerGroup(group.id, {
         is_public: !group.is_public,
       });
-      setGroups((s) => s.map((g) => (g.id === updated.id ? updated : g)));
+      setGroups((currentGroups) =>
+        currentGroups.map((item) => (item.id === updated.id ? updated : item)),
+      );
+      setNotice({
+        type: "success",
+        message: `Group made ${updated.is_public ? "public" : "private"}.`,
+      });
     } catch (err) {
-      alert(err.message || "Update failed");
+      setNotice({ type: "error", message: err.message || "Update failed" });
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this group?")) return;
+  const requestDeleteGroup = (id) => {
+    setDeleteConfirm({ kind: "group", id, title: "Delete this group?" });
+  };
+
+  const requestDeleteMessage = (messageId) => {
+    setDeleteConfirm({
+      kind: "message",
+      id: messageId,
+      title: "Delete this message?",
+    });
+  };
+
+  const cancelDelete = () => setDeleteConfirm(null);
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+
     try {
-      await authService.adminDeletePeerGroup(id);
-      setGroups((s) => s.filter((g) => g.id !== id));
-      if (selectedGroupId === id) {
-        setSelectedGroupId(null);
+      if (deleteConfirm.kind === "group") {
+        await authService.adminDeletePeerGroup(deleteConfirm.id);
+        setGroups((currentGroups) =>
+          currentGroups.filter((group) => group.id !== deleteConfirm.id),
+        );
+        if (selectedGroupId === deleteConfirm.id) {
+          setSelectedGroupId(null);
+        }
+        setNotice({ type: "success", message: "Group deleted successfully." });
+      } else if (selectedGroup) {
+        await authService.adminDeletePeerGroupMessage(
+          selectedGroup.id,
+          deleteConfirm.id,
+        );
+        setGroupMessages((currentMessages) =>
+          currentMessages.filter((message) => message.id !== deleteConfirm.id),
+        );
+        setNotice({
+          type: "success",
+          message: "Message deleted successfully.",
+        });
       }
     } catch (err) {
-      alert(err.message || "Delete failed");
+      setNotice({ type: "error", message: err.message || "Delete failed" });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
   const handleSendMessage = async () => {
     if (!selectedGroup || !currentUserId) {
-      alert("Select a group and make sure you are logged in.");
+      setNotice({
+        type: "error",
+        message: "Select a group and make sure you are logged in.",
+      });
       return;
     }
 
     if (!messageText.trim()) {
-      alert("Write a message before sending.");
+      setNotice({ type: "error", message: "Write a message before sending." });
       return;
     }
 
@@ -138,29 +190,18 @@ const AdminPeerGroups = () => {
       });
       setGroupMessages((currentMessages) => [posted, ...currentMessages]);
       setMessageText("");
+      setNotice({ type: "success", message: "Message sent successfully." });
     } catch (err) {
-      alert(err.message || "Failed to send message");
+      setNotice({
+        type: "error",
+        message: err.message || "Failed to send message",
+      });
     } finally {
       setSendingMessage(false);
     }
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    if (!selectedGroup) return;
-    if (!confirm("Delete this message?")) return;
-
-    try {
-      await authService.adminDeletePeerGroupMessage(
-        selectedGroup.id,
-        messageId,
-      );
-      setGroupMessages((currentMessages) =>
-        currentMessages.filter((message) => message.id !== messageId),
-      );
-    } catch (err) {
-      alert(err.message || "Failed to delete message");
-    }
-  };
+  const clearNotice = () => setNotice(null);
 
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
@@ -170,6 +211,25 @@ const AdminPeerGroups = () => {
             Peer Support Groups
           </h1>
         </div>
+
+        {notice && (
+          <div
+            className={`mb-6 rounded-xl border px-4 py-3 text-sm flex items-start justify-between gap-4 ${
+              notice.type === "success"
+                ? "border-green-200 bg-green-50 text-green-700"
+                : "border-red-200 bg-red-50 text-red-700"
+            }`}
+          >
+            <span>{notice.message}</span>
+            <button
+              type="button"
+              onClick={clearNotice}
+              className="text-xs font-semibold uppercase tracking-wide opacity-70 hover:opacity-100"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleCreate} className="mb-6 space-y-2">
           <input
@@ -194,7 +254,10 @@ const AdminPeerGroups = () => {
             Public
           </label>
           <div>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+              type="submit"
+            >
               Create Group
             </button>
           </div>
@@ -204,32 +267,37 @@ const AdminPeerGroups = () => {
           <div>Loading...</div>
         ) : (
           <div className="space-y-3 mb-8">
-            {groups.map((g) => (
-              <div key={g.id} className="p-3 bg-white rounded shadow">
+            {groups.map((group) => (
+              <div key={group.id} className="p-3 bg-white rounded shadow">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold">{g.name}</h3>
-                    <p className="text-sm text-slate-600">{g.description}</p>
+                    <h3 className="font-semibold">{group.name}</h3>
+                    <p className="text-sm text-slate-600">
+                      {group.description}
+                    </p>
                     <p className="text-xs text-slate-500">
-                      Created: {new Date(g.created_at).toLocaleString()}
+                      Created: {new Date(group.created_at).toLocaleString()}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <button
+                      type="button"
                       className="px-3 py-1 bg-slate-700 text-white rounded text-sm"
-                      onClick={() => setSelectedGroupId(g.id)}
+                      onClick={() => setSelectedGroupId(group.id)}
                     >
                       Manage Messages
                     </button>
                     <button
+                      type="button"
                       className="px-3 py-1 bg-green-600 text-white rounded text-sm"
-                      onClick={() => togglePublic(g)}
+                      onClick={() => togglePublic(group)}
                     >
-                      {g.is_public ? "Make Private" : "Make Public"}
+                      {group.is_public ? "Make Private" : "Make Public"}
                     </button>
                     <button
+                      type="button"
                       className="px-3 py-1 bg-red-600 text-white rounded text-sm"
-                      onClick={() => handleDelete(g.id)}
+                      onClick={() => requestDeleteGroup(group.id)}
                     >
                       Delete
                     </button>
@@ -252,6 +320,7 @@ const AdminPeerGroups = () => {
                 </p>
               </div>
               <button
+                type="button"
                 className="px-3 py-1 text-sm rounded border border-slate-300 text-slate-700"
                 onClick={() => setSelectedGroupId(null)}
               >
@@ -268,6 +337,7 @@ const AdminPeerGroups = () => {
               />
               <div className="flex justify-end mt-3">
                 <button
+                  type="button"
                   className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-60"
                   onClick={handleSendMessage}
                   disabled={sendingMessage}
@@ -318,8 +388,9 @@ const AdminPeerGroups = () => {
                       </p>
                       <div className="flex justify-end mt-2">
                         <button
+                          type="button"
                           className="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700"
-                          onClick={() => handleDeleteMessage(message.id)}
+                          onClick={() => requestDeleteMessage(message.id)}
                         >
                           Delete
                         </button>
@@ -328,6 +399,35 @@ const AdminPeerGroups = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {deleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {deleteConfirm.title}
+              </h3>
+              <p className="text-sm text-gray-600 mb-5">
+                This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={cancelDelete}
+                  className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDelete}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}
