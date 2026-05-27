@@ -399,4 +399,59 @@ export const authService = {
   isAuthenticated() {
     return !!this.getToken();
   },
+  /**
+   * Public: fetch peer groups (optionally publicOnly)
+   */
+  async getPeerGroups({ publicOnly = true } = {}) {
+    const params = new URLSearchParams();
+    if (publicOnly) params.set("publicOnly", "true");
+    const resp = await fetch(
+      `${API_BASE_URL}/peer-groups?${params.toString()}`,
+    );
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load groups");
+    return data;
+  },
+
+  // Admin: list all groups
+  async adminGetPeerGroups() {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups`, {
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load groups");
+    return data;
+  },
+
+  async adminCreatePeerGroup({ name, description, is_public = true }) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description, is_public }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to create group");
+    return data;
+  },
+
+  async adminUpdatePeerGroup(id, updates) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}`, {
+      method: "PATCH",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to update group");
+    return data;
+  },
+
+  async adminDeletePeerGroup(id) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}`, {
+      method: "DELETE",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to delete group");
+    return data;
+  },
 };

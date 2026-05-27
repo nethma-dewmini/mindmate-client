@@ -34,6 +34,12 @@ const AdminDashboard = () => {
             description="Manage approved student registry entries and import records in bulk using CSV."
             onClick={() => navigate("/admin/student-registry")}
           />
+
+          <AdminSectionCard
+            title="Peer Support Groups"
+            description="Create and moderate peer support groups for students."
+            onClick={() => navigate("/admin/peer-groups")}
+          />
         </div>
       </div>
     </div>

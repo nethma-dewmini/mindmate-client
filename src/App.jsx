@@ -22,6 +22,7 @@ import {
   AdminLoginPage,
   AdminDashboard,
   AdminExpertApplicationsPage,
+  AdminPeerGroups,
   AdminStudentRegistryPage,
   ExpertAccountRegisterPage,
   AboutPage,
@@ -72,6 +73,7 @@ function App() {
     "/admin/login",
     "/admin/dashboard",
     "/admin/expert-applications",
+    "/admin/peer-groups",
     "/admin/student-registry",
     ...expertPages,
   ];
@@ -134,6 +136,7 @@ function App() {
             path="/admin/expert-applications"
             element={<AdminExpertApplicationsPage />}
           />
+          <Route path="/admin/peer-groups" element={<AdminPeerGroups />} />
           <Route
             path="/admin/student-registry"
             element={<AdminStudentRegistryPage />}

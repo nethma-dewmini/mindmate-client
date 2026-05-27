@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { authService } from "../services/authService";
 import {
   FaUsers,
   FaComment,
@@ -9,35 +10,7 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 
-const groups = [
-  {
-    id: 1,
-    name: "Exam Stress Support",
-    description: "Share strategies and support each other through exam periods",
-    members: 234,
-    posts: 567,
-    moderator: "Dr. Silva",
-    icon: "📚",
-  },
-  {
-    id: 2,
-    name: "Anxiety Management",
-    description: "A safe space to discuss anxiety and coping strategies",
-    members: 189,
-    posts: 423,
-    moderator: "Dr. Perera",
-    icon: "🧘",
-  },
-  {
-    id: 3,
-    name: "Work-Life Balance",
-    description: "Tips and support for maintaining balance in your life",
-    members: 156,
-    posts: 312,
-    moderator: "Dr. Fernando",
-    icon: "⚖️",
-  },
-];
+// Will be loaded from server (public groups)
 
 const samplePosts = [
   {
@@ -65,12 +38,46 @@ const samplePosts = [
 ];
 
 const PeerSupportPage = () => {
+  const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [newPost, setNewPost] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
 
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = async () => {
+    try {
+      const data = await authService.getPeerGroups({ publicOnly: true });
+      setGroups(data || []);
+    } catch (err) {
+      console.error("Failed to load peer groups", err);
+    }
+  };
+
+  const joinGroup = async (groupId) => {
+    try {
+      const user = authService.getCurrentUser();
+      if (!user) {
+        alert("Please login to join a group.");
+        return;
+      }
+      const resp = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/peer-groups/${groupId}/join`, {
+        method: "POST",
+        headers: { ...authService.getAuthHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+      const j = await resp.json();
+      if (!resp.ok) throw new Error(j.message || "Join failed");
+      alert("Joined group");
+    } catch (err) {
+      alert(err.message || "Failed to join");
+    }
+  };
+
   if (selectedGroup) {
-    const group = groups.find((g) => g.id === selectedGroup);
+    const group = groups.find((g) => g.id === selectedGroup) || selectedGroup;
 
     return (
       <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
@@ -95,13 +102,8 @@ const PeerSupportPage = () => {
                 </h1>
                 <p className="text-gray-500 mb-2">{group.description}</p>
                 <div className="flex items-center space-x-4 text-sm text-gray-400">
-                  <span className="flex items-center">
-                    <FaUsers className="mr-1" /> {group.members} members
-                  </span>
-                  <span className="flex items-center">
-                    <FaComment className="mr-1" /> {group.posts} posts
-                  </span>
-                  <span>🏅 Moderated by {group.moderator}</span>
+                  <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded">{group.is_public ? 'Public' : 'Private'}</span>
+                  <span className="text-xs text-slate-500">Created: {group.created_at ? new Date(group.created_at).toLocaleDateString() : ''}</span>
                 </div>
               </div>
             </div>
@@ -207,21 +209,22 @@ const PeerSupportPage = () => {
           {groups.map((group) => (
             <div
               key={group.id}
-              onClick={() => setSelectedGroup(group.id)}
-              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100 cursor-pointer"
+              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
             >
               <div className="w-16 h-16 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl flex items-center justify-center mb-4">
-                <span className="text-3xl">{group.icon}</span>
+                <span className="text-3xl">{group.name ? group.name.charAt(0).toUpperCase() : 'G'}</span>
               </div>
               <h3 className="font-semibold text-gray-800 mb-2">{group.name}</h3>
               <p className="text-sm text-gray-500 mb-4">{group.description}</p>
-              <div className="flex items-center space-x-4 text-xs text-gray-400">
-                <span className="flex items-center">
-                  <FaUsers className="mr-1" /> {group.members} members
-                </span>
-                <span className="flex items-center">
-                  <FaComment className="mr-1" /> {group.posts} posts
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-xs text-gray-400">
+                  <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded">{group.is_public ? 'Public' : 'Private'}</span>
+                  <span className="text-xs text-slate-500">{group.created_at ? new Date(group.created_at).toLocaleDateString() : ''}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setSelectedGroup(group.id)} className="px-3 py-1 bg-[#5bb5a1] text-white rounded text-sm">View</button>
+                  <button onClick={() => joinGroup(group.id)} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">Join</button>
+                </div>
               </div>
             </div>
           ))}
