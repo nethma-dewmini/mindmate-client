@@ -12,7 +12,6 @@ import { authService } from "../services/authService";
 const PeerSupportPage = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [newPost, setNewPost] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,7 +74,6 @@ const PeerSupportPage = () => {
       setGroupMessages([]);
       setGroupError("");
       setNewPost("");
-      setIsAnonymous(false);
       return;
     }
 
@@ -207,11 +205,14 @@ const PeerSupportPage = () => {
     setGroupError("");
 
     try {
-      const postedReply = await authService.postPeerGroupMessage(selectedGroup, {
-        userId: currentUserId,
-        content: replyText.trim(),
-        metadata: { replyTo: parentMessageId },
-      });
+      const postedReply = await authService.postPeerGroupMessage(
+        selectedGroup,
+        {
+          userId: currentUserId,
+          content: replyText.trim(),
+          metadata: { replyTo: parentMessageId, isAnonymous: true },
+        },
+      );
 
       setGroupMessages((currentMessages) => [postedReply, ...currentMessages]);
       setReplyText("");
@@ -373,8 +374,8 @@ const PeerSupportPage = () => {
                   Leave this group?
                 </h3>
                 <p className="text-sm text-gray-600 mb-5">
-                  You can rejoin later, but you will lose access to posting until
-                  you join again.
+                  You can rejoin later, but you will lose access to posting
+                  until you join again.
                 </p>
                 <div className="flex justify-end gap-3">
                   <button
@@ -410,16 +411,9 @@ const PeerSupportPage = () => {
                 disabled={posting}
               />
               <div className="flex justify-between items-center">
-                <label className="flex items-center text-sm text-gray-600">
-                  <input
-                    type="checkbox"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="mr-2 rounded"
-                    disabled={posting}
-                  />
-                  Post Anonymously
-                </label>
+                <span className="text-sm text-gray-600">
+                  Messages are posted anonymously.
+                </span>
                 <button
                   onClick={async () => {
                     if (!currentUserId) {
@@ -438,7 +432,7 @@ const PeerSupportPage = () => {
                         {
                           userId: currentUserId,
                           content: newPost.trim(),
-                          metadata: { isAnonymous },
+                          metadata: { isAnonymous: true },
                         },
                       );
                       setGroupMessages((currentMessages) => [
@@ -446,7 +440,6 @@ const PeerSupportPage = () => {
                         ...currentMessages,
                       ]);
                       setNewPost("");
-                      setIsAnonymous(false);
                     } catch (err) {
                       alert(err.message || "Failed to post message");
                     } finally {
@@ -491,127 +484,151 @@ const PeerSupportPage = () => {
                     ? reactions.support
                     : [];
                   const likedByCurrentUser = likeUsers.includes(currentUserId);
-                  const supportedByCurrentUser = supportUsers.includes(currentUserId);
-                  const isReactionLoading = Boolean(reactionLoadingByMessage[post.id]);
+                  const supportedByCurrentUser =
+                    supportUsers.includes(currentUserId);
+                  const isReactionLoading = Boolean(
+                    reactionLoadingByMessage[post.id],
+                  );
 
                   return (
-                  <div
-                    key={post.id}
-                    className="border-b border-gray-100 pb-6 last:border-0 last:pb-0"
-                  >
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                        <span className="text-xl">🧑</span>
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <span className="font-medium text-gray-800">
-                            {getDisplayName(post)}
-                          </span>
-                          {post.metadata?.isAnonymous && (
-                            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
-                              Anonymous
+                    <div
+                      key={post.id}
+                      className="border-b border-gray-100 pb-6 last:border-0 last:pb-0"
+                    >
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          <span className="text-xl">🧑</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-gray-800">
+                              {getDisplayName(post)}
                             </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-[#5bb5a1]">
-                          {post.created_at
-                            ? new Date(post.created_at).toLocaleString()
-                            : "Just now"}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 mb-4">{post.content}</p>
-                    <div className="flex items-center space-x-6 text-sm text-gray-500">
-                      <button
-                        onClick={() => handleReaction(post.id, "like")}
-                        disabled={isReactionLoading}
-                        className={`flex items-center space-x-1 disabled:opacity-60 ${
-                          likedByCurrentUser
-                            ? "text-[#5bb5a1]"
-                            : "hover:text-[#5bb5a1]"
-                        }`}
-                      >
-                        <FaThumbsUp />
-                        <span>Like {likeUsers.length > 0 ? `(${likeUsers.length})` : ""}</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setReplyingTo(replyingTo === post.id ? null : post.id);
-                          setReplyText("");
-                        }}
-                        className="flex items-center space-x-1 hover:text-[#5bb5a1]"
-                      >
-                        <FaReply /> <span>Reply {replies.length > 0 ? `(${replies.length})` : ""}</span>
-                      </button>
-                      <button
-                        onClick={() => handleReaction(post.id, "support")}
-                        disabled={isReactionLoading}
-                        className={`flex items-center space-x-1 disabled:opacity-60 ${
-                          supportedByCurrentUser
-                            ? "text-red-500"
-                            : "hover:text-red-500"
-                        }`}
-                      >
-                        <FaHeart />
-                        <span>
-                          Support {supportUsers.length > 0 ? `(${supportUsers.length})` : ""}
-                        </span>
-                      </button>
-                    </div>
-
-                    {replyingTo === post.id && (
-                      <div className="mt-4 pl-4 border-l-2 border-gray-200">
-                        <textarea
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          placeholder="Write a reply..."
-                          rows={2}
-                          disabled={replyPosting}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] resize-none"
-                        />
-                        <div className="mt-2 flex justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setReplyingTo(null);
-                              setReplyText("");
-                            }}
-                            className="px-3 py-1 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
-                            disabled={replyPosting}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => handleReplySubmit(post.id)}
-                            className="px-3 py-1 text-sm rounded-lg bg-[#5bb5a1] text-white hover:bg-[#4a9d8b] disabled:opacity-60"
-                            disabled={replyPosting}
-                          >
-                            {replyPosting ? "Replying..." : "Reply"}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {replies.length > 0 && (
-                      <div className="mt-4 pl-4 border-l-2 border-gray-100 space-y-3">
-                        {replies.map((reply) => (
-                          <div key={reply.id} className="bg-gray-50 rounded-lg px-3 py-2">
-                            <div className="flex items-center gap-2 text-sm mb-1">
-                              <span className="font-medium text-gray-800">
-                                {getDisplayName(reply)}
+                            {post.metadata?.isAnonymous && (
+                              <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
+                                Anonymous
                               </span>
-                              <span className="text-xs text-[#5bb5a1]">
-                                {reply.created_at
-                                  ? new Date(reply.created_at).toLocaleString()
-                                  : "Just now"}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-700">{reply.content}</p>
+                            )}
                           </div>
-                        ))}
+                          <span className="text-xs text-[#5bb5a1]">
+                            {post.created_at
+                              ? new Date(post.created_at).toLocaleString()
+                              : "Just now"}
+                          </span>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                      <p className="text-gray-700 mb-4">{post.content}</p>
+                      <div className="flex items-center space-x-6 text-sm text-gray-500">
+                        <button
+                          onClick={() => handleReaction(post.id, "like")}
+                          disabled={isReactionLoading}
+                          className={`flex items-center space-x-1 disabled:opacity-60 ${
+                            likedByCurrentUser
+                              ? "text-[#5bb5a1]"
+                              : "hover:text-[#5bb5a1]"
+                          }`}
+                        >
+                          <FaThumbsUp />
+                          <span>
+                            Like{" "}
+                            {likeUsers.length > 0
+                              ? `(${likeUsers.length})`
+                              : ""}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setReplyingTo(
+                              replyingTo === post.id ? null : post.id,
+                            );
+                            setReplyText("");
+                          }}
+                          className="flex items-center space-x-1 hover:text-[#5bb5a1]"
+                        >
+                          <FaReply />{" "}
+                          <span>
+                            Reply{" "}
+                            {replies.length > 0 ? `(${replies.length})` : ""}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => handleReaction(post.id, "support")}
+                          disabled={isReactionLoading}
+                          className={`flex items-center space-x-1 disabled:opacity-60 ${
+                            supportedByCurrentUser
+                              ? "text-red-500"
+                              : "hover:text-red-500"
+                          }`}
+                        >
+                          <FaHeart />
+                          <span>
+                            Support{" "}
+                            {supportUsers.length > 0
+                              ? `(${supportUsers.length})`
+                              : ""}
+                          </span>
+                        </button>
+                      </div>
+
+                      {replyingTo === post.id && (
+                        <div className="mt-4 pl-4 border-l-2 border-gray-200">
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Write a reply..."
+                            rows={2}
+                            disabled={replyPosting}
+                            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] resize-none"
+                          />
+                          <div className="mt-2 flex justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setReplyingTo(null);
+                                setReplyText("");
+                              }}
+                              className="px-3 py-1 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                              disabled={replyPosting}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => handleReplySubmit(post.id)}
+                              className="px-3 py-1 text-sm rounded-lg bg-[#5bb5a1] text-white hover:bg-[#4a9d8b] disabled:opacity-60"
+                              disabled={replyPosting}
+                            >
+                              {replyPosting ? "Replying..." : "Reply"}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {replies.length > 0 && (
+                        <div className="mt-4 pl-4 border-l-2 border-gray-100 space-y-3">
+                          {replies.map((reply) => (
+                            <div
+                              key={reply.id}
+                              className="bg-gray-50 rounded-lg px-3 py-2"
+                            >
+                              <div className="flex items-center gap-2 text-sm mb-1">
+                                <span className="font-medium text-gray-800">
+                                  {getDisplayName(reply)}
+                                </span>
+                                <span className="text-xs text-[#5bb5a1]">
+                                  {reply.created_at
+                                    ? new Date(
+                                        reply.created_at,
+                                      ).toLocaleString()
+                                    : "Just now"}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-700">
+                                {reply.content}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
