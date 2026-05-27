@@ -454,4 +454,51 @@ export const authService = {
     if (!resp.ok) throw new Error(data.message || "Failed to delete group");
     return data;
   },
+
+  async getPeerGroup(id) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load group");
+    return data;
+  },
+
+  async getPeerGroupMessages(id) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/messages`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to load messages");
+    return data;
+  },
+
+  async joinPeerGroup(id, userId) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/join`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to join group");
+    return data;
+  },
+
+  async leavePeerGroup(id, userId) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/leave`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to leave group");
+    return data;
+  },
+
+  async postPeerGroupMessage(id, { userId, content, metadata = {} }) {
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/messages`, {
+      method: "POST",
+      headers: { ...this.getAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId, content, metadata }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.message || "Failed to post message");
+    return data;
+  },
 };
