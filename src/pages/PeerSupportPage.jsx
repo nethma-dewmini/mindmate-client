@@ -110,6 +110,7 @@ const PeerSupportPage = () => {
   const isMember = Boolean(
     groupDetails?.members?.some((member) => member.user_id === currentUserId),
   );
+  const canParticipate = isStudent && isMember;
 
   if (selectedGroup) {
     if (!activeGroup) {
@@ -158,36 +159,40 @@ const PeerSupportPage = () => {
                   </span>
                   <span>🏅 Moderated by Admin</span>
                 </div>
-                <div className="mt-4 flex items-center gap-3">
+                <div className="mt-4 flex flex-wrap items-center gap-3">
                   {isStudent && !isMember && (
-                    <button
-                      onClick={async () => {
-                        if (!currentUserId) {
-                          alert("Please log in as a student first.");
-                          return;
-                        }
+                    <div className="flex flex-wrap items-center gap-3">
+                      <button
+                        onClick={async () => {
+                          if (!currentUserId) {
+                            alert("Please log in as a student first.");
+                            return;
+                          }
 
-                        setJoining(true);
-                        try {
-                          await authService.joinPeerGroup(
-                            selectedGroup,
-                            currentUserId,
-                          );
-                          const detail = await authService.getPeerGroup(
-                            selectedGroup,
-                          );
-                          setGroupDetails(detail);
-                        } catch (err) {
-                          alert(err.message || "Failed to join group");
-                        } finally {
-                          setJoining(false);
-                        }
-                      }}
-                      disabled={joining}
-                      className="px-4 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] disabled:opacity-60"
-                    >
-                      {joining ? "Joining..." : "Join Group"}
-                    </button>
+                          setJoining(true);
+                          try {
+                            await authService.joinPeerGroup(
+                              selectedGroup,
+                              currentUserId,
+                            );
+                            const detail =
+                              await authService.getPeerGroup(selectedGroup);
+                            setGroupDetails(detail);
+                          } catch (err) {
+                            alert(err.message || "Failed to join group");
+                          } finally {
+                            setJoining(false);
+                          }
+                        }}
+                        disabled={joining}
+                        className="px-4 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] disabled:opacity-60"
+                      >
+                        {joining ? "Joining..." : "Join Group"}
+                      </button>
+                      <span className="text-sm text-blue-700">
+                        Join this group first to start posting.
+                      </span>
+                    </div>
                   )}
                   {isStudent && isMember && (
                     <div className="inline-flex items-center rounded-full bg-green-100 text-green-700 px-3 py-1 text-sm font-medium">
@@ -199,147 +204,145 @@ const PeerSupportPage = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h2 className="font-semibold text-gray-800 mb-4">
-              Share with the Group
-            </h2>
-            {!isStudent && (
-              <div className="mb-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-                Only logged-in students can join and post in peer groups.
-              </div>
-            )}
-            {isStudent && !isMember && (
-              <div className="mb-4 rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                Join this group first to start posting.
-              </div>
-            )}
-            <textarea
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-              placeholder="What's on your mind?"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] resize-none mb-4"
-              rows={4}
-              disabled={!isStudent || !isMember || posting}
-            />
-            <div className="flex justify-between items-center">
-              <label className="flex items-center text-sm text-gray-600">
-                <input
-                  type="checkbox"
-                  checked={isAnonymous}
-                  onChange={(e) => setIsAnonymous(e.target.checked)}
-                  className="mr-2 rounded"
-                  disabled={!isStudent || !isMember || posting}
-                />
-                Post Anonymously
-              </label>
-              <button
-                onClick={async () => {
-                  if (!currentUserId) {
-                    alert("Please log in as a student first.");
-                    return;
-                  }
-                  if (!isMember) {
-                    alert("Join the group before posting.");
-                    return;
-                  }
-                  if (!newPost.trim()) {
-                    alert("Write a message before posting.");
-                    return;
-                  }
+          {canParticipate && (
+            <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+              <h2 className="font-semibold text-gray-800 mb-4">
+                Share with the Group
+              </h2>
+              <textarea
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                placeholder="What's on your mind?"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] resize-none mb-4"
+                rows={4}
+                disabled={posting}
+              />
+              <div className="flex justify-between items-center">
+                <label className="flex items-center text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={isAnonymous}
+                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    className="mr-2 rounded"
+                    disabled={posting}
+                  />
+                  Post Anonymously
+                </label>
+                <button
+                  onClick={async () => {
+                    if (!currentUserId) {
+                      alert("Please log in as a student first.");
+                      return;
+                    }
+                    if (!newPost.trim()) {
+                      alert("Write a message before posting.");
+                      return;
+                    }
 
-                  setPosting(true);
-                  try {
-                    const posted = await authService.postPeerGroupMessage(
-                      selectedGroup,
-                      {
-                        userId: currentUserId,
-                        content: newPost.trim(),
-                        metadata: { isAnonymous },
-                      },
-                    );
-                    setGroupMessages((currentMessages) => [
-                      posted,
-                      ...currentMessages,
-                    ]);
-                    setNewPost("");
-                    setIsAnonymous(false);
-                  } catch (err) {
-                    alert(err.message || "Failed to post message");
-                  } finally {
-                    setPosting(false);
-                  }
-                }}
-                disabled={!isStudent || !isMember || posting}
-                className="px-6 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] disabled:opacity-60"
-              >
-                {posting ? "Posting..." : "Post"}
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="font-semibold text-gray-800 mb-4">
-              Recent Discussions
-            </h2>
-            {groupLoading && (
-              <div className="text-sm text-gray-500">Loading discussion...</div>
-            )}
-            {!groupLoading && groupError && (
-              <div className="text-sm text-red-600">{groupError}</div>
-            )}
-            {!groupLoading && !groupError && groupMessages.length === 0 && (
-              <div className="text-sm text-gray-500">
-                No messages yet. Start the conversation.
-              </div>
-            )}
-            <div className="space-y-6">
-              {groupMessages.map((post) => (
-                <div
-                  key={post.id}
-                  className="border-b border-gray-100 pb-6 last:border-0 last:pb-0"
+                    setPosting(true);
+                    try {
+                      const posted = await authService.postPeerGroupMessage(
+                        selectedGroup,
+                        {
+                          userId: currentUserId,
+                          content: newPost.trim(),
+                          metadata: { isAnonymous },
+                        },
+                      );
+                      setGroupMessages((currentMessages) => [
+                        posted,
+                        ...currentMessages,
+                      ]);
+                      setNewPost("");
+                      setIsAnonymous(false);
+                    } catch (err) {
+                      alert(err.message || "Failed to post message");
+                    } finally {
+                      setPosting(false);
+                    }
+                  }}
+                  disabled={posting}
+                  className="px-6 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] disabled:opacity-60"
                 >
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                      <span className="text-xl">🧑</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium text-gray-800">
-                          {post.metadata?.isAnonymous
-                            ? "Anonymous"
-                            : post.user_id === currentUserId
-                              ? "You"
-                              : "Student"}
-                        </span>
-                        {post.metadata?.isAnonymous && (
-                          <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
-                            Anonymous
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-[#5bb5a1]">
-                        {post.created_at
-                          ? new Date(post.created_at).toLocaleString()
-                          : "Just now"}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-gray-700 mb-4">{post.content}</p>
-                  <div className="flex items-center space-x-6 text-sm text-gray-500">
-                    <button className="flex items-center space-x-1 hover:text-[#5bb5a1]">
-                      <FaThumbsUp /> <span>Like</span>
-                    </button>
-                    <button className="flex items-center space-x-1 hover:text-[#5bb5a1]">
-                      <FaReply /> <span>Reply</span>
-                    </button>
-                    <button className="flex items-center space-x-1 hover:text-red-500">
-                      <FaHeart /> <span>Support</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  {posting ? "Posting..." : "Post"}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {canParticipate && (
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="font-semibold text-gray-800 mb-4">
+                Recent Discussions
+              </h2>
+              {groupLoading && (
+                <div className="text-sm text-gray-500">Loading discussion...</div>
+              )}
+              {!groupLoading && groupError && (
+                <div className="text-sm text-red-600">{groupError}</div>
+              )}
+              {!groupLoading && !groupError && groupMessages.length === 0 && (
+                <div className="text-sm text-gray-500">
+                  No messages yet. Start the conversation.
+                </div>
+              )}
+              <div className="space-y-6">
+                {groupMessages.map((post) => (
+                  <div
+                    key={post.id}
+                    className="border-b border-gray-100 pb-6 last:border-0 last:pb-0"
+                  >
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                        <span className="text-xl">🧑</span>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-gray-800">
+                            {post.metadata?.isAnonymous
+                              ? "Anonymous"
+                              : post.user_id === currentUserId
+                                ? "You"
+                                : "Student"}
+                          </span>
+                          {post.metadata?.isAnonymous && (
+                            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
+                              Anonymous
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-[#5bb5a1]">
+                          {post.created_at
+                            ? new Date(post.created_at).toLocaleString()
+                            : "Just now"}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-gray-700 mb-4">{post.content}</p>
+                    <div className="flex items-center space-x-6 text-sm text-gray-500">
+                      <button className="flex items-center space-x-1 hover:text-[#5bb5a1]">
+                        <FaThumbsUp /> <span>Like</span>
+                      </button>
+                      <button className="flex items-center space-x-1 hover:text-[#5bb5a1]">
+                        <FaReply /> <span>Reply</span>
+                      </button>
+                      <button className="flex items-center space-x-1 hover:text-red-500">
+                        <FaHeart /> <span>Support</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!canParticipate && selectedGroup && (
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <p className="text-sm text-gray-600">
+                Join this group to unlock posting and discussions.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
