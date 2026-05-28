@@ -22,6 +22,7 @@ import {
   AdminLoginPage,
   AdminDashboard,
   AdminExpertApplicationsPage,
+  AdminAssessmentsPage,
   AdminPeerGroups,
   AdminStudentRegistryPage,
   ExpertAccountRegisterPage,
@@ -29,6 +30,7 @@ import {
   ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
+  AssessmentTaking,
 } from "./pages";
 
 function App() {
@@ -73,16 +75,21 @@ function App() {
     "/admin/login",
     "/admin/dashboard",
     "/admin/expert-applications",
+    "/admin/assessments",
     "/admin/peer-groups",
     "/admin/student-registry",
     ...expertPages,
   ];
+  const matchesAppPath = (paths) =>
+    paths.some(
+      (path) =>
+        location.pathname === path || location.pathname.startsWith(`${path}/`),
+    );
   const showNavbar =
-    !authPages.includes(location.pathname) &&
-    !appPages.includes(location.pathname);
+    !authPages.includes(location.pathname) && !matchesAppPath(appPages);
   const showFooter =
     !authPages.includes(location.pathname) &&
-    !appPages.includes(location.pathname) &&
+    !matchesAppPath(appPages) &&
     location.pathname !== "/" &&
     location.pathname !== "/about";
 
@@ -128,6 +135,7 @@ function App() {
           />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
+          <Route path="/assessment/:id" element={<AssessmentTaking />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminEntry />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -136,6 +144,7 @@ function App() {
             path="/admin/expert-applications"
             element={<AdminExpertApplicationsPage />}
           />
+          <Route path="/admin/assessments" element={<AdminAssessmentsPage />} />
           <Route path="/admin/peer-groups" element={<AdminPeerGroups />} />
           <Route
             path="/admin/student-registry"
