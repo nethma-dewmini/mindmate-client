@@ -320,6 +320,7 @@ export const authService = {
     const response = await fetch(`${API_BASE_URL}/assessments/${id}`, {
       method: "GET",
       headers: {
+        ...this.getAuthHeaders(),
         "Content-Type": "application/json",
       },
     });
