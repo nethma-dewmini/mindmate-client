@@ -91,7 +91,7 @@ const ExpertAssessmentsPage = () => {
             Your Assessments
           </h1>
           <p className="mt-2 text-slate-500 max-w-2xl">
-            Open an assessment to view its questions and details. Use the "Start a new draft"
+            Open an assessment to view its questions and details. Use the "Create an Assessment"
             button to start a new draft.
           </p>
         </div>
@@ -113,9 +113,9 @@ const ExpertAssessmentsPage = () => {
             <button
               type="button"
               onClick={() => navigate("/expert/assessments/new")}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200"
+              className="px-4 py-2 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b]"
             >
-              Start a new draft
+              Create an Assessment
             </button>
           </div>
 
