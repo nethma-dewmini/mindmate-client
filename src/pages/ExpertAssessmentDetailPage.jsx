@@ -271,7 +271,7 @@ const ExpertAssessmentDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto mb-6 flex items-start justify-between gap-4">
+      <div className="max-w-4xl mx-auto mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <Link
             to="/expert/assessments"
@@ -284,9 +284,18 @@ const ExpertAssessmentDetailPage = () => {
             View the assessment details here. Switch to edit mode to update the
             title, questions, visibility, or delete it.
           </p>
+          {!isNew && assessment?.createdAt && (
+            <p className="mt-2 text-xs text-slate-400 font-medium">
+              Created on {new Date(assessment.createdAt).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          )}
         </div>
 
-        <div className="flex gap-3 flex-wrap justify-end">
+        <div className="flex gap-3 items-center justify-start sm:justify-end shrink-0">
           <button
             type="button"
             onClick={() => setEditing((current) => !current)}
@@ -313,28 +322,42 @@ const ExpertAssessmentDetailPage = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="max-w-4xl mx-auto">
         <section className="rounded-3xl bg-white shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-6 sm:p-8 border-b border-slate-100">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full">
                 <span className="text-4xl">{editor.icon || "🧠"}</span>
-                <div>
+                <div className="flex-grow">
                   <p className="text-sm font-semibold text-[#5bb5a1] uppercase tracking-wide">
-                    Assessment View
+                    {editing ? "Edit Assessment Details" : "Assessment View"}
                   </p>
-                  <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+                  {editing ? (
+                    <input
+                      type="text"
+                      value={editor.title}
+                      onChange={(e) =>
+                        setEditor((curr) => ({ ...curr, title: e.target.value }))
+                      }
+                      placeholder="Assessment Title"
+                      className="w-full text-2xl font-bold text-slate-800 border-b border-slate-200 focus:border-[#5bb5a1] outline-none py-1 mt-1"
+                    />
+                  ) : (
+                    <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+                  )}
                 </div>
               </div>
-              <span
-                className={`text-[11px] px-2 py-1 rounded-full font-medium ${
-                  visibility === "public"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-amber-100 text-amber-800"
-                }`}
-              >
-                {visibility === "public" ? "Public" : "Private"}
-              </span>
+              {!editing && (
+                <span
+                  className={`text-[11px] px-2 py-1 rounded-full font-medium ${
+                    visibility === "public"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-amber-100 text-amber-800"
+                  }`}
+                >
+                  {visibility === "public" ? "Public" : "Private"}
+                </span>
+              )}
             </div>
 
             {notice ? (
@@ -353,28 +376,59 @@ const ExpertAssessmentDetailPage = () => {
           <div className="p-6 sm:p-8 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-wide text-slate-400">
-                  Duration
+                <div className="text-xs uppercase tracking-wide text-slate-400 mb-1">
+                  Duration (minutes)
                 </div>
-                <div className="mt-1 text-lg font-semibold text-slate-800">
-                  {editor.duration || assessment?.duration || 5} min
-                </div>
+                {editing ? (
+                  <input
+                    type="number"
+                    min="1"
+                    value={editor.duration}
+                    onChange={(e) =>
+                      setEditor((curr) => ({
+                        ...curr,
+                        duration: e.target.value === "" ? "" : Number(e.target.value),
+                      }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-[#5bb5a1] bg-white font-semibold text-slate-800 mt-1"
+                  />
+                ) : (
+                  <div className="mt-1 text-lg font-semibold text-slate-800">
+                    {editor.duration || assessment?.duration || 5} min
+                  </div>
+                )}
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-wide text-slate-400">
+                <div className="text-xs uppercase tracking-wide text-slate-400 mb-1">
                   Questions
                 </div>
-                <div className="mt-1 text-lg font-semibold text-slate-800">
+                <div className="mt-1.5 text-lg font-semibold text-slate-800">
                   {parsedQuestions.length}
                 </div>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-wide text-slate-400">
+                <div className="text-xs uppercase tracking-wide text-slate-400 mb-1">
                   Visibility
                 </div>
-                <div className="mt-1 text-lg font-semibold text-slate-800">
-                  {visibility === "public" ? "Public" : "Private"}
-                </div>
+                {editing ? (
+                  <select
+                    value={editor.visibility}
+                    onChange={(e) =>
+                      setEditor((curr) => ({
+                        ...curr,
+                        visibility: e.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-[#5bb5a1] bg-white font-semibold text-slate-800 mt-1"
+                  >
+                    <option value="private">Private</option>
+                    <option value="public">Public</option>
+                  </select>
+                ) : (
+                  <div className="mt-1 text-lg font-semibold text-slate-800">
+                    {visibility === "public" ? "Public" : "Private"}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -382,11 +436,26 @@ const ExpertAssessmentDetailPage = () => {
               <h3 className="text-lg font-semibold text-slate-800 mb-2">
                 Description
               </h3>
-              <p className="text-slate-600 leading-7">
-                {editor.description ||
-                  assessment?.description ||
-                  "No description provided."}
-              </p>
+              {editing ? (
+                <textarea
+                  rows="3"
+                  value={editor.description}
+                  onChange={(e) =>
+                    setEditor((curr) => ({
+                      ...curr,
+                      description: e.target.value,
+                    }))
+                  }
+                  placeholder="Describe the assessment purpose, target audience, or what it measures..."
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-[#5bb5a1] text-slate-700 text-sm leading-6 bg-white"
+                />
+              ) : (
+                <p className="text-slate-600 leading-7">
+                  {editor.description ||
+                    assessment?.description ||
+                    "No description provided."}
+                </p>
+              )}
             </div>
 
             <div>
@@ -465,55 +534,6 @@ const ExpertAssessmentDetailPage = () => {
             </div>
           </div>
         </section>
-
-        <aside className="space-y-4">
-          <div className="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm">
-            <div className="text-xs uppercase tracking-wide text-slate-400">
-              Details
-            </div>
-            <div className="mt-3 space-y-2 text-sm text-slate-600">
-              <div className="flex justify-between gap-4">
-                <span>Assessment ID</span>
-                <span className="font-medium text-slate-800">
-                  {assessment?.id || "new"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span>Key</span>
-                <span className="font-medium text-slate-800 text-right break-all">
-                  {editor.key || assessment?.key || "auto-generated"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span>Status</span>
-                <span className="font-medium text-slate-800">
-                  {visibility === "public" ? "Visible to students" : "Hidden"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm">
-            <div className="text-xs uppercase tracking-wide text-slate-400 mb-3">
-              Actions
-            </div>
-            <button
-              type="button"
-              onClick={saveAssessment}
-              disabled={saving || !editing}
-              className="w-full px-4 py-3 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b] disabled:opacity-60"
-            >
-              {isNew ? "Create Assessment" : "Save Changes"}
-            </button>
-            <button
-              type="button"
-              onClick={deleteAssessment}
-              className="mt-3 w-full px-4 py-3 rounded-xl border border-rose-200 text-rose-600 font-medium hover:bg-rose-50"
-            >
-              Delete Assessment
-            </button>
-          </div>
-        </aside>
       </div>
     </div>
   );

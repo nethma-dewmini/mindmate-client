@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   FaBook,
   FaCalendarAlt,
-  FaClipboardList,
   FaComments,
   FaSignOutAlt,
   FaUserMd,
@@ -35,13 +34,6 @@ const ExpertDashboardPage = () => {
   };
 
   const quickActions = [
-    {
-      icon: FaClipboardList,
-      title: "Assessment Builder",
-      description:
-        "Create, publish, and maintain mental health assessments for students",
-      path: "/expert/assessments",
-    },
     {
       icon: FaComments,
       title: "Client Messages",
