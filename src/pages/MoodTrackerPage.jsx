@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { authService } from "../services/authService";
 
 const MoodTrackerPage = () => {
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState("");
+  const [summary, setSummary] = useState({ count: 0, avg_mood: 0, streak: 0 });
+  const [recentEntries, setRecentEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const moods = [
     { id: 5, emoji: "😄", label: "Excellent", color: "bg-green-500" },
@@ -13,29 +18,71 @@ const MoodTrackerPage = () => {
     { id: 1, emoji: "😢", label: "Terrible", color: "bg-red-500" },
   ];
 
-  const moodJourney = [
-    { date: "12", mood: 2, color: "bg-orange-400" },
-    { date: "13", mood: 4, color: "bg-blue-400" },
-    { date: "14", mood: 3, color: "bg-yellow-400" },
-    { date: "15", mood: 4, color: "bg-blue-400" },
-    { date: "16", mood: 5, color: "bg-green-400" },
-    { date: "17", mood: 4, color: "bg-orange-400" },
-    { date: "18", mood: 4, color: "bg-yellow-400" },
-  ];
-
-  const recentEntries = [
-    { date: "2026-01-18", mood: "🙂", note: "Productive study session" },
-    { date: "2026-01-17", mood: "🙂", note: "Tired but okay" },
-    { date: "2026-01-16", mood: "😄", note: "Great day, feeling confident" },
-    { date: "2026-01-15", mood: "🙂", note: "Presentation went well!" },
-  ];
-
-  const handleSaveMood = () => {
-    if (selectedMood) {
-      // Save mood logic here
-      alert("Mood saved!");
+  const fetchMoodData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [summaryData, entriesData] = await Promise.all([
+        authService.getMoodSummary(30),
+        authService.getMoodEntries(7),
+      ]);
+      setSummary(summaryData);
+      setRecentEntries(entriesData);
+    } catch (err) {
+      console.error("Error loading mood data:", err);
+      setError("Failed to load mood data. Please refresh and try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMoodData();
+  }, []);
+
+  const getMoodColor = (moodId) => {
+    const colors = {
+      5: "bg-green-400",
+      4: "bg-blue-400",
+      3: "bg-yellow-400",
+      2: "bg-orange-400",
+      1: "bg-red-400",
+    };
+    return colors[moodId] || "bg-gray-400";
+  };
+
+  const getMoodEmoji = (moodId) => {
+    const emojis = {
+      5: "😄",
+      4: "🙂",
+      3: "😐",
+      2: "😟",
+      1: "😢",
+    };
+    return emojis[moodId] || "😐";
+  };
+
+  const handleSaveMood = async () => {
+    if (!selectedMood) return;
+
+    try {
+      await authService.createMoodEntry({
+        mood: selectedMood,
+        note: note.trim() || null,
+      });
+      // Reset inputs
+      setSelectedMood(null);
+      setNote("");
+      // Refresh stats and logs
+      await fetchMoodData();
+    } catch (err) {
+      console.error("Error saving mood entry:", err);
+      alert("Failed to save mood entry. Please try again.");
+    }
+  };
+
+  // Derive moodJourney (oldest to newest chronological) from the last 7 entries
+  const journeyEntries = [...recentEntries].slice(0, 7).reverse();
 
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
@@ -55,6 +102,12 @@ const MoodTrackerPage = () => {
             Cancel
           </Link>
         </div>
+
+        {error && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm border border-red-200">
+            {error}
+          </div>
+        )}
 
         {/* Mood Selection Card */}
         <div className="bg-white rounded-2xl p-8 shadow-sm mb-6">
@@ -113,21 +166,27 @@ const MoodTrackerPage = () => {
             <span className="text-2xl">📊</span>
             <div>
               <p className="text-xs text-gray-500">Average Mood</p>
-              <p className="font-bold text-gray-800">3.6 🙂</p>
+              <p className="font-bold text-gray-800">
+                {summary.avg_mood > 0
+                  ? `${summary.avg_mood} ${getMoodEmoji(Math.round(summary.avg_mood))}`
+                  : "N/A"}
+              </p>
             </div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center space-x-3">
             <span className="text-2xl">📅</span>
             <div>
               <p className="text-xs text-gray-500">Days Tracked</p>
-              <p className="font-bold text-gray-800">7</p>
+              <p className="font-bold text-gray-800">{summary.count}</p>
             </div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center space-x-3">
             <span className="text-2xl">📈</span>
             <div>
               <p className="text-xs text-gray-500">Current Streak</p>
-              <p className="font-bold text-gray-800">7 days</p>
+              <p className="font-bold text-gray-800">
+                {summary.streak} {summary.streak === 1 ? "day" : "days"}
+              </p>
             </div>
           </div>
         </div>
@@ -137,46 +196,71 @@ const MoodTrackerPage = () => {
           <h2 className="font-semibold text-gray-800 mb-6">
             Your Mood Journey
           </h2>
-          <div className="flex items-end justify-between h-40 px-4">
-            {moodJourney.map((day, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <div className="relative">
-                  <span className="text-xl mb-2 block">
-                    {day.mood === 5
-                      ? "😄"
-                      : day.mood === 4
-                        ? "🙂"
-                        : day.mood === 3
-                          ? "😐"
-                          : "😟"}
-                  </span>
-                  <div
-                    className={`w-8 ${day.color} rounded-t-lg`}
-                    style={{ height: `${day.mood * 20}px` }}
-                  ></div>
-                </div>
-                <span className="text-xs text-gray-500 mt-2">{day.date}</span>
-              </div>
-            ))}
-          </div>
+          {loading && journeyEntries.length === 0 ? (
+            <div className="flex justify-center items-center h-40 text-gray-500 text-sm">
+              Loading chart...
+            </div>
+          ) : journeyEntries.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-40 text-gray-400 text-sm">
+              <span className="text-4xl mb-2">📊</span>
+              <p>No mood entries recorded yet. Start tracking above!</p>
+            </div>
+          ) : (
+            <div className="flex items-end justify-between h-40 px-4">
+              {journeyEntries.map((entry, index) => {
+                const dateNum = new Date(entry.created_at).getDate();
+                return (
+                  <div key={entry.id || index} className="flex flex-col items-center">
+                    <div className="relative">
+                      <span className="text-xl mb-2 block">
+                        {getMoodEmoji(entry.mood)}
+                      </span>
+                      <div
+                        className={`w-8 ${getMoodColor(entry.mood)} rounded-t-lg transition-all duration-300`}
+                        style={{ height: `${entry.mood * 20}px` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-500 mt-2">{dateNum}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Recent Entries */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <h2 className="font-semibold text-gray-800 mb-4">Recent Entries</h2>
           <div className="space-y-3">
-            {recentEntries.map((entry, index) => (
-              <div
-                key={index}
-                className="flex items-center space-x-4 p-3 bg-gray-50 rounded-xl"
-              >
-                <span className="text-2xl">{entry.mood}</span>
-                <div>
-                  <p className="font-medium text-gray-800">{entry.date}</p>
-                  <p className="text-sm text-gray-500">{entry.note}</p>
-                </div>
-              </div>
-            ))}
+            {loading && recentEntries.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-4">Loading entries...</p>
+            ) : recentEntries.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-4">
+                No recent entries found. Record your first mood entry today!
+              </p>
+            ) : (
+              recentEntries.map((entry, index) => {
+                const formattedDate = new Date(entry.created_at).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+                return (
+                  <div
+                    key={entry.id || index}
+                    className="flex items-center space-x-4 p-3 bg-gray-50 rounded-xl"
+                  >
+                    <span className="text-2xl">{getMoodEmoji(entry.mood)}</span>
+                    <div>
+                      <p className="font-medium text-gray-800">{formattedDate}</p>
+                      {entry.note && (
+                        <p className="text-sm text-gray-500">{entry.note}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

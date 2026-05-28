@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaComments,
@@ -13,11 +14,26 @@ import { authService } from "../services/authService";
 const DashboardPage = () => {
   const navigate = useNavigate();
   const user = authService.getCurrentUser() || { name: "Student" };
+  const [moodStreak, setMoodStreak] = useState("0 days tracked");
 
   const handleLogout = () => {
     authService.logout();
     navigate("/");
   };
+
+  useEffect(() => {
+    const fetchStreak = async () => {
+      try {
+        const summary = await authService.getMoodSummary(30);
+        if (summary && typeof summary.streak !== "undefined") {
+          setMoodStreak(`${summary.streak} ${summary.streak === 1 ? "day" : "days"} tracked`);
+        }
+      } catch (err) {
+        console.error("Failed to load mood streak for dashboard:", err);
+      }
+    };
+    fetchStreak();
+  }, []);
 
   const quickActions = [
     {
@@ -61,7 +77,7 @@ const DashboardPage = () => {
   const stats = [
     { label: "Next Appointment", value: "2026-01-22" },
     { label: "Available Experts", value: "4 professionals" },
-    { label: "Mood Streak", value: "7 days tracked" },
+    { label: "Mood Streak", value: moodStreak },
   ];
 
   const quickTips = [
