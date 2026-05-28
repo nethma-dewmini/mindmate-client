@@ -137,55 +137,7 @@ const ExpertAssessmentsPage = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden">
-            <div className="border-b border-slate-100 px-4 py-3 font-medium text-slate-700">
-              Assessment Library
-            </div>
-            <div className="divide-y divide-slate-100">
-              {assessments.length === 0 ? (
-                <div className="p-4 text-sm text-slate-500">
-                  You have not created any assessments yet.
-                </div>
-              ) : (
-                assessments.map((assessment) => (
-                  <Link
-                    key={assessment.id}
-                    to={`/expert/assessments/${assessment.id}`}
-                    className="block p-4 transition-colors hover:bg-slate-50"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{assessment.icon}</span>
-                          <h2 className="font-semibold text-slate-800">
-                            {assessment.title}
-                          </h2>
-                        </div>
-                        <p className="mt-1 text-sm text-slate-500 line-clamp-2">
-                          {assessment.description}
-                        </p>
-                        <div className="mt-2 text-xs text-slate-400">
-                          {assessment.questions.length} questions ·{" "}
-                          {assessment.duration} min
-                        </div>
-                      </div>
-                      <span
-                        className={`text-[11px] px-2 py-1 rounded-full font-medium ${
-                          assessment.visibility === "public"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {assessment.visibility === "public"
-                          ? "Public"
-                          : "Private"}
-                      </span>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
+
         </aside>
 
         <section className="rounded-3xl bg-white shadow-sm border border-slate-100 p-8">
