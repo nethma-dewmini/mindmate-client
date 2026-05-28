@@ -117,6 +117,27 @@ const ExpertDashboardPage = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#5bb5a1]">
+              Your Assessments
+            </p>
+            <h2 className="text-2xl font-bold text-gray-800 mt-1">
+              Manage the assessments you publish
+            </h2>
+            <p className="text-gray-500 mt-2 max-w-2xl">
+              Open your assessment library to view every assessment, then click
+              one to see its details and manage it from a dedicated page.
+            </p>
+          </div>
+          <Link
+            to="/expert/assessments"
+            className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b]"
+          >
+            Open Assessments
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {stats.map((stat) => (
             <div

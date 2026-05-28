@@ -9,6 +9,7 @@ import {
   DashboardPage,
   ExpertDashboardPage,
   ExpertAssessmentsPage,
+  ExpertAssessmentDetailPage,
   ChatPage,
   AssessmentPage,
   AssessmentTaking,
@@ -83,11 +84,13 @@ function App() {
   const showNavbar =
     !authPages.includes(location.pathname) &&
     !appPages.includes(location.pathname) &&
-    !location.pathname.startsWith("/assessment/");
+    !location.pathname.startsWith("/assessment/") &&
+    !location.pathname.startsWith("/expert/assessments/");
   const showFooter =
     !authPages.includes(location.pathname) &&
     !appPages.includes(location.pathname) &&
     !location.pathname.startsWith("/assessment/") &&
+    !location.pathname.startsWith("/expert/assessments/") &&
     location.pathname !== "/" &&
     location.pathname !== "/about";
 
@@ -122,6 +125,10 @@ function App() {
           <Route
             path="/expert/assessments"
             element={<ExpertAssessmentsPage />}
+          />
+          <Route
+            path="/expert/assessments/:id"
+            element={<ExpertAssessmentDetailPage />}
           />
           <Route
             path="/expert/upload-resources"
