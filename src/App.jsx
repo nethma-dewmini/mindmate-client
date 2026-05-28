@@ -8,8 +8,11 @@ import {
   RegisterPage,
   DashboardPage,
   ExpertDashboardPage,
+  ExpertAssessmentsPage,
+  ExpertAssessmentDetailPage,
   ChatPage,
   AssessmentPage,
+  AssessmentTaking,
   ProfilePage,
   MoodTrackerPage,
   ResourcesPage,
@@ -29,6 +32,7 @@ import {
   ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
+  ExpertSessionsPage,
 } from "./pages";
 
 function App() {
@@ -62,6 +66,8 @@ function App() {
     "/expert/upload-resources",
     "/expert/resource-upload",
     "/expert/resource-library",
+    "/expert/assessments",
+    "/expert/sessions",
     "/chat",
     "/assessment",
     "/profile",
@@ -79,10 +85,14 @@ function App() {
   ];
   const showNavbar =
     !authPages.includes(location.pathname) &&
-    !appPages.includes(location.pathname);
+    !appPages.includes(location.pathname) &&
+    !location.pathname.startsWith("/assessment/") &&
+    !location.pathname.startsWith("/expert/assessments/");
   const showFooter =
     !authPages.includes(location.pathname) &&
     !appPages.includes(location.pathname) &&
+    !location.pathname.startsWith("/assessment/") &&
+    !location.pathname.startsWith("/expert/assessments/") &&
     location.pathname !== "/" &&
     location.pathname !== "/about";
 
@@ -115,6 +125,14 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/expert/dashboard" element={<ExpertDashboardPage />} />
           <Route
+            path="/expert/assessments"
+            element={<ExpertAssessmentsPage />}
+          />
+          <Route
+            path="/expert/assessments/:id"
+            element={<ExpertAssessmentDetailPage />}
+          />
+          <Route
             path="/expert/upload-resources"
             element={<ExpertUploadResourcesPage />}
           />
@@ -126,8 +144,13 @@ function App() {
             path="/expert/resource-library"
             element={<ExpertResourceLibraryPage />}
           />
+          <Route
+            path="/expert/sessions"
+            element={<ExpertSessionsPage />}
+          />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
+          <Route path="/assessment/:id" element={<AssessmentTaking />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminEntry />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />

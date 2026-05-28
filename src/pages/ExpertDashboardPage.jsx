@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FaBook,
-  FaCalendarAlt,
-  FaClipboardList,
-  FaComments,
-  FaSignOutAlt,
-  FaUserMd,
-  FaUsers,
-} from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
 import { authService } from "../services/authService";
 
 const ExpertDashboardPage = () => {
@@ -36,54 +28,38 @@ const ExpertDashboardPage = () => {
 
   const quickActions = [
     {
-      icon: FaComments,
-      title: "Client Messages",
-      description: "Review conversations and respond to students",
+      category: "Client Messages",
+      title: "Review conversations and respond to students",
+      description: "View ongoing chats, moderate messages, and keep in touch with university students seeking support.",
+      buttonText: "Open Messages",
       path: "/chat",
     },
     {
-      icon: FaCalendarAlt,
-      title: "Schedule",
-      description: "Manage availability and upcoming sessions",
-      path: "/profile",
+      category: "Schedule",
+      title: "Manage availability and upcoming sessions",
+      description: "Define your student support hours, coordinate check-ins, and schedule upcoming sessions held.",
+      buttonText: "Manage Sessions",
+      path: "/expert/sessions",
     },
     {
-      icon: FaClipboardList,
-      title: "Consultation Notes",
-      description: "Capture session notes and follow-up actions",
-      path: "/resources",
-    },
-    {
-      icon: FaUsers,
-      title: "Support Groups",
-      description: "Monitor moderated peer support activity",
-      path: "/peer-support",
-    },
-    {
-      icon: FaBook,
-      title: "Resource Management",
-      description: "Upload materials for the student resource library",
+      category: "Resource Management",
+      title: "Upload materials for student resource library",
+      description: "Contribute clinical sheets, guidebooks, and self-help articles for the student dashboard.",
+      buttonText: "Manage Resources",
       path: "/expert/upload-resources",
     },
     {
-      icon: FaUserMd,
-      title: "Expert Profile",
-      description: "Review your profile and professional details",
+      category: "Expert Profile",
+      title: "Review your profile and professional details",
+      description: "Update your credentials, bio, contact info, and profile settings.",
+      buttonText: "View Profile",
       path: "/profile",
     },
   ];
 
-  const stats = [
-    { label: "Today’s Sessions", value: "3 scheduled" },
-    { label: "Open Requests", value: "2 pending" },
-    { label: "Active Students", value: "14 supported" },
-  ];
 
-  const upcomingSessions = [
-    { time: "09:30 AM", student: "Anonymous Student", type: "Check-in" },
-    { time: "01:00 PM", student: "Peer Support Review", type: "Moderation" },
-    { time: "04:15 PM", student: "Follow-up Session", type: "Consultation" },
-  ];
+
+
 
   return (
     <div className="min-h-screen bg-[#f9f5e7]">
@@ -116,70 +92,55 @@ const ExpertDashboardPage = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
-            >
-              <p className="text-sm text-[#5bb5a1] font-medium">{stat.label}</p>
-              <p className="text-lg font-semibold text-gray-800">
-                {stat.value}
-              </p>
-            </div>
-          ))}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#5bb5a1]">
+              Your Assessments
+            </p>
+            <h2 className="text-2xl font-bold text-gray-800 mt-1">
+              Manage the assessments you publish
+            </h2>
+            <p className="text-gray-500 mt-2 max-w-2xl">
+              Open your assessment library to view every assessment, then click
+              one to see its details and manage it from a dedicated page.
+            </p>
+          </div>
+          <Link
+            to="/expert/assessments"
+            className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b]"
+          >
+            Open Assessments
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Quick Actions
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {quickActions.map((action) => {
-                const Icon = action.icon;
 
-                return (
-                  <Link key={action.title} to={action.path}>
-                    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100 h-full">
-                      <div className="w-12 h-12 rounded-xl bg-teal-50 text-[#5bb5a1] flex items-center justify-center mb-4">
-                        <Icon />
-                      </div>
-                      <h3 className="font-semibold text-gray-800 mb-1">
-                        {action.title}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {action.description}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
 
-          <div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Upcoming Sessions
-            </h2>
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-              {upcomingSessions.map((session) => (
-                <div
-                  key={`${session.time}-${session.student}`}
-                  className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0"
-                >
-                  <div className="flex items-center justify-between gap-3 mb-1">
-                    <p className="font-semibold text-gray-800">
-                      {session.time}
-                    </p>
-                    <span className="text-xs px-2 py-1 rounded-full bg-teal-50 text-[#5bb5a1]">
-                      {session.type}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600">{session.student}</p>
+        <div className="mb-8">
+          <div className="space-y-6">
+            {quickActions.map((action) => (
+              <div
+                key={action.category}
+                className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+              >
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-[#5bb5a1]">
+                    {action.category}
+                  </p>
+                  <h3 className="text-2xl font-bold text-gray-800 mt-1">
+                    {action.title}
+                  </h3>
+                  <p className="text-gray-500 mt-2 max-w-2xl">
+                    {action.description}
+                  </p>
                 </div>
-              ))}
-            </div>
+                <Link
+                  to={action.path}
+                  className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#5bb5a1] text-white font-medium hover:bg-[#4a9d8b] shrink-0"
+                >
+                  {action.buttonText}
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </div>

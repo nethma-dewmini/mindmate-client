@@ -11,6 +11,7 @@ const AdminPeerGroups = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [groupMessages, setGroupMessages] = useState([]);
+  const [selectedMessageIds, setSelectedMessageIds] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
@@ -36,6 +37,7 @@ const AdminPeerGroups = () => {
     if (!selectedGroupId) {
       setGroupMessages([]);
       setMessageText("");
+      setSelectedMessageIds([]);
       return;
     }
 
@@ -47,6 +49,7 @@ const AdminPeerGroups = () => {
         const data = await authService.getPeerGroupMessages(selectedGroupId);
         if (isMounted) {
           setGroupMessages(Array.isArray(data) ? data : []);
+          setSelectedMessageIds([]);
         }
       } catch (err) {
         if (isMounted) {
@@ -132,6 +135,38 @@ const AdminPeerGroups = () => {
     });
   };
 
+  const requestBulkDeleteMessages = () => {
+    if (selectedMessageIds.length === 0) return;
+
+    setDeleteConfirm({
+      kind: "bulk-messages",
+      ids: selectedMessageIds,
+      title: `Delete ${selectedMessageIds.length} selected message${
+        selectedMessageIds.length === 1 ? "" : "s"
+      }?`,
+    });
+  };
+
+  const toggleMessageSelection = (messageId) => {
+    setSelectedMessageIds((currentSelected) =>
+      currentSelected.includes(messageId)
+        ? currentSelected.filter((id) => id !== messageId)
+        : [...currentSelected, messageId],
+    );
+  };
+
+  const toggleSelectAllMessages = () => {
+    if (groupMessages.length === 0) return;
+
+    setSelectedMessageIds((currentSelected) => {
+      const visibleIds = groupMessages.map((message) => message.id);
+      const allSelected = visibleIds.every((id) =>
+        currentSelected.includes(id),
+      );
+      return allSelected ? [] : visibleIds;
+    });
+  };
+
   const cancelDelete = () => setDeleteConfirm(null);
 
   const confirmDelete = async () => {
@@ -147,7 +182,7 @@ const AdminPeerGroups = () => {
           setSelectedGroupId(null);
         }
         setNotice({ type: "success", message: "Group deleted successfully." });
-      } else if (selectedGroup) {
+      } else if (deleteConfirm.kind === "message" && selectedGroup) {
         await authService.adminDeletePeerGroupMessage(
           selectedGroup.id,
           deleteConfirm.id,
@@ -155,9 +190,31 @@ const AdminPeerGroups = () => {
         setGroupMessages((currentMessages) =>
           currentMessages.filter((message) => message.id !== deleteConfirm.id),
         );
+        setSelectedMessageIds((currentSelected) =>
+          currentSelected.filter((id) => id !== deleteConfirm.id),
+        );
         setNotice({
           type: "success",
           message: "Message deleted successfully.",
+        });
+      } else if (deleteConfirm.kind === "bulk-messages" && selectedGroup) {
+        for (const messageId of deleteConfirm.ids) {
+          await authService.adminDeletePeerGroupMessage(
+            selectedGroup.id,
+            messageId,
+          );
+        }
+        setGroupMessages((currentMessages) =>
+          currentMessages.filter(
+            (message) => !deleteConfirm.ids.includes(message.id),
+          ),
+        );
+        setSelectedMessageIds([]);
+        setNotice({
+          type: "success",
+          message: `${deleteConfirm.ids.length} message${
+            deleteConfirm.ids.length === 1 ? "" : "s"
+          } deleted successfully.`,
         });
       }
     } catch (err) {
@@ -189,6 +246,7 @@ const AdminPeerGroups = () => {
         metadata: { fromAdmin: true },
       });
       setGroupMessages((currentMessages) => [posted, ...currentMessages]);
+      setSelectedMessageIds([]);
       setMessageText("");
       setNotice({ type: "success", message: "Message sent successfully." });
     } catch (err) {
@@ -348,9 +406,32 @@ const AdminPeerGroups = () => {
             </div>
 
             <div>
-              <h3 className="font-semibold text-slate-800 mb-3">
-                Recent Messages
-              </h3>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h3 className="font-semibold text-slate-800">
+                  Recent Messages
+                </h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="px-3 py-1 text-xs rounded border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    onClick={toggleSelectAllMessages}
+                    disabled={groupMessages.length === 0}
+                  >
+                    {selectedMessageIds.length === groupMessages.length &&
+                    groupMessages.length > 0
+                      ? "Clear Selection"
+                      : "Select All"}
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                    onClick={requestBulkDeleteMessages}
+                    disabled={selectedMessageIds.length === 0}
+                  >
+                    Delete Selected ({selectedMessageIds.length})
+                  </button>
+                </div>
+              </div>
               {messagesLoading ? (
                 <div className="text-sm text-slate-500">
                   Loading messages...
@@ -366,18 +447,28 @@ const AdminPeerGroups = () => {
                       key={message.id}
                       className="border rounded p-3 bg-slate-50"
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-slate-800">
-                            {message.metadata?.fromAdmin ? "Admin" : "Student"}
-                          </span>
-                          {message.metadata?.fromAdmin && (
-                            <span className="text-[11px] rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">
-                              Official
+                      <div className="flex items-start justify-between gap-3 mb-1">
+                        <label className="flex items-start gap-3 cursor-pointer flex-1">
+                          <input
+                            type="checkbox"
+                            className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            checked={selectedMessageIds.includes(message.id)}
+                            onChange={() => toggleMessageSelection(message.id)}
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-medium text-slate-800">
+                              {message.metadata?.fromAdmin
+                                ? "Admin"
+                                : "Student"}
                             </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-slate-500">
+                            {message.metadata?.fromAdmin && (
+                              <span className="text-[11px] rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">
+                                Official
+                              </span>
+                            )}
+                          </div>
+                        </label>
+                        <span className="text-xs text-slate-500 whitespace-nowrap">
                           {message.created_at
                             ? new Date(message.created_at).toLocaleString()
                             : "Just now"}
