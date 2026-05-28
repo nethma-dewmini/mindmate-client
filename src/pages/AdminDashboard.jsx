@@ -40,12 +40,6 @@ const AdminDashboard = () => {
             description="Create and moderate peer support groups for students."
             onClick={() => navigate("/admin/peer-groups")}
           />
-
-          <AdminSectionCard
-            title="Mental Health Assessments"
-            description="Build and manage assessment templates that students can take from the public assessment flow."
-            onClick={() => navigate("/admin/assessments")}
-          />
         </div>
       </div>
     </div>

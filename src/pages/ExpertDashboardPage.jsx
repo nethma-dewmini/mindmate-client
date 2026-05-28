@@ -36,6 +36,13 @@ const ExpertDashboardPage = () => {
 
   const quickActions = [
     {
+      icon: FaClipboardList,
+      title: "Assessment Builder",
+      description:
+        "Create, publish, and maintain mental health assessments for students",
+      path: "/expert/assessments",
+    },
+    {
       icon: FaComments,
       title: "Client Messages",
       description: "Review conversations and respond to students",
@@ -46,12 +53,6 @@ const ExpertDashboardPage = () => {
       title: "Schedule",
       description: "Manage availability and upcoming sessions",
       path: "/profile",
-    },
-    {
-      icon: FaClipboardList,
-      title: "Consultation Notes",
-      description: "Capture session notes and follow-up actions",
-      path: "/resources",
     },
     {
       icon: FaUsers,

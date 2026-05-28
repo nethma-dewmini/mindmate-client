@@ -1,15 +1,13 @@
-const ASSESSMENT_STORAGE_KEY = "mindmate_assessment_catalog";
-
-const DEFAULT_ASSESSMENT_CATALOG = [
+const DEFAULT_ASSESSMENTS = [
   {
     id: "stress",
+    key: "stress",
     title: "Stress Level Assessment",
     description:
       "Evaluate your current stress load, common triggers, and how much it is affecting your routine.",
     icon: "😰",
     duration: 6,
-    status: "active",
-    audience: "Students",
+    visibility: "public",
     questions: [
       {
         prompt:
@@ -44,13 +42,13 @@ const DEFAULT_ASSESSMENT_CATALOG = [
   },
   {
     id: "anxiety",
+    key: "anxiety",
     title: "Anxiety Screening",
     description:
       "Check for recurring worry, nervousness, and body symptoms linked with anxiety.",
     icon: "😟",
     duration: 7,
-    status: "active",
-    audience: "Students",
+    visibility: "public",
     questions: [
       {
         prompt:
@@ -91,13 +89,13 @@ const DEFAULT_ASSESSMENT_CATALOG = [
   },
   {
     id: "depression",
+    key: "depression",
     title: "Depression Screening (PHQ-9 style)",
     description:
       "Review mood, interest, motivation, and energy patterns associated with low mood.",
     icon: "😔",
     duration: 8,
-    status: "active",
-    audience: "Students",
+    visibility: "public",
     questions: [
       {
         prompt:
@@ -156,13 +154,13 @@ const DEFAULT_ASSESSMENT_CATALOG = [
   },
   {
     id: "sleep",
+    key: "sleep",
     title: "Sleep Quality Assessment",
     description:
       "Measure sleep duration, sleep quality, and how refreshed you feel during the day.",
     icon: "😴",
     duration: 5,
-    status: "draft",
-    audience: "Students",
+    visibility: "public",
     questions: [
       {
         prompt: "How would you describe your sleep quality over the last week?",
@@ -196,163 +194,106 @@ const DEFAULT_ASSESSMENT_CATALOG = [
   },
 ];
 
-function cloneAssessment(assessment) {
-  return {
-    ...assessment,
-    questions: (assessment.questions || []).map((question) => ({
-      ...question,
-      options: [...(question.options || [])],
-    })),
-  };
-}
-
-function getDefaultAssessmentCatalog() {
-  return DEFAULT_ASSESSMENT_CATALOG.map(cloneAssessment);
-}
-
-function normalizeQuestion(question) {
+function cloneQuestion(question) {
   return {
     prompt: String(question?.prompt || "").trim(),
     options: Array.isArray(question?.options)
-      ? question.options.map((option) => String(option).trim()).filter(Boolean)
+      ? question.options
+          .map((option) => String(option || "").trim())
+          .filter(Boolean)
       : [],
   };
 }
 
-function normalizeAssessment(assessment, index = 0) {
-  const id = String(assessment?.id || `assessment-${index + 1}`).trim();
+export function normalizeAssessment(assessment) {
+  if (!assessment) {
+    return null;
+  }
+
+  const questions = Array.isArray(assessment.questions)
+    ? assessment.questions
+        .map(cloneQuestion)
+        .filter((question) => question.prompt)
+    : [];
 
   return {
-    id,
-    title: String(assessment?.title || "Untitled assessment").trim(),
-    description: String(assessment?.description || "").trim(),
-    icon: String(assessment?.icon || "🧠").trim() || "🧠",
-    duration: Number(assessment?.duration) || 5,
-    status: ["active", "draft", "archived"].includes(assessment?.status)
-      ? assessment.status
-      : "draft",
-    audience: String(assessment?.audience || "Students").trim() || "Students",
-    questions: Array.isArray(assessment?.questions)
-      ? assessment.questions
-          .map(normalizeQuestion)
-          .filter((question) => question.prompt)
-      : [],
+    id: assessment.id,
+    key: assessment.key || assessment.id,
+    title: String(assessment.title || "Untitled assessment").trim(),
+    description: String(assessment.description || "").trim(),
+    icon: String(assessment.icon || "🧠").trim() || "🧠",
+    duration: Number(assessment.duration) || 5,
+    visibility: assessment.visibility || "private",
+    authorId: assessment.authorId || assessment.author_id || null,
+    createdAt: assessment.createdAt || assessment.created_at || null,
+    updatedAt: assessment.updatedAt || assessment.updated_at || null,
+    questions,
   };
 }
 
-export function loadAssessmentCatalog() {
-  if (typeof window === "undefined") {
-    return getDefaultAssessmentCatalog();
-  }
-
-  try {
-    const rawCatalog = window.localStorage.getItem(ASSESSMENT_STORAGE_KEY);
-    if (!rawCatalog) {
-      return getDefaultAssessmentCatalog();
-    }
-
-    const parsed = JSON.parse(rawCatalog);
-    if (!Array.isArray(parsed)) {
-      return getDefaultAssessmentCatalog();
-    }
-
-    const normalized = parsed
-      .map(normalizeAssessment)
-      .filter((assessment) => assessment.id);
-    return normalized.length > 0 ? normalized : getDefaultAssessmentCatalog();
-  } catch {
-    return getDefaultAssessmentCatalog();
-  }
+export function normalizeAssessmentList(assessments) {
+  return (Array.isArray(assessments) ? assessments : [])
+    .map(normalizeAssessment)
+    .filter(Boolean);
 }
 
-export function saveAssessmentCatalog(catalog) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(ASSESSMENT_STORAGE_KEY, JSON.stringify(catalog));
-}
-
-export function resetAssessmentCatalog() {
-  const catalog = getDefaultAssessmentCatalog();
-  saveAssessmentCatalog(catalog);
-  return catalog;
-}
-
-export function getAssessmentById(catalog, assessmentId) {
-  return catalog.find((assessment) => assessment.id === assessmentId) || null;
+export function getDefaultAssessmentCatalog() {
+  return DEFAULT_ASSESSMENTS.map((assessment) =>
+    normalizeAssessment(assessment),
+  );
 }
 
 export function createAssessmentDraft() {
-  const timestamp = Date.now();
-
-  return {
-    id: `assessment-${timestamp}`,
-    title: "New Assessment",
-    description: "Describe what this assessment helps the student understand.",
+  return normalizeAssessment({
+    id: `draft-${Date.now()}`,
+    key: "",
+    title: "Untitled assessment",
+    description: "",
     icon: "🧠",
     duration: 5,
-    status: "draft",
-    audience: "Students",
+    visibility: "private",
     questions: [
       {
-        prompt: "What would you like this assessment to measure?",
+        prompt: "How often have you felt this way recently?",
         options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
       },
     ],
-  };
+  });
 }
 
-export function updateAssessmentInCatalog(catalog, updatedAssessment) {
-  const normalized = normalizeAssessment(updatedAssessment);
-
-  return catalog.some((assessment) => assessment.id === normalized.id)
-    ? catalog.map((assessment) =>
-        assessment.id === normalized.id ? normalized : assessment,
-      )
-    : [normalized, ...catalog];
-}
-
-export function removeAssessmentFromCatalog(catalog, assessmentId) {
-  return catalog.filter((assessment) => assessment.id !== assessmentId);
-}
-
-export function calculateAssessmentResult(assessment, answers) {
+export function buildAssessmentResult(assessment, answers) {
   const questions = assessment?.questions || [];
   const maxScore = questions.length * 4;
 
   const score = questions.reduce((total, _question, index) => {
-    const selected = answers[index];
-    return total + (Number.isFinite(selected) ? selected : 0);
+    const answer = Number.isFinite(Number(answers[index]))
+      ? Number(answers[index])
+      : 0;
+    return total + answer;
   }, 0);
 
-  const percentage = maxScore > 0 ? score / maxScore : 0;
-
+  const ratio = maxScore > 0 ? score / maxScore : 0;
   let severity = "Low";
-  let recommendation =
-    "Your responses suggest that things are relatively manageable right now. Keep using your current coping strategies and check in regularly.";
 
-  if (percentage > 0.25 && percentage <= 0.55) {
-    severity = "Moderate";
-    recommendation =
-      "Some areas are showing strain. Consider using campus support, guided coping tools, or a follow-up conversation with a professional.";
-  } else if (percentage > 0.55 && percentage <= 0.75) {
+  if (ratio >= 0.75) {
     severity = "High";
-    recommendation =
-      "Your answers suggest a significant level of distress. Reaching out to a counsellor or mental health professional would be a good next step.";
-  } else if (percentage > 0.75) {
-    severity = "Very High";
-    recommendation =
-      "Your responses indicate strong distress. Please seek support from a trusted person, counsellor, or emergency mental health service as soon as possible.";
+  } else if (ratio >= 0.45) {
+    severity = "Moderate";
   }
+
+  const recommendation =
+    severity === "High"
+      ? "Your responses suggest a higher level of concern. Consider speaking with a licensed professional or campus support service soon."
+      : severity === "Moderate"
+        ? "Your responses suggest a moderate level of concern. Keep monitoring your symptoms and consider reaching out for support if they continue."
+        : "Your responses suggest a lower level of concern right now. Keep using healthy routines and check in again if anything changes.";
 
   return {
     score,
     maxScore,
-    percentage,
     severity,
     recommendation,
   };
 }
 
-export { ASSESSMENT_STORAGE_KEY, DEFAULT_ASSESSMENT_CATALOG };
+export { DEFAULT_ASSESSMENTS };

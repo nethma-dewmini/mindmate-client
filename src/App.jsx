@@ -8,8 +8,10 @@ import {
   RegisterPage,
   DashboardPage,
   ExpertDashboardPage,
+  ExpertAssessmentsPage,
   ChatPage,
   AssessmentPage,
+  AssessmentTaking,
   ProfilePage,
   MoodTrackerPage,
   ResourcesPage,
@@ -22,7 +24,6 @@ import {
   AdminLoginPage,
   AdminDashboard,
   AdminExpertApplicationsPage,
-  AdminAssessmentsPage,
   AdminPeerGroups,
   AdminStudentRegistryPage,
   ExpertAccountRegisterPage,
@@ -30,7 +31,6 @@ import {
   ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
-  AssessmentTaking,
 } from "./pages";
 
 function App() {
@@ -64,6 +64,7 @@ function App() {
     "/expert/upload-resources",
     "/expert/resource-upload",
     "/expert/resource-library",
+    "/expert/assessments",
     "/chat",
     "/assessment",
     "/profile",
@@ -75,21 +76,18 @@ function App() {
     "/admin/login",
     "/admin/dashboard",
     "/admin/expert-applications",
-    "/admin/assessments",
     "/admin/peer-groups",
     "/admin/student-registry",
     ...expertPages,
   ];
-  const matchesAppPath = (paths) =>
-    paths.some(
-      (path) =>
-        location.pathname === path || location.pathname.startsWith(`${path}/`),
-    );
   const showNavbar =
-    !authPages.includes(location.pathname) && !matchesAppPath(appPages);
+    !authPages.includes(location.pathname) &&
+    !appPages.includes(location.pathname) &&
+    !location.pathname.startsWith("/assessment/");
   const showFooter =
     !authPages.includes(location.pathname) &&
-    !matchesAppPath(appPages) &&
+    !appPages.includes(location.pathname) &&
+    !location.pathname.startsWith("/assessment/") &&
     location.pathname !== "/" &&
     location.pathname !== "/about";
 
@@ -122,6 +120,10 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/expert/dashboard" element={<ExpertDashboardPage />} />
           <Route
+            path="/expert/assessments"
+            element={<ExpertAssessmentsPage />}
+          />
+          <Route
             path="/expert/upload-resources"
             element={<ExpertUploadResourcesPage />}
           />
@@ -144,7 +146,6 @@ function App() {
             path="/admin/expert-applications"
             element={<AdminExpertApplicationsPage />}
           />
-          <Route path="/admin/assessments" element={<AdminAssessmentsPage />} />
           <Route path="/admin/peer-groups" element={<AdminPeerGroups />} />
           <Route
             path="/admin/student-registry"
