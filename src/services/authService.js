@@ -661,4 +661,70 @@ export const authService = {
     if (!resp.ok) throw new Error(data.message || "Failed to delete message");
     return data;
   },
+
+  /**
+   * Create a new group session (expert)
+   */
+  async createSession({ sessionDate, sessionTime, topic, content }) {
+    const response = await fetch(`${API_BASE_URL}/sessions`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        session_date: sessionDate,
+        session_time: sessionTime,
+        topic,
+        content,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create session");
+    }
+
+    return data;
+  },
+
+  /**
+   * Retrieve group sessions created by the current expert
+   */
+  async getMySessions() {
+    const response = await fetch(`${API_BASE_URL}/sessions/me`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load sessions");
+    }
+
+    return data;
+  },
+
+  /**
+   * Delete a group session by ID (expert/admin)
+   */
+  async deleteSession(sessionId) {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+      method: "DELETE",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete session");
+    }
+
+    return data;
+  },
 };

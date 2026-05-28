@@ -37,9 +37,9 @@ const ExpertDashboardPage = () => {
     {
       category: "Schedule",
       title: "Manage availability and upcoming sessions",
-      description: "Define your student support hours, coordinate check-ins, and inspect your session history.",
-      buttonText: "Go to Schedule",
-      path: "/profile",
+      description: "Define your student support hours, coordinate check-ins, and schedule upcoming sessions held.",
+      buttonText: "Manage Sessions",
+      path: "/expert/sessions",
     },
     {
       category: "Resource Management",

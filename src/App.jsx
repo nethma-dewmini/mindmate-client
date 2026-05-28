@@ -32,6 +32,7 @@ import {
   ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
+  ExpertSessionsPage,
 } from "./pages";
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
     "/expert/resource-upload",
     "/expert/resource-library",
     "/expert/assessments",
+    "/expert/sessions",
     "/chat",
     "/assessment",
     "/profile",
@@ -141,6 +143,10 @@ function App() {
           <Route
             path="/expert/resource-library"
             element={<ExpertResourceLibraryPage />}
+          />
+          <Route
+            path="/expert/sessions"
+            element={<ExpertSessionsPage />}
           />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/assessment" element={<AssessmentPage />} />
