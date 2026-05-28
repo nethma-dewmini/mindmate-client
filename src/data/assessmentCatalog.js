@@ -225,6 +225,7 @@ export function normalizeAssessment(assessment) {
     duration: Number(assessment.duration) || 5,
     visibility: assessment.visibility || "private",
     authorId: assessment.authorId || assessment.author_id || null,
+    authorName: assessment.authorName || assessment.author_name || null,
     createdAt: assessment.createdAt || assessment.created_at || null,
     updatedAt: assessment.updatedAt || assessment.updated_at || null,
     questions,

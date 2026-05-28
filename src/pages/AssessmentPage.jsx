@@ -122,9 +122,29 @@ const AssessmentPage = () => {
                   <p className="text-sm text-gray-500 mb-4 min-h-12">
                     {assessment.description}
                   </p>
-                  <div className="flex justify-center space-x-4 text-xs text-gray-400 mb-4">
+                  <div className="flex justify-center space-x-4 text-xs text-gray-400 mb-2">
                     <span>📝 {assessment.questions.length} questions</span>
                     <span>⏱ {assessment.duration} minutes</span>
+                  </div>
+                  <div className="text-[11px] text-gray-400 mb-4 flex flex-col items-center gap-0.5">
+                    <span>Published by: {assessment.authorName || "MindMate Team"}</span>
+                    {assessment.updatedAt && assessment.createdAt && Math.abs(new Date(assessment.updatedAt) - new Date(assessment.createdAt)) > 5000 ? (
+                      <span>
+                        Modified at: {new Date(assessment.updatedAt).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    ) : assessment.createdAt ? (
+                      <span>
+                        Created at: {new Date(assessment.createdAt).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    ) : null}
                   </div>
                   <span className="inline-flex w-full justify-center py-2 bg-[#e74c3c] text-white rounded-lg font-medium hover:bg-[#c0392b]">
                     Start Assessment
@@ -370,9 +390,29 @@ export const AssessmentTaking = () => {
               >
                 <FaArrowLeft className="mr-2" /> Back to Assessments
               </Link>
-              <h1 className="text-xl font-semibold text-[#5bb5a1] mb-2">
+              <h1 className="text-xl font-semibold text-[#5bb5a1] mb-1">
                 {assessment.title}
               </h1>
+              <div className="flex justify-between items-center text-xs text-gray-400 mb-3">
+                <span>By: {assessment.authorName || "MindMate Team"}</span>
+                {assessment.updatedAt && assessment.createdAt && Math.abs(new Date(assessment.updatedAt) - new Date(assessment.createdAt)) > 5000 ? (
+                  <span>
+                    Modified at: {new Date(assessment.updatedAt).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                ) : assessment.createdAt ? (
+                  <span>
+                    Published: {new Date(assessment.createdAt).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                ) : null}
+              </div>
               <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
                 <div
                   className="h-full bg-gradient-to-r from-[#5bb5a1] to-green-400 transition-all duration-300"
