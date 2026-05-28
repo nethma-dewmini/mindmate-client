@@ -21,7 +21,6 @@ import {
   AdminEntry,
   AdminLoginPage,
   AdminDashboard,
-  AdminAssessmentsPage,
   AdminExpertApplicationsPage,
   AdminPeerGroups,
   AdminStudentRegistryPage,
@@ -73,7 +72,6 @@ function App() {
     "/admin",
     "/admin/login",
     "/admin/dashboard",
-    "/admin/assessments",
     "/admin/expert-applications",
     "/admin/peer-groups",
     "/admin/student-registry",
@@ -134,7 +132,6 @@ function App() {
           <Route path="/admin" element={<AdminEntry />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/assessments" element={<AdminAssessmentsPage />} />
           <Route
             path="/admin/expert-applications"
             element={<AdminExpertApplicationsPage />}
