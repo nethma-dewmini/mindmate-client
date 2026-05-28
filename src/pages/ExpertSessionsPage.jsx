@@ -21,7 +21,8 @@ const ExpertSessionsPage = () => {
   // Form states
   const [formData, setFormData] = useState({
     sessionDate: "",
-    sessionTime: "",
+    startTime: "",
+    endTime: "",
     topic: "",
     content: "",
   });
@@ -65,8 +66,8 @@ const ExpertSessionsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.sessionDate || !formData.sessionTime || !formData.topic) {
-      setError("Please fill in all required fields (Date, Time, Topic).");
+    if (!formData.sessionDate || !formData.startTime || !formData.endTime || !formData.topic) {
+      setError("Please fill in all required fields (Date, Start Time, End Time, Topic).");
       return;
     }
 
@@ -74,10 +75,25 @@ const ExpertSessionsPage = () => {
     setError("");
     setSuccess("");
 
+    // Helper function to format 24h string (e.g. "14:30") to 12h string (e.g. "02:30 PM")
+    const formatTime12Hour = (timeStr) => {
+      if (!timeStr) return "";
+      const [hoursStr, minutesStr] = timeStr.split(":");
+      let hours = parseInt(hoursStr, 10);
+      const minutes = minutesStr;
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const formattedHours = hours < 10 ? `0${hours}` : hours;
+      return `${formattedHours}:${minutes} ${ampm}`;
+    };
+
+    const sessionTime = `${formatTime12Hour(formData.startTime)} - ${formatTime12Hour(formData.endTime)}`;
+
     try {
       await authService.createSession({
         sessionDate: formData.sessionDate,
-        sessionTime: formData.sessionTime,
+        sessionTime,
         topic: formData.topic,
         content: formData.content,
       });
@@ -85,7 +101,8 @@ const ExpertSessionsPage = () => {
       setSuccess("Session scheduled successfully!");
       setFormData({
         sessionDate: "",
-        sessionTime: "",
+        startTime: "",
+        endTime: "",
         topic: "",
         content: "",
       });
@@ -182,19 +199,33 @@ const ExpertSessionsPage = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    Session Time / Slot *
-                  </label>
-                  <input
-                    type="text"
-                    name="sessionTime"
-                    placeholder="e.g. 10:00 AM - 11:30 AM"
-                    value={formData.sessionTime}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] bg-[#fdfbf7] placeholder-gray-400"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      Start Time *
+                    </label>
+                    <input
+                      type="time"
+                      name="startTime"
+                      value={formData.startTime}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] bg-[#fdfbf7]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      End Time *
+                    </label>
+                    <input
+                      type="time"
+                      name="endTime"
+                      value={formData.endTime}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] bg-[#fdfbf7]"
+                    />
+                  </div>
                 </div>
 
                 <div>
