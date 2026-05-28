@@ -665,7 +665,7 @@ export const authService = {
   /**
    * Create a new group session (expert)
    */
-  async createSession({ sessionDate, sessionTime, topic, content }) {
+  async createSession({ sessionDate, sessionTime, topic, content, meetingLink, meetingDetails }) {
     const response = await fetch(`${API_BASE_URL}/sessions`, {
       method: "POST",
       headers: {
@@ -677,6 +677,8 @@ export const authService = {
         session_time: sessionTime,
         topic,
         content,
+        meeting_link: meetingLink,
+        meeting_details: meetingDetails,
       }),
     });
 
@@ -723,6 +725,90 @@ export const authService = {
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.message || "Failed to delete session");
+    }
+
+    return data;
+  },
+
+  /**
+   * Fetch all group sessions (public)
+   */
+  async getSessions() {
+    const response = await fetch(`${API_BASE_URL}/sessions`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load sessions");
+    }
+
+    return data;
+  },
+
+  /**
+   * Book a group session (student)
+   */
+  async bookSession(sessionId) {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/book`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to book session");
+    }
+
+    return data;
+  },
+
+  /**
+   * Cancel a group session booking (student)
+   */
+  async cancelSessionBooking(sessionId) {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/cancel`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to cancel booking");
+    }
+
+    return data;
+  },
+
+  /**
+   * Update session meeting link and details (expert)
+   */
+  async updateSessionMeeting(sessionId, { meetingLink, meetingDetails }) {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+      method: "PATCH",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        meeting_link: meetingLink,
+        meeting_details: meetingDetails,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update meeting details");
     }
 
     return data;

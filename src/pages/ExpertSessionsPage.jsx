@@ -7,6 +7,12 @@ import {
   FaBookOpen,
   FaTrashAlt,
   FaPlusCircle,
+  FaVideo,
+  FaUsers,
+  FaEdit,
+  FaCheck,
+  FaTimes,
+  FaEnvelope,
 } from "react-icons/fa";
 import { authService } from "../services/authService";
 
@@ -18,13 +24,22 @@ const ExpertSessionsPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Form states
+  // Form states for creating a new session
   const [formData, setFormData] = useState({
     sessionDate: "",
     startTime: "",
     endTime: "",
     topic: "",
     content: "",
+    meetingLink: "",
+    meetingDetails: "",
+  });
+
+  // States for inline editing meeting details of an existing session
+  const [editingSessionId, setEditingSessionId] = useState(null);
+  const [editMeetingData, setEditMeetingData] = useState({
+    meetingLink: "",
+    meetingDetails: "",
   });
 
   const currentUser = authService.getCurrentUser();
@@ -64,6 +79,14 @@ const ExpertSessionsPage = () => {
     }));
   };
 
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditMeetingData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.sessionDate || !formData.startTime || !formData.endTime || !formData.topic) {
@@ -96,6 +119,8 @@ const ExpertSessionsPage = () => {
         sessionTime,
         topic: formData.topic,
         content: formData.content,
+        meetingLink: formData.meetingLink,
+        meetingDetails: formData.meetingDetails,
       });
 
       setSuccess("Session scheduled successfully!");
@@ -105,6 +130,8 @@ const ExpertSessionsPage = () => {
         endTime: "",
         topic: "",
         content: "",
+        meetingLink: "",
+        meetingDetails: "",
       });
       await loadSessions();
     } catch (err) {
@@ -112,6 +139,31 @@ const ExpertSessionsPage = () => {
     } finally {
       setSubmitLoading(false);
     }
+  };
+
+  const handleEditMeetingSubmit = async (sessionId) => {
+    setError("");
+    setSuccess("");
+
+    try {
+      await authService.updateSessionMeeting(sessionId, {
+        meetingLink: editMeetingData.meetingLink,
+        meetingDetails: editMeetingData.meetingDetails,
+      });
+      setSuccess("Meeting link and joining details updated successfully!");
+      setEditingSessionId(null);
+      await loadSessions();
+    } catch (err) {
+      setError(err.message || "Failed to update meeting details.");
+    }
+  };
+
+  const startEditingMeeting = (session) => {
+    setEditingSessionId(session.id);
+    setEditMeetingData({
+      meetingLink: session.meeting_link || "",
+      meetingDetails: session.meeting_details || "",
+    });
   };
 
   const handleDelete = async (sessionId) => {
@@ -151,7 +203,7 @@ const ExpertSessionsPage = () => {
               <FaCalendarAlt className="text-[#5bb5a1]" /> Availability & Sessions
             </h1>
             <p className="text-gray-600">
-              Schedule upcoming sessions held so university students can view and join them.
+              Schedule upcoming sessions held so university students can view, book, and join them.
             </p>
           </div>
           <Link
@@ -245,11 +297,39 @@ const ExpertSessionsPage = () => {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Meeting Link (optional)
+                  </label>
+                  <input
+                    type="url"
+                    name="meetingLink"
+                    placeholder="e.g. https://zoom.us/j/..."
+                    value={formData.meetingLink}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] bg-[#fdfbf7] placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Joining Instructions (optional)
+                  </label>
+                  <textarea
+                    name="meetingDetails"
+                    rows={2}
+                    placeholder="e.g. Enter password '123' to join the waiting room."
+                    value={formData.meetingDetails}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] bg-[#fdfbf7] placeholder-gray-400 resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Description / Content
                   </label>
                   <textarea
                     name="content"
-                    rows={4}
+                    rows={3}
                     placeholder="Provide details about what will be covered in the session..."
                     value={formData.content}
                     onChange={handleInputChange}
@@ -294,14 +374,14 @@ const ExpertSessionsPage = () => {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {sessions.map((session) => (
                     <div
                       key={session.id}
                       className="border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow bg-[#fdfbf7]"
                     >
                       <div className="flex justify-between items-start gap-4">
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex-grow">
                           <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                             <FaBookOpen className="text-[#5bb5a1] shrink-0" size={16} />
                             {session.topic}
@@ -324,11 +404,121 @@ const ExpertSessionsPage = () => {
                               {session.session_time}
                             </span>
                           </div>
+
                           {session.content && (
-                            <p className="text-sm text-gray-600 mt-3 whitespace-pre-line leading-relaxed">
+                            <p className="text-sm text-gray-600 mt-2 whitespace-pre-line leading-relaxed">
                               {session.content}
                             </p>
                           )}
+
+                          {/* Meeting Link / Instructions Block */}
+                          <div className="mt-4 pt-3 border-t border-gray-100">
+                            {editingSessionId === session.id ? (
+                              <div className="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <h4 className="text-sm font-semibold text-gray-700">Update Meeting Details</h4>
+                                <div>
+                                  <label className="block text-xs font-medium text-gray-500 mb-1">Meeting Link</label>
+                                  <input
+                                    type="url"
+                                    name="meetingLink"
+                                    placeholder="https://zoom.us/j/..."
+                                    value={editMeetingData.meetingLink}
+                                    onChange={handleEditChange}
+                                    className="w-full px-3 py-1.5 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1]"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-medium text-gray-500 mb-1">Instructions / Details</label>
+                                  <textarea
+                                    name="meetingDetails"
+                                    rows={2}
+                                    placeholder="Enter access details or codes..."
+                                    value={editMeetingData.meetingDetails}
+                                    onChange={handleEditChange}
+                                    className="w-full px-3 py-1.5 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5bb5a1] resize-none"
+                                  />
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    onClick={() => setEditingSessionId(null)}
+                                    className="px-3 py-1 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 flex items-center gap-1"
+                                  >
+                                    <FaTimes size={10} /> Cancel
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditMeetingSubmit(session.id)}
+                                    className="px-3 py-1 text-xs font-medium rounded-lg bg-[#5bb5a1] text-white hover:bg-[#4a9d8b] flex items-center gap-1"
+                                  >
+                                    <FaCheck size={10} /> Save
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col gap-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1">
+                                    <FaVideo className="text-[#5bb5a1]" /> Meeting Details
+                                  </span>
+                                  <button
+                                    onClick={() => startEditingMeeting(session)}
+                                    className="text-xs text-[#5bb5a1] hover:underline flex items-center gap-1"
+                                  >
+                                    <FaEdit size={11} /> {session.meeting_link ? "Edit Link" : "Add Link"}
+                                  </button>
+                                </div>
+                                {session.meeting_link ? (
+                                  <div className="text-sm bg-teal-50/30 border border-teal-100/50 p-3 rounded-xl">
+                                    <p className="text-xs text-gray-400">Meeting Link:</p>
+                                    <a
+                                      href={session.meeting_link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-sm text-[#5bb5a1] hover:underline font-medium break-all block mt-0.5"
+                                    >
+                                      {session.meeting_link}
+                                    </a>
+                                    {session.meeting_details && (
+                                      <div className="mt-2 text-xs text-gray-600">
+                                        <p className="text-gray-400">Instructions:</p>
+                                        <p className="mt-0.5 whitespace-pre-line">{session.meeting_details}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-gray-400 italic">No link provided yet.</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Booked Students List */}
+                          <div className="mt-4 pt-3 border-t border-gray-100 bg-gray-50/50 p-4 rounded-xl">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-2">
+                              <FaUsers className="text-[#5bb5a1]" /> Booked Students ({session.attendees?.length || 0})
+                            </span>
+                            {session.attendees && session.attendees.length > 0 ? (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                {session.attendees.map((attendee) => (
+                                  <div
+                                    key={attendee.id}
+                                    className="bg-white border border-gray-100 rounded-lg p-2.5 flex items-center gap-2 shadow-xs"
+                                  >
+                                    <div className="w-8 h-8 rounded-full bg-teal-50 text-[#5bb5a1] flex items-center justify-center font-bold text-xs shrink-0">
+                                      {attendee.name.charAt(0)}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-bold text-gray-700 truncate">{attendee.name}</p>
+                                      <p className="text-[10px] text-gray-400 truncate flex items-center gap-0.5 mt-0.5">
+                                        <FaEnvelope size={9} /> {attendee.email}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-gray-400 italic">No student bookings yet.</p>
+                            )}
+                          </div>
                         </div>
                         <button
                           onClick={() => handleDelete(session.id)}
