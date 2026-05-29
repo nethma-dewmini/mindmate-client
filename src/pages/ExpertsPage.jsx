@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { FaCalendarAlt, FaClock, FaVideo, FaExternalLinkAlt, FaInfoCircle } from "react-icons/fa";
 import { authService } from "../services/authService";
 
@@ -66,6 +67,16 @@ const ExpertsPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-6xl mx-auto">
+        {/* Back Link */}
+        <div className="mb-6">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center text-sm text-[#5bb5a1] hover:text-[#4a9d8b] font-medium transition-colors"
+          >
+            <span className="mr-1.5">←</span> Back to Dashboard
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
@@ -73,7 +84,7 @@ const ExpertsPage = () => {
               Live Group Sessions
             </h1>
             <p className="text-gray-500 mt-1">
-              Participate in interactive webinars and group support sessions held by our licensed professionals.
+              Engage in supportive live group sessions hosted by licensed professionals to nurture your emotional resilience and mental wellness.
             </p>
           </div>
         </div>

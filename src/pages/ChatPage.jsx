@@ -79,6 +79,16 @@ const ChatPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f9f5e7] flex flex-col">
+      {/* Back Link */}
+      <div className="max-w-4xl w-full mx-auto px-6 pt-4">
+        <Link
+          to="/dashboard"
+          className="inline-flex items-center text-sm text-[#5bb5a1] hover:text-[#4a9d8b] font-medium transition-colors"
+        >
+          <span className="mr-1.5">←</span> Back to Dashboard
+        </Link>
+      </div>
+
       {/* Chat Header */}
       <div className="gradient-teal py-4 px-6">
         <div className="max-w-4xl mx-auto flex justify-between items-center">

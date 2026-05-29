@@ -31,6 +31,7 @@ const AdminExpertApplications = () => {
   const [actionLoadingId, setActionLoadingId] = useState("");
   const [reviewNotes, setReviewNotes] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [summary, setSummary] = useState({ pending: 0, approved: 0, rejected: 0 });
 
   useEffect(() => {
     if (!user) {
@@ -72,6 +73,9 @@ const AdminExpertApplications = () => {
 
       setApplications(data.applications || []);
       setCount(data.count || 0);
+      if (data.summary) {
+        setSummary(data.summary);
+      }
     } catch (err) {
       setError(err.message || "Failed to load applications");
     } finally {
@@ -128,20 +132,6 @@ const AdminExpertApplications = () => {
       setActionLoadingId("");
     }
   }
-
-  const summary = useMemo(() => {
-    return {
-      pending: applications.filter(
-        (application) => application.status === "pending",
-      ).length,
-      approved: applications.filter(
-        (application) => application.status === "approved",
-      ).length,
-      rejected: applications.filter(
-        (application) => application.status === "rejected",
-      ).length,
-    };
-  }, [applications]);
 
   return (
     <div className="bg-white p-6 rounded-xl shadow">

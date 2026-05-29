@@ -22,6 +22,7 @@ const AdminStudentRegistry = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
   const [uploadErrors, setUploadErrors] = useState([]);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -32,9 +33,17 @@ const AdminStudentRegistry = () => {
       navigate("/");
       return;
     }
-
-    loadRegistry();
   }, []);
+
+  useEffect(() => {
+    if (!user || user.role !== "admin") return;
+    const t = setTimeout(() => {
+      const q = query.trim();
+      setDebouncedQuery(q);
+      loadRegistry(q);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [query]);
 
   async function loadRegistry(q = "") {
     setLoading(true);
@@ -181,6 +190,27 @@ const AdminStudentRegistry = () => {
     }
   }
 
+  const escapeRegExp = (string = "") =>
+    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const highlightMatch = (text = "", q = "") => {
+    if (!q) return text;
+    const parts = String(text).split(new RegExp(`(${escapeRegExp(q)})`, "i"));
+    return parts.map((part, i) => {
+      if (part.toLowerCase() === q.toLowerCase()) {
+        return (
+          <mark
+            key={i}
+            className="bg-yellow-200 text-yellow-900 rounded px-0.5"
+          >
+            {part}
+          </mark>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -317,9 +347,11 @@ const AdminStudentRegistry = () => {
                   registry.map((r) => (
                     <tr key={r.id} className="bg-white border-t">
                       <td className="px-4 py-3 font-medium text-slate-800">
-                        {r.registration_no}
+                        {highlightMatch(r.registration_no, debouncedQuery)}
                       </td>
-                      <td className="px-4 py-3 text-slate-600">{r.email}</td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {highlightMatch(r.email, debouncedQuery)}
+                      </td>
                       <td className="px-4 py-3 text-slate-500">
                         {r.created_at
                           ? new Date(r.created_at).toLocaleString()

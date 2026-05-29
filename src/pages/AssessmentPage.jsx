@@ -54,19 +54,25 @@ const AssessmentPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-5xl mx-auto">
+        {/* Back Link */}
+        <div className="mb-6">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center text-sm text-[#5bb5a1] hover:text-[#4a9d8b] font-medium transition-colors"
+          >
+            <span className="mr-1.5">←</span> Back to Dashboard
+          </Link>
+        </div>
+
         <div className="flex justify-between items-start mb-8 gap-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
               Mental Health Assessments
             </h1>
             <p className="mt-2 text-gray-500 max-w-2xl">
-              Public assessments published by experts appear here. Choose one to
-              begin a guided check-in.
+              Take evidence-based assessments to understand your mental well-being
             </p>
           </div>
-          <p className="text-gray-500 max-w-md text-right">
-            Take evidence-based assessments to understand your mental well-being
-          </p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-8 border border-gray-100">

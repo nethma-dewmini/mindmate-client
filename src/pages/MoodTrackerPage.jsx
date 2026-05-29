@@ -134,20 +134,22 @@ const MoodTrackerPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Mood Tracker</h1>
-            <p className="text-gray-500">
-              Reflect on your emotional well-being, observe your daily patterns, and nurture your inner peace
-            </p>
-          </div>
+        {/* Back Link */}
+        <div className="mb-6">
           <Link
             to="/dashboard"
-            className="px-4 py-2 bg-[#5bb5a1] text-white rounded-lg hover:bg-[#4a9d8b]"
+            className="inline-flex items-center text-sm text-[#5bb5a1] hover:text-[#4a9d8b] font-medium transition-colors"
           >
-            Back to Dashboard
+            <span className="mr-1.5">←</span> Back to Dashboard
           </Link>
+        </div>
+
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-800">Mood Tracker</h1>
+          <p className="text-gray-500 mt-1">
+            Reflect on your emotional well-being, observe your daily patterns, and nurture your inner peace
+          </p>
         </div>
 
         {error && (

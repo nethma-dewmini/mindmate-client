@@ -133,15 +133,26 @@ const ResourcesPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-6xl mx-auto">
+        {/* Back Link */}
+        <div className="mb-6">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center text-sm text-[#5bb5a1] hover:text-[#4a9d8b] font-medium transition-colors"
+          >
+            <span className="mr-1.5">←</span> Back to Dashboard
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Mental Health Resources
-          </h1>
-          <p className="text-gray-500 max-w-md text-right">
-            Expert tips, articles, videos, and guides to support your mental
-            wellness journey
-          </p>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Mental Health Resources
+            </h1>
+            <p className="mt-2 text-gray-500 max-w-2xl">
+              Explore expert insights, mindful strategies, and therapeutic guides to nurture your inner peace and empower your well-being journey.
+            </p>
+          </div>
         </div>
 
         {/* Search Bar */}

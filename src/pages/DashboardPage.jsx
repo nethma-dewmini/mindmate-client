@@ -57,7 +57,7 @@ const DashboardPage = () => {
     {
       icon: FaUsers,
       title: "Peer Support",
-      description: "Connect with others in moderated support groups",
+      description: "Share your journey, find mutual understanding, and grow together in a safe, compassionate community",
       path: "/peer-support",
     },
     {
