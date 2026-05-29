@@ -26,7 +26,7 @@ const RegisterPage = () => {
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
 
   const isValidRegistrationNo = (value) =>
-    /^\d{6}[A-Za-z]$/.test(String(value || "").trim());
+    /^\d{6}[A-Z]$/.test(String(value || "").trim());
 
   const getFriendlyErrorMessage = (message, role) => {
     const normalizedMessage = String(message || "").toLowerCase();
@@ -95,7 +95,7 @@ const RegisterPage = () => {
         ...prev,
         studentId:
           value && !isValidRegistrationNo(value)
-            ? "Enter a valid registration number like 221234X"
+            ? "Enter a valid registration number like 221234X. The last letter must be a capital letter."
             : "",
       }));
       return;
@@ -235,7 +235,7 @@ const RegisterPage = () => {
           nextErrors.studentId = "Registration number is required";
         } else if (!isValidRegistrationNo(studentData.studentId)) {
           nextErrors.studentId =
-            "Enter a valid registration number like 221234X";
+            "Enter a valid registration number like 221234X. The last letter must be a capital letter.";
         }
 
         if (!studentData.password || !studentData.confirmPassword) {

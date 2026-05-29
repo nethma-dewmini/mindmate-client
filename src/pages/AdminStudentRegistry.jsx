@@ -78,6 +78,9 @@ const AdminStudentRegistry = () => {
     setSuccessMsg("");
     if (!registrationNo || !email)
       return setError("Registration number and email are required");
+    if (!/^\d{6}[A-Z]$/.test(registrationNo.trim())) {
+      return setError("Enter a valid registration number like 221234X. The last letter must be a capital letter.");
+    }
     setCreating(true);
     try {
       const res = await fetch(`${API_BASE_URL}/student-registry`, {
@@ -149,6 +152,16 @@ const AdminStudentRegistry = () => {
       for (let i = 0; i < rows.length; i++) {
         const r = rows[i];
         try {
+          if (!/^\d{6}[A-Z]$/.test(String(r.registration_no || "").trim())) {
+            errors.push({
+              row: i + 1,
+              registration_no: r.registration_no,
+              email: r.email,
+              error: "Invalid Registration No. Last letter must be a capital letter.",
+            });
+            setUploadProgress((p) => ({ ...p, done: p.done + 1 }));
+            continue;
+          }
           const res = await fetch(`${API_BASE_URL}/student-registry`, {
             method: "POST",
             headers: {
