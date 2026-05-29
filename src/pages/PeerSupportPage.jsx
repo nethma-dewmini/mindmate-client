@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FaUsers,
   FaComment,
@@ -650,13 +651,23 @@ const PeerSupportPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-8 px-6">
       <div className="max-w-6xl mx-auto">
+        {/* Back Link */}
+        <div className="mb-6">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center text-sm text-[#5bb5a1] hover:text-[#4a9d8b] font-medium transition-colors"
+          >
+            <span className="mr-1.5">←</span> Back to Dashboard
+          </Link>
+        </div>
+
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
               Peer Support Groups
             </h1>
             <p className="text-gray-500">
-              Connect with others in moderated support groups
+              Share your journey, find mutual understanding, and grow together in a safe, compassionate community
             </p>
           </div>
         </div>

@@ -813,4 +813,88 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Create a new mood entry (student)
+   */
+  async createMoodEntry({ mood, note }) {
+    const response = await fetch(`${API_BASE_URL}/moods`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mood,
+        note,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to save mood entry");
+    }
+
+    return data;
+  },
+
+  /**
+   * Fetch recent mood entries for the current student
+   */
+  async getMoodEntries(limit = 50) {
+    const response = await fetch(`${API_BASE_URL}/moods?limit=${limit}`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load mood entries");
+    }
+
+    return data;
+  },
+
+  /**
+   * Fetch mood summary statistics (student)
+   */
+  async getMoodSummary(days = 30) {
+    const response = await fetch(`${API_BASE_URL}/moods/summary?days=${days}`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load mood summary");
+    }
+
+    return data;
+  },
+
+  /**
+   * Delete a mood entry (student)
+   */
+  async deleteMoodEntry(id) {
+    const response = await fetch(`${API_BASE_URL}/moods/${id}`, {
+      method: "DELETE",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete mood entry");
+    }
+
+    return data;
+  },
 };
