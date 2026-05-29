@@ -53,31 +53,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
             ))}
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                {user?.role === "admin" && (
-                  <Link
-                    to="/admin"
-                    className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
-                  >
-                    Admin
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <div>
-                <Link
-                  to="/admin"
-                  className="px-3 py-2 bg-[#5bb5a1] text-white rounded-lg font-medium hover:bg-[#4a9d8b] transition-colors"
-                >
-                  Admin
-                </Link>
-              </div>
-            )}
-          </div>
-
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-slate-600"
@@ -105,30 +80,6 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
                   {link.name}
                 </Link>
               ))}
-              {!isAuthenticated && (
-                <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
-                  <Link
-                    to="/admin"
-                    className="text-center py-2.5 text-indigo-600 font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Admin
-                  </Link>
-                </div>
-              )}
-              {isAuthenticated && (
-                <div className="flex flex-col space-y-2 pt-4 border-t border-slate-200">
-                  {user?.role === "admin" && (
-                    <Link
-                      to="/admin"
-                      className="text-slate-600 hover:text-indigo-600 font-medium py-2"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Admin
-                    </Link>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         )}

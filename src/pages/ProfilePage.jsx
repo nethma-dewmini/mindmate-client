@@ -29,6 +29,9 @@ const ProfilePage = () => {
     registration_no: "",
     phone: "",
     bio: "",
+    specialization: "",
+    qualifications: "",
+    license_number: "",
   });
 
   const [profileStats, setProfileStats] = useState([]);
@@ -51,6 +54,9 @@ const ProfilePage = () => {
             registration_no: data.user.registration_no || "",
             phone: data.user.phone || "",
             bio: data.user.bio || "",
+            specialization: data.user.specialization || "",
+            qualifications: data.user.qualifications || "",
+            license_number: data.user.license_number || "",
           });
           setUserRole(data.user.role || "student");
 
@@ -98,6 +104,9 @@ const ProfilePage = () => {
           registration_no: data.user.registration_no || "",
           phone: data.user.phone || "",
           bio: data.user.bio || "",
+          specialization: data.user.specialization || "",
+          qualifications: data.user.qualifications || "",
+          license_number: data.user.license_number || "",
         });
       }
       alert("Profile updated successfully!");
@@ -230,6 +239,31 @@ const ProfilePage = () => {
                   disabled={true}
                   icon={FaUser}
                 />
+              )}
+              {userRole === "expert" && (
+                <>
+                  <Input
+                    label="Specialization"
+                    name="specialization"
+                    value={userData.specialization}
+                    disabled={true}
+                    icon={FaBrain}
+                  />
+                  <Input
+                    label="License Number"
+                    name="license_number"
+                    value={userData.license_number}
+                    disabled={true}
+                    icon={FaUser}
+                  />
+                  <Input
+                    label="Qualifications"
+                    name="qualifications"
+                    value={userData.qualifications}
+                    disabled={true}
+                    icon={FaClipboardList}
+                  />
+                </>
               )}
               <Input
                 label="Phone Number"
