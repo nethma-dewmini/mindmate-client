@@ -4,9 +4,6 @@ import {
   FaUser,
   FaEnvelope,
   FaPhone,
-  FaBell,
-  FaShieldAlt,
-  FaPalette,
   FaEdit,
   FaCamera,
   FaSave,
@@ -25,7 +22,6 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState("student");
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
 
   const [userData, setUserData] = useState({
     name: "",
@@ -35,21 +31,7 @@ const ProfilePage = () => {
     bio: "",
   });
 
-  const [notifications, setNotifications] = useState({
-    dailyReminder: true,
-    weeklyReport: true,
-    chatNotifications: true,
-    emailUpdates: false,
-  });
-
   const [profileStats, setProfileStats] = useState([]);
-
-  const tabs = [
-    { id: "profile", label: "Profile", icon: FaUser },
-    { id: "notifications", label: "Notifications", icon: FaBell },
-    { id: "privacy", label: "Privacy", icon: FaShieldAlt },
-    { id: "preferences", label: "Preferences", icon: FaPalette },
-  ];
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -95,10 +77,6 @@ const ProfilePage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleNotificationChange = (key) => {
-    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleSave = async () => {
@@ -218,243 +196,75 @@ const ProfilePage = () => {
           )}
         </Card>
 
-        {/* Tabs */}
-        <div className="flex space-x-2 mb-6 overflow-x-auto pb-2 scrollbar-none">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === tab.id
-                  ? "bg-[#5bb5a1] text-white shadow-sm"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-100 shadow-sm"
-              }`}
-            >
-              <tab.icon />
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
+        {/* Profile Card Content */}
         <Card className="rounded-3xl border border-gray-100 shadow-sm bg-white p-6">
-          {activeTab === "profile" && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">
-                Personal Information
-              </h2>
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              Personal Information
+            </h2>
 
-              <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <Input
+                label="Full Name"
+                name="name"
+                value={userData.name}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={FaUser}
+              />
+              <Input
+                label="Email Address"
+                name="email"
+                type="email"
+                value={userData.email}
+                onChange={handleInputChange}
+                disabled={true}
+                icon={FaEnvelope}
+              />
+              {userRole === "student" && (
                 <Input
-                  label="Full Name"
-                  name="name"
-                  value={userData.name}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  icon={FaUser}
-                />
-                <Input
-                  label="Email Address"
-                  name="email"
-                  type="email"
-                  value={userData.email}
+                  label="Registration Number"
+                  name="registration_no"
+                  value={userData.registration_no}
                   onChange={handleInputChange}
                   disabled={true}
-                  icon={FaEnvelope}
+                  icon={FaUser}
                 />
-                {userRole === "student" && (
-                  <Input
-                    label="Registration Number"
-                    name="registration_no"
-                    value={userData.registration_no}
-                    onChange={handleInputChange}
-                    disabled={true}
-                    icon={FaUser}
-                  />
-                )}
-                <Input
-                  label="Phone Number"
-                  name="phone"
-                  type="tel"
-                  value={userData.phone}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  icon={FaPhone}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Bio
-                </label>
-                <textarea
-                  name="bio"
-                  value={userData.bio}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#5bb5a1] focus:ring-2 focus:ring-[#5bb5a1]/20 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-700 transition-all leading-relaxed"
-                  placeholder="Tell us a little about yourself..."
-                />
-              </div>
-
-              {isEditing && (
-                <div className="flex justify-end pt-2">
-                  <Button variant="primary" onClick={handleSave} icon={FaSave} className="bg-[#5bb5a1] hover:bg-[#4a9d8b]">
-                    Save Changes
-                  </Button>
-                </div>
               )}
+              <Input
+                label="Phone Number"
+                name="phone"
+                type="tel"
+                value={userData.phone}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={FaPhone}
+              />
             </div>
-          )}
 
-          {activeTab === "notifications" && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">
-                Notification Settings
-              </h2>
-
-              {[
-                {
-                  key: "dailyReminder",
-                  label: "Daily Mood Check-in Reminder",
-                  description: "Get reminded to log your mood every day",
-                },
-                {
-                  key: "weeklyReport",
-                  label: "Weekly Progress Report",
-                  description: "Receive a summary of your weekly progress",
-                },
-                {
-                  key: "chatNotifications",
-                  label: "Chat Notifications",
-                  description: "Get notified about new messages",
-                },
-                {
-                  key: "emailUpdates",
-                  label: "Email Updates",
-                  description: "Receive updates and tips via email",
-                },
-              ].map((setting) => (
-                <div
-                  key={setting.key}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-50"
-                >
-                  <div>
-                    <h3 className="font-semibold text-gray-800 text-sm">
-                      {setting.label}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {setting.description}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleNotificationChange(setting.key)}
-                    className={`relative w-12 h-6 rounded-full transition-colors cursor-pointer ${
-                      notifications[setting.key]
-                        ? "bg-[#5bb5a1]"
-                        : "bg-gray-300"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                        notifications[setting.key] ? "left-7" : "left-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              ))}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Bio
+              </label>
+              <textarea
+                name="bio"
+                value={userData.bio}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#5bb5a1] focus:ring-2 focus:ring-[#5bb5a1]/20 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-700 transition-all leading-relaxed"
+                placeholder="Tell us a little about yourself..."
+              />
             </div>
-          )}
 
-          {activeTab === "privacy" && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">
-                Privacy & Security
-              </h2>
-
-              <div className="space-y-4">
-                <button className="w-full text-left p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-50 cursor-pointer">
-                  <h3 className="font-semibold text-gray-800 text-sm">
-                    Change Password
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Update your account password
-                  </p>
-                </button>
-                <button className="w-full text-left p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-50 cursor-pointer">
-                  <h3 className="font-semibold text-gray-800 text-sm">
-                    Two-Factor Authentication
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Add an extra layer of security
-                  </p>
-                </button>
-                <button className="w-full text-left p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-50 cursor-pointer">
-                  <h3 className="font-semibold text-gray-800 text-sm">
-                    Download My Data
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Get a copy of all your data
-                  </p>
-                </button>
-                <button className="w-full text-left p-4 bg-red-50/50 rounded-2xl hover:bg-red-100/50 transition-colors border border-red-100/30 cursor-pointer">
-                  <h3 className="font-semibold text-red-700 text-sm">Delete Account</h3>
-                  <p className="text-xs text-red-500 mt-0.5">
-                    Permanently delete your account and data
-                  </p>
-                </button>
+            {isEditing && (
+              <div className="flex justify-end pt-2">
+                <Button variant="primary" onClick={handleSave} icon={FaSave} className="bg-[#5bb5a1] hover:bg-[#4a9d8b]">
+                  Save Changes
+                </Button>
               </div>
-            </div>
-          )}
-
-          {activeTab === "preferences" && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">
-                App Preferences
-              </h2>
-
-              <div className="space-y-4">
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-50">
-                  <h3 className="font-semibold text-gray-800 text-sm mb-3">Theme</h3>
-                  <div className="flex space-x-3">
-                    {["Light", "Dark", "System"].map((theme) => (
-                      <button
-                        key={theme}
-                        className={`px-4 py-2 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
-                          theme === "Light"
-                            ? "bg-[#5bb5a1] text-white shadow-sm"
-                            : "bg-white border border-gray-100 text-gray-600 hover:bg-gray-100"
-                        }`}
-                      >
-                        {theme}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-50">
-                  <h3 className="font-semibold text-gray-800 text-sm mb-3">Language</h3>
-                  <select className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#5bb5a1] focus:ring-2 focus:ring-[#5bb5a1]/20 focus:outline-none bg-white text-gray-700 text-sm">
-                    <option>English (US)</option>
-                    <option>English (UK)</option>
-                    <option>Spanish</option>
-                    <option>French</option>
-                  </select>
-                </div>
-
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-50">
-                  <h3 className="font-semibold text-[#5bb5a1] text-sm mb-3">Time Zone</h3>
-                  <select className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#5bb5a1] focus:ring-2 focus:ring-[#5bb5a1]/20 focus:outline-none bg-white text-gray-700 text-sm">
-                    <option>UTC-05:00 Eastern Time</option>
-                    <option>UTC-08:00 Pacific Time</option>
-                    <option>UTC+00:00 GMT</option>
-                    <option>UTC+05:30 IST</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </Card>
       </div>
     </div>
