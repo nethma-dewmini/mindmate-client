@@ -490,14 +490,13 @@ const RegisterPage = () => {
 
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name with Initials
+                    Name
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={studentData.name}
                     onChange={handleStudentChange}
-                    placeholder="R.M.N.D. Rathnayaka"
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                       errors.name ? "border-red-300" : "border-gray-200"
                     }`}
@@ -517,7 +516,7 @@ const RegisterPage = () => {
                   name="email"
                   value={studentData.email}
                   onChange={handleStudentChange}
-                  placeholder="rathnayakarmnd.22@uom.lk"
+                  placeholder="...**@uom.lk"
                   className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                     errors.email ? "border-red-300" : "border-gray-200"
                   }`}
@@ -539,7 +538,6 @@ const RegisterPage = () => {
                   name="studentId"
                   value={studentData.studentId}
                   onChange={handleStudentChange}
-                  placeholder="221234X"
                   className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                     errors.studentId ? "border-red-300" : "border-gray-200"
                   }`}
