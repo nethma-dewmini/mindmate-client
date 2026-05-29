@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGraduationCap, FaUserMd, FaArrowLeft } from "react-icons/fa";
+import { FaGraduationCap, FaUserMd, FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
 import { authService } from "../services/authService";
 
@@ -21,6 +21,10 @@ const RegisterPage = () => {
   const [registeringExpertAccount, setRegisteringExpertAccount] =
     useState(false);
   const [expertAccountMessage, setExpertAccountMessage] = useState("");
+  const [showStudentPassword, setShowStudentPassword] = useState(false);
+  const [showStudentConfirmPassword, setShowStudentConfirmPassword] = useState(false);
+  const [showExpertPassword, setShowExpertPassword] = useState(false);
+  const [showExpertConfirmPassword, setShowExpertConfirmPassword] = useState(false);
 
   const isValidUomEmail = (value) =>
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
@@ -553,27 +557,45 @@ const RegisterPage = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={studentData.password}
-                    onChange={handleStudentChange}
-                    className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
-                      errors.password ? "border-red-300" : "border-gray-200"
-                    }`}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showStudentPassword ? "text" : "password"}
+                      name="password"
+                      value={studentData.password}
+                      onChange={handleStudentChange}
+                      className={`w-full pl-4 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                        errors.password ? "border-red-300" : "border-gray-200"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowStudentPassword(!showStudentPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                    >
+                      {showStudentPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password
                   </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={studentData.confirmPassword}
-                    onChange={handleStudentChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showStudentConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={studentData.confirmPassword}
+                      onChange={handleStudentChange}
+                      className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowStudentConfirmPassword(!showStudentConfirmPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                    >
+                      {showStudentConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                 </div>
               </div>
               {errors.password && (
@@ -659,30 +681,48 @@ const RegisterPage = () => {
                   Set a password to create your expert account.
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Password
                     </label>
-                    <input
-                      type="password"
-                      value={expertAccountPassword}
-                      onChange={(e) => setExpertAccountPassword(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showExpertPassword ? "text" : "password"}
+                        value={expertAccountPassword}
+                        onChange={(e) => setExpertAccountPassword(e.target.value)}
+                        className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowExpertPassword(!showExpertPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                      >
+                        {showExpertPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Confirm Password
                     </label>
-                    <input
-                      type="password"
-                      value={expertAccountConfirmPassword}
-                      onChange={(e) =>
-                        setExpertAccountConfirmPassword(e.target.value)
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showExpertConfirmPassword ? "text" : "password"}
+                        value={expertAccountConfirmPassword}
+                        onChange={(e) =>
+                          setExpertAccountConfirmPassword(e.target.value)
+                        }
+                        className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowExpertConfirmPassword(!showExpertConfirmPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                      >
+                        {showExpertConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
