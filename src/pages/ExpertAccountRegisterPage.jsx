@@ -53,6 +53,14 @@ const ExpertAccountRegisterPage = () => {
       return;
     }
 
+    const isValidPassword = (value) =>
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+
+    if (!isValidPassword(password)) {
+      setError("Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
