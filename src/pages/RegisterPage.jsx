@@ -516,7 +516,7 @@ const RegisterPage = () => {
                   name="email"
                   value={studentData.email}
                   onChange={handleStudentChange}
-                  placeholder="...**@uom.lk"
+                  placeholder="@uom.lk"
                   className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                     errors.email ? "border-red-300" : "border-gray-200"
                   }`}
