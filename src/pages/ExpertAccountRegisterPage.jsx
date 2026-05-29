@@ -1,9 +1,12 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { authService } from "../services/authService";
 
 const ExpertAccountRegisterPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const emailParam = searchParams.get("email") || "";
+
   const [email, setEmail] = useState("");
   const [application, setApplication] = useState(null);
   const [password, setPassword] = useState("");
@@ -12,6 +15,34 @@ const ExpertAccountRegisterPage = () => {
   const [registering, setRegistering] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (emailParam) {
+      setEmail(emailParam);
+      const verifyApproval = async () => {
+        setLoading(true);
+        setError("");
+        setMessage("");
+        setApplication(null);
+        try {
+          const response = await authService.getExpertApplicationStatus(emailParam);
+          setApplication(response.application);
+          if (response.application?.status === "approved") {
+            setMessage("");
+          } else if (response.application?.status === "pending") {
+            setMessage("Your application is still pending admin approval.");
+          } else if (response.application?.status === "rejected") {
+            setMessage("Your application was rejected. Please contact admin.");
+          }
+        } catch (err) {
+          setError(err.message || "Unable to check application status");
+        } finally {
+          setLoading(false);
+        }
+      };
+      verifyApproval();
+    }
+  }, [emailParam]);
 
   const checkStatus = async (event) => {
     event.preventDefault();
@@ -25,7 +56,7 @@ const ExpertAccountRegisterPage = () => {
       setApplication(response.application);
 
       if (response.application?.status === "approved") {
-        setMessage("You are approved. Create your expert account below.");
+        setMessage("");
       } else if (response.application?.status === "pending") {
         setMessage("Your application is still pending admin approval.");
       } else if (response.application?.status === "rejected") {
@@ -111,35 +142,39 @@ const ExpertAccountRegisterPage = () => {
             </div>
           )}
 
-          <form onSubmit={checkStatus} className="space-y-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Approved Application Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="you@example.com"
-              />
+          {loading && emailParam && (
+            <div className="text-center py-6 text-slate-500">
+              <span className="animate-pulse">Verifying approval status...</span>
             </div>
+          )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
-            >
-              {loading ? "Checking status..." : "Check Approval Status"}
-            </button>
-          </form>
+          {!emailParam && (
+            <form onSubmit={checkStatus} className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Approved Application Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="you@example.com"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
+              >
+                {loading ? "Checking status..." : "Check Approval Status"}
+              </button>
+            </form>
+          )}
 
           {application?.status === "approved" && (
             <form onSubmit={registerAccount} className="space-y-4">
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                You are approved. Set a password to create your expert account.
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Name
@@ -154,11 +189,11 @@ const ExpertAccountRegisterPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Title
+                  Email
                 </label>
                 <input
-                  type="text"
-                  value={application.title || ""}
+                  type="email"
+                  value={application.email || ""}
                   disabled
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-100 text-gray-600"
                 />
@@ -192,7 +227,7 @@ const ExpertAccountRegisterPage = () => {
               <button
                 type="submit"
                 disabled={registering}
-                className="w-full py-3 bg-[#e74c3c] text-white rounded-xl font-medium hover:bg-[#c0392b] transition-colors disabled:opacity-50"
+                className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {registering ? "Creating Account..." : "Create Expert Account"}
               </button>
