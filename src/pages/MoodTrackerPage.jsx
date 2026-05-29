@@ -6,7 +6,7 @@ import { authService } from "../services/authService";
 const MoodTrackerPage = () => {
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState("");
-  const [summary, setSummary] = useState({ count: 0, avg_mood: 0, streak: 0 });
+  const [summary, setSummary] = useState({ count: 0, avg_mood: 0, avg_mood_yesterday: 0, streak: 0 });
   const [recentEntries, setRecentEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -106,6 +106,26 @@ const MoodTrackerPage = () => {
     }
   };
 
+  const getWellnessMessage = () => {
+    const today = summary.avg_mood;
+    const yesterday = summary.avg_mood_yesterday;
+
+    if (today === 0) {
+      return "Log how you are feeling today to see how your mood compares to yesterday and receive helpful wellness reflections. 🌱";
+    }
+    if (yesterday === 0) {
+      return "Good job logging today! Track your mood again tomorrow to unlock comparisons and see patterns in your wellness journey. 🌟";
+    }
+
+    if (today > yesterday) {
+      return "You're doing great! Today's mood is looking brighter than yesterday. Keep up the positive momentum and celebrate this light! ☀️";
+    } else if (today === yesterday) {
+      return "You've stayed consistent since yesterday. Stability is a wonderful form of progress. Keep breathing and taking things one step at a time! 🧘";
+    } else {
+      return "It's completely okay to have a down day compared to yesterday. Be gentle with yourself, and remember that healing isn't linear. You are resilient. 💚";
+    }
+  };
+
   // Derive moodJourney (oldest to newest chronological) from the last 7 entries
   const journeyEntries = [...recentEntries].slice(0, 7).reverse();
 
@@ -119,14 +139,14 @@ const MoodTrackerPage = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Mood Tracker</h1>
             <p className="text-gray-500">
-              Track your daily mood and identify patterns
+              Reflect on your emotional well-being, observe your daily patterns, and nurture your inner peace
             </p>
           </div>
           <Link
             to="/dashboard"
             className="px-4 py-2 bg-[#5bb5a1] text-white rounded-lg hover:bg-[#4a9d8b]"
           >
-            Cancel
+            Back to Dashboard
           </Link>
         </div>
 
@@ -182,8 +202,8 @@ const MoodTrackerPage = () => {
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
-              rows={3}
+              className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+              rows={2}
               placeholder="How was your day?"
             />
           </div>
@@ -227,6 +247,17 @@ const MoodTrackerPage = () => {
               <p className="font-bold text-gray-800 mt-0.5">
                 {summary.streak} {summary.streak === 1 ? "day" : "days"}
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mental Wellness Comparison Banner */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm mb-6 border-l-4 border-[#5bb5a1]">
+          <div className="flex items-start space-x-3">
+            <span className="text-xl">🌱</span>
+            <div>
+              <h3 className="font-semibold text-gray-800 text-sm mb-1">Your Mental Wellness Reflection</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">{getWellnessMessage()}</p>
             </div>
           </div>
         </div>
