@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaUserCheck, FaUsers, FaHandshake } from "react-icons/fa";
 import { authService } from "../services/authService";
-import AdminSectionCard from "../components/AdminSectionCard";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -24,6 +23,30 @@ const AdminDashboard = () => {
     authService.logout();
     navigate("/login");
   };
+
+  const adminActions = [
+    {
+      title: "Expert Applications",
+      description: "Review expert submissions, inspect attached documents, and approve or reject applications.",
+      icon: FaUserCheck,
+      path: "/admin/expert-applications",
+      linkText: "Review Applications",
+    },
+    {
+      title: "Student Registry",
+      description: "Manage approved student registry entries and import records in bulk using CSV.",
+      icon: FaUsers,
+      path: "/admin/student-registry",
+      linkText: "Manage Registry",
+    },
+    {
+      title: "Peer Support Groups",
+      description: "Create and moderate peer support groups for students.",
+      icon: FaHandshake,
+      path: "/admin/peer-groups",
+      linkText: "Manage Groups",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#f9f5e7]">
@@ -60,25 +83,32 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Grid Content */}
       <div className="max-w-6xl mx-auto px-6 py-4">
-        <div className="flex flex-col gap-6 max-w-3xl">
-          <AdminSectionCard
-            title="Expert Applications"
-            description="Review expert submissions, inspect attached documents, and approve or reject applications."
-            onClick={() => navigate("/admin/expert-applications")}
-          />
-
-          <AdminSectionCard
-            title="Student Registry"
-            description="Manage approved student registry entries and import records in bulk using CSV."
-            onClick={() => navigate("/admin/student-registry")}
-          />
-
-          <AdminSectionCard
-            title="Peer Support Groups"
-            description="Create and moderate peer support groups for students."
-            onClick={() => navigate("/admin/peer-groups")}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {adminActions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <Link key={index} to={action.path} className="group">
+                <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="bg-[#5bb5a1]/10 text-[#5bb5a1] w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-xl group-hover:scale-110 transition-transform duration-300">
+                      <Icon size={20} />
+                    </div>
+                    <h3 className="font-bold text-gray-800 mb-1 group-hover:text-[#5bb5a1] transition-colors duration-200 text-lg">
+                      {action.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {action.description}
+                    </p>
+                  </div>
+                  <div className="mt-5 text-xs font-semibold text-[#5bb5a1] flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
+                    {action.linkText} <span>→</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
