@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Footer } from "./components";
 import { authService } from "./services/authService";
+import { FaClock, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from "react-icons/fa";
 import {
   LandingPage,
   LoginPage,
@@ -43,6 +44,57 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [alertConfig, setAlertConfig] = useState({
+    isOpen: false,
+    message: "",
+    type: "info",
+  });
+
+  const getAlertType = (message) => {
+    const msg = message.toLowerCase();
+    if (
+      msg.includes("expired") ||
+      msg.includes("timeout") ||
+      msg.includes("inactivity")
+    ) {
+      return "warning";
+    }
+    if (
+      msg.includes("failed") ||
+      msg.includes("error") ||
+      msg.includes("invalid") ||
+      msg.includes("please log in") ||
+      msg.includes("only students")
+    ) {
+      return "error";
+    }
+    if (
+      msg.includes("success") ||
+      msg.includes("successful") ||
+      msg.includes("booked") ||
+      msg.includes("cancelled")
+    ) {
+      return "success";
+    }
+    return "info";
+  };
+
+  useEffect(() => {
+    const originalAlert = window.alert;
+    window.alert = (message) => {
+      const msgStr = String(message);
+      const type = getAlertType(msgStr);
+      setAlertConfig({
+        isOpen: true,
+        message: msgStr,
+        type: type,
+      });
+    };
+    return () => {
+      window.alert = originalAlert;
+    };
+  }, []);
+
   useEffect(() => {
     const syncAuthState = () => {
       setIsAuthenticated(authService.isAuthenticated());
@@ -56,6 +108,48 @@ function App() {
       window.removeEventListener("mindmate-auth-change", syncAuthState);
     };
   }, []);
+
+  // Global Inactivity Timeout (5 minutes)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let timeoutId;
+    const TIMEOUT_DURATION = 5 * 60 * 1000; // 5 minutes
+
+    const handleInactivity = () => {
+      authService.logout();
+      setIsAuthenticated(false);
+      setUser(null);
+      alert("Session expired due to inactivity. Please log in again.");
+      navigate("/login");
+    };
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleInactivity, TIMEOUT_DURATION);
+    };
+
+    const activityEvents = [
+      "mousedown",
+      "mousemove",
+      "keypress",
+      "scroll",
+      "touchstart",
+    ];
+
+    resetTimer();
+
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [isAuthenticated, navigate]);
 
   // Pages where we don't show navbar/footer
   const authPages = ["/login", "/register", "/forgot-password"];
@@ -173,6 +267,79 @@ function App() {
       </main>
 
       {showFooter && <Footer />}
+
+      {alertConfig.isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          {/* Backdrop Blur Overlay */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setAlertConfig((prev) => ({ ...prev, isOpen: false }))}
+          />
+
+          {/* Dialog Box */}
+          <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-gray-100 text-center flex flex-col items-center transform scale-100 transition-all duration-300 animate-in fade-in zoom-in-95">
+            {/* Color-coded Icon Circle */}
+            <div
+              className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
+                alertConfig.type === "success"
+                  ? "bg-emerald-50 text-emerald-500"
+                  : alertConfig.type === "warning"
+                    ? "bg-amber-50 text-amber-500"
+                    : alertConfig.type === "error"
+                      ? "bg-rose-50 text-rose-500"
+                      : "bg-teal-50 text-teal-500"
+              }`}
+            >
+              {alertConfig.type === "success" && (
+                <FaCheckCircle className="w-8 h-8" />
+              )}
+              {alertConfig.type === "warning" && (
+                <FaClock className="w-8 h-8" />
+              )}
+              {alertConfig.type === "error" && (
+                <FaExclamationCircle className="w-8 h-8" />
+              )}
+              {alertConfig.type === "info" && (
+                <FaInfoCircle className="w-8 h-8" />
+              )}
+            </div>
+
+            {/* Header/Title */}
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              {alertConfig.type === "success"
+                ? "Success"
+                : alertConfig.type === "warning"
+                  ? "Session Timeout"
+                  : alertConfig.type === "error"
+                    ? "Notice"
+                    : "Notification"}
+            </h3>
+
+            {/* Alert Message Text */}
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed whitespace-pre-wrap">
+              {alertConfig.message}
+            </p>
+
+            {/* Action Button */}
+            <button
+              onClick={() => {
+                setAlertConfig((prev) => ({ ...prev, isOpen: false }));
+              }}
+              className={`w-full py-3 px-6 rounded-xl text-white font-semibold shadow-md transition-all duration-200 hover:shadow-lg active:scale-95 cursor-pointer ${
+                alertConfig.type === "success"
+                  ? "bg-emerald-500 hover:bg-emerald-600"
+                  : alertConfig.type === "warning"
+                    ? "bg-amber-500 hover:bg-amber-600"
+                    : alertConfig.type === "error"
+                      ? "bg-rose-500 hover:bg-rose-600"
+                      : "bg-[#5bb5a1] hover:bg-[#4a9d8b]"
+              }`}
+            >
+              {alertConfig.type === "warning" ? "Sign In Again" : "OK"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

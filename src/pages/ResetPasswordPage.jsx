@@ -22,6 +22,14 @@ const ResetPasswordPage = () => {
     e.preventDefault();
     setError("");
     if (!password || !confirm) return setError("Both fields are required");
+
+    const isValidPassword = (value) =>
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+
+    if (!isValidPassword(password)) {
+      return setError("Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.");
+    }
+
     if (password !== confirm) return setError("Passwords do not match");
     setIsLoading(true);
     try {

@@ -26,7 +26,10 @@ const RegisterPage = () => {
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
 
   const isValidRegistrationNo = (value) =>
-    /^\d{6}[A-Za-z]$/.test(String(value || "").trim());
+    /^\d{6}[A-Z]$/.test(String(value || "").trim());
+
+  const isValidPassword = (value) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
 
   const getFriendlyErrorMessage = (message, role) => {
     const normalizedMessage = String(message || "").toLowerCase();
@@ -95,7 +98,7 @@ const RegisterPage = () => {
         ...prev,
         studentId:
           value && !isValidRegistrationNo(value)
-            ? "Enter a valid registration number like 221234X"
+            ? "Enter a valid registration number like 221234X. The last letter must be a capital letter."
             : "",
       }));
       return;
@@ -103,6 +106,17 @@ const RegisterPage = () => {
 
     if (name === "name") {
       setErrors((prev) => ({ ...prev, name: value ? "" : prev.name }));
+      return;
+    }
+
+    if (name === "password") {
+      setErrors((prev) => ({
+        ...prev,
+        password:
+          value && !isValidPassword(value)
+            ? "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number."
+            : "",
+      }));
       return;
     }
 
@@ -132,6 +146,11 @@ const RegisterPage = () => {
 
     if (!expertAccountPassword || !expertAccountConfirmPassword) {
       setErrors({ general: "Password and confirm password are required" });
+      return;
+    }
+
+    if (!isValidPassword(expertAccountPassword)) {
+      setErrors({ general: "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number." });
       return;
     }
 
@@ -235,11 +254,14 @@ const RegisterPage = () => {
           nextErrors.studentId = "Registration number is required";
         } else if (!isValidRegistrationNo(studentData.studentId)) {
           nextErrors.studentId =
-            "Enter a valid registration number like 221234X";
+            "Enter a valid registration number like 221234X. The last letter must be a capital letter.";
         }
 
         if (!studentData.password || !studentData.confirmPassword) {
           nextErrors.general = "All fields are required";
+        } else if (!isValidPassword(studentData.password)) {
+          nextErrors.password =
+            "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.";
         }
 
         if (Object.keys(nextErrors).length > 0) {
@@ -538,7 +560,9 @@ const RegisterPage = () => {
                     name="password"
                     value={studentData.password}
                     onChange={handleStudentChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                      errors.password ? "border-red-300" : "border-gray-200"
+                    }`}
                   />
                 </div>
                 <div>
@@ -554,6 +578,9 @@ const RegisterPage = () => {
                   />
                 </div>
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-600 mt-1">{errors.password}</p>
+              )}
 
               <button
                 type="submit"
