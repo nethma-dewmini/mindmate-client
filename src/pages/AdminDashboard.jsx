@@ -14,7 +14,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (!user) {
-      navigate("/admin/login");
+      navigate("/login");
     } else if (user.role !== "admin") {
       navigate("/");
     }
@@ -22,7 +22,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate("/admin/login");
+    navigate("/login");
   };
 
   return (

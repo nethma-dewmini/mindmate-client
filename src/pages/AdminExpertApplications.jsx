@@ -35,7 +35,7 @@ const AdminExpertApplications = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/admin/login");
+      navigate("/login");
       return;
     }
 

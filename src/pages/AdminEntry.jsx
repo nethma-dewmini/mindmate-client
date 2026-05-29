@@ -10,7 +10,7 @@ const AdminEntry = () => {
     if (user && user.role === "admin") {
       navigate("/admin/dashboard");
     } else {
-      navigate("/admin/login");
+      navigate("/login");
     }
   }, []);
 
