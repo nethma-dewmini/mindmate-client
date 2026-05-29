@@ -48,13 +48,6 @@ const ExpertDashboardPage = () => {
       buttonText: "Manage Resources",
       path: "/expert/upload-resources",
     },
-    {
-      category: "Expert Profile",
-      title: "Review your profile and professional details",
-      description: "Update your credentials, bio, contact info, and profile settings.",
-      buttonText: "View Profile",
-      path: "/profile",
-    },
   ];
 
 
@@ -77,12 +70,16 @@ const ExpertDashboardPage = () => {
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#5bb5a1]">
-              {user.name.charAt(0)}
-            </div>
+            <Link
+              to="/profile"
+              title="View Profile"
+              className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#5bb5a1] hover:scale-105 transition-all shadow-sm cursor-pointer"
+            >
+              {user.name.charAt(0).toUpperCase()}
+            </Link>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-white text-red-400 rounded-lg flex items-center space-x-2 hover:bg-red-300"
+              className="px-4 py-2 bg-white text-red-400 rounded-lg flex items-center space-x-2 hover:bg-red-50 border border-gray-100 shadow-sm transition-all"
             >
               <FaSignOutAlt />
               <span>Logout</span>
