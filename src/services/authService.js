@@ -877,4 +877,24 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Delete a mood entry (student)
+   */
+  async deleteMoodEntry(id) {
+    const response = await fetch(`${API_BASE_URL}/moods/${id}`, {
+      method: "DELETE",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete mood entry");
+    }
+
+    return data;
+  },
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { FaTrash } from "react-icons/fa";
 import { authService } from "../services/authService";
 
 const MoodTrackerPage = () => {
@@ -24,7 +25,7 @@ const MoodTrackerPage = () => {
       setError(null);
       const [summaryData, entriesData] = await Promise.all([
         authService.getMoodSummary(30),
-        authService.getMoodEntries(7),
+        authService.getMoodEntries(20),
       ]);
       setSummary(summaryData);
       setRecentEntries(entriesData);
@@ -78,6 +79,19 @@ const MoodTrackerPage = () => {
     } catch (err) {
       console.error("Error saving mood entry:", err);
       alert("Failed to save mood entry. Please try again.");
+    }
+  };
+
+  const handleDeleteMood = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this mood entry?")) return;
+
+    try {
+      await authService.deleteMoodEntry(id);
+      // Refresh stats and logs
+      await fetchMoodData();
+    } catch (err) {
+      console.error("Error deleting mood entry:", err);
+      alert("Failed to delete mood entry. Please try again.");
     }
   };
 
@@ -208,7 +222,9 @@ const MoodTrackerPage = () => {
           ) : (
             <div className="flex items-end justify-between h-40 px-4">
               {journeyEntries.map((entry, index) => {
-                const dateNum = new Date(entry.created_at).getDate();
+                const dateObj = new Date(entry.created_at);
+                const dateStr = dateObj.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+                const timeStr = dateObj.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", hour12: true });
                 return (
                   <div key={entry.id || index} className="flex flex-col items-center">
                     <div className="relative">
@@ -220,7 +236,11 @@ const MoodTrackerPage = () => {
                         style={{ height: `${entry.mood * 20}px` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-500 mt-2">{dateNum}</span>
+                    <span className="text-[10px] text-gray-500 mt-2 text-center leading-tight">
+                      {dateStr}
+                      <br />
+                      {timeStr}
+                    </span>
                   </div>
                 );
               })}
@@ -231,7 +251,7 @@ const MoodTrackerPage = () => {
         {/* Recent Entries */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <h2 className="font-semibold text-gray-800 mb-4">Recent Entries</h2>
-          <div className="space-y-3">
+          <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
             {loading && recentEntries.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-4">Loading entries...</p>
             ) : recentEntries.length === 0 ? (
@@ -240,23 +260,39 @@ const MoodTrackerPage = () => {
               </p>
             ) : (
               recentEntries.map((entry, index) => {
-                const formattedDate = new Date(entry.created_at).toLocaleDateString(undefined, {
+                const dateObj = new Date(entry.created_at);
+                const formattedDate = dateObj.toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
                 });
+                const formattedTime = dateObj.toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+                const displayDateTime = `${formattedDate}, ${formattedTime}`;
                 return (
                   <div
                     key={entry.id || index}
-                    className="flex items-center space-x-4 p-3 bg-gray-50 rounded-xl"
+                    className="flex items-center justify-between py-1.5 px-3 bg-gray-50 rounded-lg group"
                   >
-                    <span className="text-2xl">{getMoodEmoji(entry.mood)}</span>
-                    <div>
-                      <p className="font-medium text-gray-800">{formattedDate}</p>
-                      {entry.note && (
-                        <p className="text-sm text-gray-500">{entry.note}</p>
-                      )}
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <span className="text-xl">{getMoodEmoji(entry.mood)}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-gray-700">{displayDateTime}</p>
+                        {entry.note && (
+                          <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>
+                        )}
+                      </div>
                     </div>
+                    <button
+                      onClick={() => handleDeleteMood(entry.id)}
+                      className="text-red-400 hover:text-red-600 p-1 rounded-md transition-colors md:opacity-0 md:group-hover:opacity-100 focus:opacity-100"
+                      title="Delete Entry"
+                    >
+                      <FaTrash size={12} />
+                    </button>
                   </div>
                 );
               })
