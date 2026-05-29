@@ -137,18 +137,10 @@ const LoginPage = () => {
               Register here
             </Link>
           </p>
-          <p className="mt-3 text-center text-gray-600">
-            Approved expert?{" "}
-            <Link
-              to="/expert/register"
-              className="text-[#5bb5a1] hover:underline font-medium"
-            >
-              Create your expert account
-            </Link>
-          </p>
+
           <p className="mt-6 text-center text-gray-60">
             <Link
-              to="/forgot-password"
+              to={`/forgot-password${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ""}`}
               className="text-[#5bb5a1] hover:underline font-medium"
             >
               Forgot Password
