@@ -899,6 +899,53 @@ export const authService = {
   },
 
   /**
+   * Fetch current user's profile details & stats
+   */
+  async getUserProfile() {
+    const response = await fetch(`${API_BASE_URL}/unistudents/profile/me`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load profile details");
+    }
+
+    return data;
+  },
+
+  /**
+   * Update current user's profile details
+   */
+  async updateUserProfile({ name, bio, phone }) {
+    const response = await fetch(`${API_BASE_URL}/unistudents/profile/me`, {
+      method: "PUT",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, bio, phone }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update profile details");
+    }
+
+    // Update local storage copy of the user
+    if (data.user) {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+    }
+    emitAuthChange();
+
+    return data;
+  },
+
+  /**
    * Register a new admin
    */
   async registerAdmin(name, email, password) {

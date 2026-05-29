@@ -187,9 +187,13 @@ const DashboardPage = () => {
             <p className="text-gray-600">How are you feeling today?</p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#5bb5a1] shadow-sm">
-              {user.name.charAt(0)}
-            </div>
+            <Link
+              to="/profile"
+              title="View Profile"
+              className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#5bb5a1] shadow-sm hover:scale-105 transition-transform cursor-pointer"
+            >
+              {user.name.charAt(0).toUpperCase()}
+            </Link>
             <button
               onClick={handleLogout}
               className="px-4 py-2 bg-white text-red-400 rounded-lg flex items-center space-x-2 hover:bg-red-50 border border-gray-100 shadow-sm transition-all"

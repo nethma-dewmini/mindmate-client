@@ -615,15 +615,6 @@ const RegisterPage = () => {
                 Create Your Account
               </h1>
               <p className="text-gray-500">Register as Mental Health Expert</p>
-              <p className="mt-2 text-sm text-gray-600">
-                Approved expert?{" "}
-                <Link
-                  to="/expert/register"
-                  className="text-[#5bb5a1] hover:underline font-medium"
-                >
-                  Create your expert account
-                </Link>
-              </p>
               <button
                 onClick={() => setStep("select")}
                 className="text-[#5bb5a1] text-sm mt-2 hover:underline flex items-center justify-center mx-auto"
