@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { authService } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminPeerGroups = () => {
   const [groups, setGroups] = useState([]);
@@ -26,7 +26,7 @@ const AdminPeerGroups = () => {
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (!user || user.role !== "admin") {
-      navigate("/admin/login");
+      navigate("/login");
       return;
     }
 
@@ -263,6 +263,15 @@ const AdminPeerGroups = () => {
 
   return (
     <div className="min-h-screen bg-[#f7faf8] py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto mb-6">
+        <Link
+          to="/admin/dashboard"
+          className="text-sm text-[#5bb5a1] hover:underline font-semibold"
+        >
+          ← Back to Admin Dashboard
+        </Link>
+      </div>
+
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-slate-800">

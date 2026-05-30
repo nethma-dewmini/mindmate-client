@@ -969,4 +969,45 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Fetch conversation history with MindMate AI chatbot (student)
+   */
+  async getChatbotHistory() {
+    const response = await fetch(`${API_BASE_URL}/chatbot`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load chatbot history");
+    }
+
+    return data;
+  },
+
+  /**
+   * Send a message to the MindMate AI chatbot and get a response (student)
+   */
+  async sendMessageToChatbot(message) {
+    const response = await fetch(`${API_BASE_URL}/chatbot`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send message to chatbot");
+    }
+
+    return data;
+  },
 };

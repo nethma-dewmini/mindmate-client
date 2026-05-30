@@ -9,7 +9,7 @@ const AdminStudentRegistryPage = () => {
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (!user) {
-      navigate("/admin/login");
+      navigate("/login");
       return;
     }
     if (user.role !== "admin") {

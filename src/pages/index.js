@@ -15,7 +15,6 @@ export { default as ResetPasswordPage } from "./ResetPasswordPage";
 export { default as AdminStudentRegistry } from "./AdminStudentRegistry";
 export { default as AdminStudentRegistryPage } from "./AdminStudentRegistryPage";
 export { default as AdminEntry } from "./AdminEntry";
-export { default as AdminLoginPage } from "./AdminLoginPage";
 export { default as AdminDashboard } from "./AdminDashboard";
 export { default as AdminExpertApplicationsPage } from "./AdminExpertApplicationsPage";
 export { default as AdminPeerGroups } from "./AdminPeerGroups";

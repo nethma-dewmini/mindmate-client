@@ -21,9 +21,7 @@ import {
   PeerSupportPage,
   ForgotPasswordPage,
   ResetPasswordPage,
-  AdminStudentRegistry,
   AdminEntry,
-  AdminLoginPage,
   AdminDashboard,
   AdminExpertApplicationsPage,
   AdminPeerGroups,
@@ -170,7 +168,6 @@ function App() {
     "/experts",
     "/peer-support",
     "/admin",
-    "/admin/login",
     "/admin/dashboard",
     "/admin/expert-applications",
     "/admin/peer-groups",
@@ -247,7 +244,6 @@ function App() {
           <Route path="/assessment/:id" element={<AssessmentTaking />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminEntry />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route
             path="/admin/expert-applications"

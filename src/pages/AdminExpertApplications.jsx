@@ -35,7 +35,7 @@ const AdminExpertApplications = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/admin/login");
+      navigate("/login");
       return;
     }
 
@@ -330,21 +330,32 @@ const AdminExpertApplications = () => {
                     onClick={() =>
                       handleReview(selectedApplication.id, "approved")
                     }
-                    disabled={actionLoadingId === selectedApplication.id}
-                    className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                    disabled={
+                      actionLoadingId === selectedApplication.id ||
+                      selectedApplication.status === "approved"
+                    }
+                    className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 cursor-pointer"
                   >
                     {actionLoadingId === selectedApplication.id
                       ? "Updating..."
+                      : selectedApplication.status === "approved"
+                      ? "Approved"
                       : "Approve"}
                   </button>
                   <button
                     onClick={() =>
                       handleReview(selectedApplication.id, "rejected")
                     }
-                    disabled={actionLoadingId === selectedApplication.id}
-                    className="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
+                    disabled={
+                      actionLoadingId === selectedApplication.id ||
+                      selectedApplication.status === "rejected" ||
+                      selectedApplication.status === "approved"
+                    }
+                    className="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 cursor-pointer"
                   >
-                    Reject
+                    {selectedApplication.status === "rejected"
+                      ? "Rejected"
+                      : "Reject"}
                   </button>
                 </div>
 
