@@ -1010,4 +1010,106 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Fetch all chat sessions for the current student
+   */
+  async getChatbotSessions() {
+    const response = await fetch(`${API_BASE_URL}/chatbot/sessions`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load chatbot sessions");
+    }
+
+    return data;
+  },
+
+  /**
+   * Create a new chatbot session (student)
+   */
+  async createChatbotSession(title = "") {
+    const response = await fetch(`${API_BASE_URL}/chatbot/sessions`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create chatbot session");
+    }
+
+    return data;
+  },
+
+  /**
+   * Delete a specific chatbot session (student)
+   */
+  async deleteChatbotSession(sessionId) {
+    const response = await fetch(`${API_BASE_URL}/chatbot/sessions/${sessionId}`, {
+      method: "DELETE",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete chatbot session");
+    }
+
+    return data;
+  },
+
+  /**
+   * Fetch all messages inside a specific chatbot session (student)
+   */
+  async getChatbotSessionMessages(sessionId) {
+    const response = await fetch(`${API_BASE_URL}/chatbot/sessions/${sessionId}/messages`, {
+      method: "GET",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to load chatbot session messages");
+    }
+
+    return data;
+  },
+
+  /**
+   * Send a message to a specific chatbot session and get a response (student)
+   */
+  async sendMessageToChatbotSession(sessionId, message) {
+    const response = await fetch(`${API_BASE_URL}/chatbot/sessions/${sessionId}/messages`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send message to chatbot session");
+    }
+
+    return data;
+  },
 };
