@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { authService } from "../services/authService";
 import { FaSearch, FaClock, FaThumbsUp } from "react-icons/fa";
+import { SkeletonCard } from "../components";
 
 const ResourcesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -204,9 +205,7 @@ const ResourcesPage = () => {
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {loading ? (
-            <div className="col-span-full text-center text-gray-500 py-12">
-              Loading resources...
-            </div>
+            <SkeletonCard count={6} />
           ) : loadError ? (
             <div className="col-span-full text-center text-red-600 py-12">
               {loadError}
