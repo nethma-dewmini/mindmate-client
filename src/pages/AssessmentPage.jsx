@@ -152,7 +152,7 @@ const AssessmentPage = () => {
                       </span>
                     ) : null}
                   </div>
-                  <span className="inline-flex w-full justify-center py-2 bg-[#e74c3c] text-white rounded-lg font-medium hover:bg-[#c0392b]">
+                  <span className="inline-flex w-full justify-center py-2 bg-[#2c6e5f] text-white rounded-lg font-medium hover:bg-[#1b4d42]">
                     Start Assessment
                   </span>
                 </div>

@@ -870,7 +870,7 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={isLoading || submittedApplication}
-                className="w-full py-3 bg-[#e74c3c] text-white rounded-xl font-medium hover:bg-[#c0392b] transition-colors disabled:opacity-50"
+                className="w-full py-3 bg-[#2c6e5f] text-white rounded-xl font-medium hover:bg-[#1b4d42] transition-colors disabled:opacity-50"
               >
                 {isLoading
                   ? "Submitting Application..."
