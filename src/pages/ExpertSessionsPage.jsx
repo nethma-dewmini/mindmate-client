@@ -41,6 +41,7 @@ const ExpertSessionsPage = () => {
     meetingLink: "",
     meetingDetails: "",
   });
+  const [deleteSessionId, setDeleteSessionId] = useState(null);
 
   const currentUser = authService.getCurrentUser();
 
@@ -166,20 +167,24 @@ const ExpertSessionsPage = () => {
     });
   };
 
-  const handleDelete = async (sessionId) => {
-    if (!window.confirm("Are you sure you want to cancel this scheduled session?")) {
-      return;
-    }
+  const handleDelete = (sessionId) => {
+    setDeleteSessionId(sessionId);
+  };
+
+  const confirmDeleteSession = async () => {
+    if (!deleteSessionId) return;
 
     setError("");
     setSuccess("");
 
     try {
-      await authService.deleteSession(sessionId);
+      await authService.deleteSession(deleteSessionId);
       setSuccess("Session cancelled successfully.");
       await loadSessions();
     } catch (err) {
       setError(err.message || "Failed to delete session.");
+    } finally {
+      setDeleteSessionId(null);
     }
   };
 
@@ -536,6 +541,37 @@ const ExpertSessionsPage = () => {
           </div>
         </div>
       </div>
+
+      {deleteSessionId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity" onClick={() => setDeleteSessionId(null)}></div>
+          <div className="relative w-full max-w-sm mx-auto my-6 p-6 bg-white rounded-2xl shadow-xl z-50 border border-gray-100 animate-in fade-in zoom-in-95 duration-200 text-center">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4 mx-auto">
+              <span className="text-xl font-bold">🗑️</span>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Cancel Session?</h3>
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+              Are you sure you want to cancel this scheduled session? This action will permanently remove it.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteSessionId(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                Go Back
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteSession}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors"
+              >
+                Cancel Session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
