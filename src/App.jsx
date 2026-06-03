@@ -42,11 +42,22 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [alertConfig, setAlertConfig] = useState({
-    isOpen: false,
-    message: "",
-    type: "info",
-  });
+  const [toasts, setToasts] = useState([]);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+  const [timeoutCountdown, setTimeoutCountdown] = useState(60);
+
+  const addToast = (message, type = "info") => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, message, type, isFading: false }]);
+    setTimeout(() => {
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, isFading: true } : t))
+      );
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 300);
+    }, 4000);
+  };
 
   const getAlertType = (message) => {
     const msg = message.toLowerCase();
@@ -80,13 +91,10 @@ function App() {
   useEffect(() => {
     const originalAlert = window.alert;
     window.alert = (message) => {
+      if (!message) return;
       const msgStr = String(message);
       const type = getAlertType(msgStr);
-      setAlertConfig({
-        isOpen: true,
-        message: msgStr,
-        type: type,
-      });
+      addToast(msgStr, type);
     };
     return () => {
       window.alert = originalAlert;
@@ -107,24 +115,52 @@ function App() {
     };
   }, []);
 
-  // Global Inactivity Timeout (5 minutes)
+  // Warm Inactivity Timeout (15 minutes total: 14m inactivity + 60s countdown warning)
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    let timeoutId;
-    const TIMEOUT_DURATION = 5 * 60 * 1000; // 5 minutes
+    let activeTimer;
+    let countdownInterval;
+    const WARNING_TIMEOUT = 14 * 60 * 1000; // 14 minutes
 
-    const handleInactivity = () => {
+    const logoutUser = () => {
       authService.logout();
       setIsAuthenticated(false);
       setUser(null);
-      alert("Session expired due to inactivity. Please log in again.");
+      setShowTimeoutWarning(false);
+      addToast("Session expired due to inactivity.", "warning");
       navigate("/login");
     };
 
+    const startInactivityTimer = () => {
+      if (activeTimer) clearTimeout(activeTimer);
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      activeTimer = setTimeout(() => {
+        setShowTimeoutWarning(true);
+        setTimeoutCountdown(60);
+      }, WARNING_TIMEOUT);
+    };
+
+    if (showTimeoutWarning) {
+      countdownInterval = setInterval(() => {
+        setTimeoutCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            logoutUser();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      startInactivityTimer();
+    }
+
     const resetTimer = () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(handleInactivity, TIMEOUT_DURATION);
+      if (!showTimeoutWarning) {
+        startInactivityTimer();
+      }
     };
 
     const activityEvents = [
@@ -135,19 +171,23 @@ function App() {
       "touchstart",
     ];
 
-    resetTimer();
-
     activityEvents.forEach((event) => {
       window.addEventListener(event, resetTimer);
     });
 
     return () => {
-      if (timeoutId) clearTimeout(timeoutId);
+      if (activeTimer) clearTimeout(activeTimer);
+      if (countdownInterval) clearInterval(countdownInterval);
       activityEvents.forEach((event) => {
         window.removeEventListener(event, resetTimer);
       });
     };
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, showTimeoutWarning, navigate]);
+
+  const handleKeepLoggedIn = () => {
+    setShowTimeoutWarning(false);
+    addToast("Session extended. Welcome back!", "success");
+  };
 
   // Pages where we don't show navbar/footer
   const authPages = ["/login", "/register", "/forgot-password"];
@@ -264,75 +304,89 @@ function App() {
 
       {showFooter && <Footer />}
 
-      {alertConfig.isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-          {/* Backdrop Blur Overlay */}
+      {/* Toast Notification Container */}
+      <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+        {toasts.map((toast) => (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setAlertConfig((prev) => ({ ...prev, isOpen: false }))}
-          />
-
-          {/* Dialog Box */}
-          <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-gray-100 text-center flex flex-col items-center transform scale-100 transition-all duration-300 animate-in fade-in zoom-in-95">
+            key={toast.id}
+            className={`pointer-events-auto flex items-start gap-3 bg-white border border-gray-100 rounded-2xl p-4 shadow-xl w-full transition-all duration-300 ${
+              toast.isFading ? "animate-toast-out" : "animate-toast-in"
+            }`}
+          >
             {/* Color-coded Icon Circle */}
             <div
-              className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
-                alertConfig.type === "success"
+              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                toast.type === "success"
                   ? "bg-emerald-50 text-emerald-500"
-                  : alertConfig.type === "warning"
+                  : toast.type === "warning"
                     ? "bg-amber-50 text-amber-500"
-                    : alertConfig.type === "error"
+                    : toast.type === "error"
                       ? "bg-rose-50 text-rose-500"
-                      : "bg-teal-50 text-teal-500"
+                      : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
               }`}
             >
-              {alertConfig.type === "success" && (
-                <FaCheckCircle className="w-8 h-8" />
-              )}
-              {alertConfig.type === "warning" && (
-                <FaClock className="w-8 h-8" />
-              )}
-              {alertConfig.type === "error" && (
-                <FaExclamationCircle className="w-8 h-8" />
-              )}
-              {alertConfig.type === "info" && (
-                <FaInfoCircle className="w-8 h-8" />
-              )}
+              {toast.type === "success" && <FaCheckCircle className="w-5 h-5" />}
+              {toast.type === "warning" && <FaClock className="w-5 h-5" />}
+              {toast.type === "error" && <FaExclamationCircle className="w-5 h-5" />}
+              {toast.type === "info" && <FaInfoCircle className="w-5 h-5" />}
             </div>
 
-            {/* Header/Title */}
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              {alertConfig.type === "success"
-                ? "Success"
-                : alertConfig.type === "warning"
-                  ? "Session Timeout"
-                  : alertConfig.type === "error"
-                    ? "Notice"
-                    : "Notification"}
-            </h3>
-
-            {/* Alert Message Text */}
-            <p className="text-sm text-gray-500 mb-6 leading-relaxed whitespace-pre-wrap">
-              {alertConfig.message}
-            </p>
-
-            {/* Action Button */}
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-semibold text-gray-800 capitalize">
+                {toast.type === "info" ? "notification" : toast.type}
+              </h4>
+              <p className="text-xs text-gray-500 mt-0.5 leading-relaxed whitespace-pre-wrap">
+                {toast.message}
+              </p>
+            </div>
+            
             <button
               onClick={() => {
-                setAlertConfig((prev) => ({ ...prev, isOpen: false }));
+                setToasts((prev) => prev.filter((t) => t.id !== toast.id));
               }}
-              className={`w-full py-3 px-6 rounded-xl text-white font-semibold shadow-md transition-all duration-200 hover:shadow-lg active:scale-95 cursor-pointer ${
-                alertConfig.type === "success"
-                  ? "bg-emerald-500 hover:bg-emerald-600"
-                  : alertConfig.type === "warning"
-                    ? "bg-amber-500 hover:bg-amber-600"
-                    : alertConfig.type === "error"
-                      ? "bg-rose-500 hover:bg-rose-600"
-                      : "bg-[#5bb5a1] hover:bg-[#4a9d8b]"
-              }`}
+              className="text-gray-400 hover:text-gray-600 cursor-pointer"
             >
-              {alertConfig.type === "warning" ? "Sign In Again" : "OK"}
+              ✕
             </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Warm Inactivity Warning Countdown Modal */}
+      {showTimeoutWarning && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" />
+          <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-gray-100 text-center flex flex-col items-center transform scale-100 transition-all duration-300 animate-in fade-in zoom-in-95">
+            <div className="w-16 h-16 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mb-4">
+              <FaClock className="w-8 h-8 animate-pulse" />
+            </div>
+
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Are you still there?</h3>
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+              We care about your safety. For security, your session will automatically lock in{" "}
+              <span className="font-semibold text-amber-600 text-base">{timeoutCountdown} seconds</span> due to inactivity.
+            </p>
+
+            <div className="w-full flex flex-col gap-3">
+              <button
+                onClick={handleKeepLoggedIn}
+                className="w-full py-3 px-6 rounded-xl bg-[#2c6e5f] hover:bg-[#1b4d42] text-white font-semibold shadow-md transition-all duration-200 hover:shadow-lg active:scale-95 cursor-pointer"
+              >
+                Keep me logged in
+              </button>
+              <button
+                onClick={() => {
+                  authService.logout();
+                  setIsAuthenticated(false);
+                  setUser(null);
+                  setShowTimeoutWarning(false);
+                  navigate("/login");
+                }}
+                className="w-full py-3 px-6 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-all duration-200 cursor-pointer"
+              >
+                Logout Now
+              </button>
+            </div>
           </div>
         </div>
       )}
