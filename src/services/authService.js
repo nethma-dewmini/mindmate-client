@@ -1112,4 +1112,24 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Submit a contact form message (public)
+   */
+  async submitContactMessage({ name, email, subject, message }) {
+    const response = await fetch(`${API_BASE_URL}/contact`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, subject, message }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to submit message");
+    }
+
+    return data;
+  },
 };

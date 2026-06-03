@@ -2,21 +2,30 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaEnvelope, FaClock, FaShieldAlt, FaPaperPlane } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
+import { authService } from "../services/authService";
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.name && form.email && form.message) {
-      setSubmitted(true);
-      // Simulate form submission
-      setTimeout(() => {
-        setForm({ name: "", email: "", subject: "", message: "" });
-        setSubmitted(false);
-        alert("Thank you! Your message has been sent to our administrator.");
-      }, 1500);
+    if (!form.name || !form.email || !form.message) return;
+
+    setSubmitted(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+      await authService.submitContactMessage(form);
+      setSuccessMessage("Thank you! Your message has been sent to our administrator.");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (err) {
+      setErrorMessage(err.message || "Failed to submit message. Please try again.");
+    } finally {
+      setSubmitted(false);
     }
   };
 
@@ -50,6 +59,16 @@ const ContactPage = () => {
             <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2.5">
               <span>✉️</span> Send a Message
             </h2>
+            {successMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 text-sm animate-in fade-in">
+                {successMessage}
+              </div>
+            )}
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-100 text-sm animate-in fade-in">
+                {errorMessage}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
