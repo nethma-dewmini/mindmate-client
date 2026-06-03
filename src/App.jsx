@@ -28,6 +28,7 @@ import {
   AdminStudentRegistryPage,
   ExpertAccountRegisterPage,
   AboutPage,
+  ContactPage,
   ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
@@ -299,6 +300,7 @@ function App() {
           <Route path="/experts" element={<ExpertsPage />} />
           <Route path="/peer-support" element={<PeerSupportPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </main>
 
