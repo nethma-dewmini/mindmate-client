@@ -28,6 +28,7 @@ import {
   AdminStudentRegistryPage,
   ExpertAccountRegisterPage,
   AboutPage,
+  ContactPage,
   ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
@@ -225,7 +226,8 @@ function App() {
     !location.pathname.startsWith("/assessment/") &&
     !location.pathname.startsWith("/expert/assessments/") &&
     location.pathname !== "/" &&
-    location.pathname !== "/about";
+    location.pathname !== "/about" &&
+    location.pathname !== "/contact";
 
   const handleLogout = () => {
     authService.logout();
@@ -299,6 +301,7 @@ function App() {
           <Route path="/experts" element={<ExpertsPage />} />
           <Route path="/peer-support" element={<PeerSupportPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </main>
 

@@ -27,3 +27,5 @@ export { default as ExpertUploadResourcesPage } from "./ExpertUploadResourcesPag
 export { default as ExpertResourceUploadPage } from "./ExpertResourceUploadPage";
 export { default as ExpertResourceLibraryPage } from "./ExpertResourceLibraryPage";
 export { default as ExpertSessionsPage } from "./ExpertSessionsPage";
+export { default as ContactPage } from "./ContactPage";
+
