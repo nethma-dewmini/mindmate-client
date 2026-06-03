@@ -773,13 +773,14 @@ export const authService = {
   /**
    * Cancel a group session booking (student)
    */
-  async cancelSessionBooking(sessionId) {
+  async cancelSessionBooking(sessionId, reason) {
     const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/cancel`, {
       method: "POST",
       headers: {
         ...this.getAuthHeaders(),
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ reason }),
     });
 
     const data = await response.json();

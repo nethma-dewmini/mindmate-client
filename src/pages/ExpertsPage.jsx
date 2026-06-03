@@ -10,6 +10,11 @@ const ExpertsPage = () => {
   const [bookingLoading, setBookingLoading] = useState({});
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  
+  // State for cancellation modal
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
+  const [cancelReason, setCancelReason] = useState("");
 
   const currentUser = authService.getCurrentUser();
   const isStudent = currentUser?.role === "student";
@@ -49,19 +54,46 @@ const ExpertsPage = () => {
 
     try {
       if (isBooked) {
-        // Cancel Booking
-        await authService.cancelSessionBooking(sessionId);
-        setSuccess("Session booking cancelled successfully.");
+        handleCancelClick(sessionId);
       } else {
         // Book Session
         await authService.bookSession(sessionId);
         setSuccess("Session booked successfully! Meeting details are now available.");
+        await loadSessions();
       }
-      await loadSessions();
     } catch (err) {
       setError(err.message || "Failed to update booking.");
     } finally {
-      setBookingLoading((prev) => ({ ...prev, [sessionId]: false }));
+      if (!isBooked) {
+        setBookingLoading((prev) => ({ ...prev, [sessionId]: false }));
+      }
+    }
+  };
+
+  const handleCancelClick = (sessionId) => {
+    setSelectedSessionId(sessionId);
+    setCancelReason("");
+    setShowCancelModal(true);
+  };
+
+  const handleCancelSubmit = async () => {
+    if (!selectedSessionId) return;
+
+    setBookingLoading((prev) => ({ ...prev, [selectedSessionId]: true }));
+    setError("");
+    setSuccess("");
+    setShowCancelModal(false);
+
+    try {
+      await authService.cancelSessionBooking(selectedSessionId, cancelReason);
+      setSuccess("Session booking cancelled successfully. Notification email sent to the expert.");
+      await loadSessions();
+    } catch (err) {
+      setError(err.message || "Failed to cancel booking.");
+    } finally {
+      setBookingLoading((prev) => ({ ...prev, [selectedSessionId]: false }));
+      setSelectedSessionId(null);
+      setCancelReason("");
     }
   };
 
@@ -201,7 +233,7 @@ const ExpertsPage = () => {
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 text-xs">
                       <span className="text-gray-500 font-medium">Do you want to cancel the booking?</span>
                       <button
-                        onClick={() => handleBookingToggle(session.id, true)}
+                        onClick={() => handleCancelClick(session.id)}
                         disabled={bookingLoading[session.id]}
                         className="text-red-500 hover:text-red-700 font-bold hover:underline py-1.5 px-3 bg-red-50 rounded-lg border border-red-100 transition-colors disabled:opacity-50 shrink-0"
                       >
@@ -224,6 +256,67 @@ const ExpertsPage = () => {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Cancellation Modal */}
+        {showCancelModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity"
+              onClick={() => setShowCancelModal(false)}
+            ></div>
+            
+            {/* Modal Content */}
+            <div className="relative w-full max-w-md mx-auto my-6 p-6 bg-white rounded-2xl shadow-xl z-50 border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+                <h3 className="text-lg font-bold text-gray-800">
+                  Cancel Session Booking
+                </h3>
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-xl font-bold"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="my-4">
+                <p className="text-sm text-gray-500 mb-3">
+                  Please let the expert know why you are cancelling your booking for this session. Your feedback helps them prepare or adjust future sessions.
+                </p>
+                <label htmlFor="cancel-reason" className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                  Reason for Cancellation
+                </label>
+                <textarea
+                  id="cancel-reason"
+                  rows="4"
+                  className="w-full px-3 py-2 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bb5a1]/50 focus:border-[#5bb5a1] resize-none"
+                  placeholder="e.g. I have an academic clash / family emergency / won't be able to attend at this time."
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowCancelModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelSubmit}
+                  disabled={bookingLoading[selectedSessionId]}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {bookingLoading[selectedSessionId] ? "Cancelling..." : "Cancel Booking"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

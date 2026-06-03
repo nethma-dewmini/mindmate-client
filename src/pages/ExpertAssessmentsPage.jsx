@@ -20,13 +20,7 @@ const ExpertAssessmentsPage = () => {
     setFilter((current) => (current === type ? "all" : type));
   };
 
-  const getCardClass = (type) => {
-    const baseClass = "rounded-2xl p-4 border transition-all cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-[#5bb5a1]/50";
-    if (filter === type) {
-      return `${baseClass} bg-[#5bb5a1]/8 border-[#5bb5a1] shadow-sm scale-[1.02]`;
-    }
-    return `${baseClass} bg-slate-50/80 border-slate-100 hover:bg-slate-100/80 hover:border-slate-200`;
-  };
+
 
   const loadAssessments = async () => {
     try {
@@ -92,7 +86,7 @@ const ExpertAssessmentsPage = () => {
           </h1>
           <p className="mt-2 text-slate-500 max-w-2xl">
             Open an assessment to view its questions and details. Use the "Create an Assessment"
-            button to start a new draft.
+            button to start a new assessment.
           </p>
         </div>
 
@@ -101,14 +95,46 @@ const ExpertAssessmentsPage = () => {
 
       <div className="max-w-7xl mx-auto">
         <section className="rounded-3xl bg-white shadow-sm border border-slate-100 p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-              <p className="text-sm font-semibold text-[#5bb5a1] uppercase tracking-wide">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="text-sm font-bold text-[#5bb5a1] uppercase tracking-wide">
                 Assessment Overview
-              </p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-800">
-                Select a card to view the assessment
-              </h2>
+              </span>
+              <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => toggleFilter("public")}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                    filter === "public"
+                      ? "bg-[#5bb5a1] text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                  }`}
+                >
+                  Public: <span className="ml-0.5 font-bold">{summary.publicCount}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleFilter("private")}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                    filter === "private"
+                      ? "bg-[#5bb5a1] text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                  }`}
+                >
+                  Private: <span className="ml-0.5 font-bold">{summary.privateCount}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilter("all")}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                    filter === "all"
+                      ? "bg-[#5bb5a1] text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                  }`}
+                >
+                  Total: <span className="ml-0.5 font-bold">{assessments.length}</span>
+                </button>
+              </div>
             </div>
             <button
               type="button"
@@ -119,50 +145,23 @@ const ExpertAssessmentsPage = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-8 max-w-md">
-            <button
-              type="button"
-              onClick={() => toggleFilter("public")}
-              className={getCardClass("public")}
-            >
-              <div className="text-xs uppercase tracking-wide text-slate-400 font-medium text-left">
-                Public
-              </div>
-              <div className="mt-1 text-2xl font-bold text-slate-800 text-left">
-                {summary.publicCount}
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleFilter("private")}
-              className={getCardClass("private")}
-            >
-              <div className="text-xs uppercase tracking-wide text-slate-400 font-medium text-left">
-                Private
-              </div>
-              <div className="mt-1 text-2xl font-bold text-slate-800 text-left">
-                {summary.privateCount}
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("all")}
-              className={getCardClass("all")}
-            >
-              <div className="text-xs uppercase tracking-wide text-slate-400 font-medium text-left">
-                Total
-              </div>
-              <div className="mt-1 text-2xl font-bold text-slate-800 text-left">
-                {assessments.length}
-              </div>
-            </button>
-          </div>
-
           {error ? (
             <div className="rounded-xl px-4 py-3 text-sm bg-rose-50 text-rose-800 mb-4">
               {error}
             </div>
           ) : null}
+
+          {filter === "public" && (
+            <div className="mb-4 rounded-xl px-4 py-2.5 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100/50 flex items-center gap-1.5 max-w-max">
+              <span>💡</span> These assessments are shown to students.
+            </div>
+          )}
+
+          {filter === "private" && (
+            <div className="mb-4 rounded-xl px-4 py-2.5 text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-100/50 flex items-center gap-1.5 max-w-max">
+              <span>💡</span> Complete your modifications and publish them to make these assessments visible to students.
+            </div>
+          )}
 
           {filteredAssessments.length === 0 ? (
             <div className="text-center py-12 border border-dashed border-slate-200 rounded-2xl bg-slate-50/30">
@@ -171,7 +170,7 @@ const ExpertAssessmentsPage = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAssessments.map((assessment) => (
                 <Link
                   key={assessment.id}
