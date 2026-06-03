@@ -226,7 +226,8 @@ function App() {
     !location.pathname.startsWith("/assessment/") &&
     !location.pathname.startsWith("/expert/assessments/") &&
     location.pathname !== "/" &&
-    location.pathname !== "/about";
+    location.pathname !== "/about" &&
+    location.pathname !== "/contact";
 
   const handleLogout = () => {
     authService.logout();

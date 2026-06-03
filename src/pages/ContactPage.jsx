@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaEnvelope, FaClock, FaShieldAlt, FaPaperPlane } from "react-icons/fa";
+import mindmateLogo from "../assets/mindmate_logo.png";
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
@@ -20,8 +21,8 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f5e7] py-12 px-6 flex flex-col items-center">
-      <div className="max-w-4xl w-full">
+    <div className="min-h-screen bg-[#f9f5e7] flex flex-col pt-16">
+      <div className="max-w-4xl w-full mx-auto px-6 py-12 flex-grow">
         {/* Back Link */}
         <div className="mb-6">
           <Link
@@ -179,6 +180,19 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="py-8 px-6 bg-gray-50 border-t border-gray-100 w-full mt-auto">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+          <div className="flex items-center space-x-2 mb-4 md:mb-0">
+            <img src={mindmateLogo} alt="MindMate" className="w-6 h-6" />
+            <span className="font-semibold text-gray-800">MindMate</span>
+          </div>
+          <p className="text-sm text-gray-500">
+            © 2025 MindMate. A safe space for mental wellness.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
