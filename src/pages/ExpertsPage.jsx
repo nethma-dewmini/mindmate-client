@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaCalendarAlt, FaClock, FaVideo, FaExternalLinkAlt, FaInfoCircle } from "react-icons/fa";
 import { authService } from "../services/authService";
+import { SkeletonCard } from "../components";
 
 const ExpertsPage = () => {
   const [sessions, setSessions] = useState([]);
@@ -103,8 +104,8 @@ const ExpertsPage = () => {
 
         {/* Sessions list */}
         {sessionsLoading ? (
-          <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center text-gray-500">
-            Loading live sessions...
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SkeletonCard count={4} />
           </div>
         ) : sessions.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 border-2 border-dashed border-gray-100 text-center text-gray-400">

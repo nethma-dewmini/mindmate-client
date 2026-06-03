@@ -113,42 +113,45 @@ const DashboardPage = () => {
 
   const greeting = getGreeting();
 
-  const quickActions = [
+  const primaryActions = [
     {
       icon: FaComments,
-      title: "Start Chat",
-      description: "Talk to our AI assistant for immediate support",
+      title: "AI Companion",
+      description: "Talk to our compassionate AI assistant for immediate feedback and emotional relief",
       path: "/chat",
     },
     {
       icon: FaChartLine,
       title: "Track Mood",
-      description: "Log your daily mood and track patterns",
+      description: "Log your daily mood check-in and analyze emotional trends over time",
       path: "/mood",
-    },
-    {
-      icon: FaClipboardList,
-      title: "Take Assessment",
-      description: "Evaluate your mental health with evidence-based tools",
-      path: "/assessment",
-    },
-    {
-      icon: FaUsers,
-      title: "Peer Support",
-      description: "Share your journey, find mutual understanding, and grow together in a safe, compassionate community",
-      path: "/peer-support",
-    },
-    {
-      icon: FaBook,
-      title: "Browse Resources",
-      description: "Access expert articles, videos, and guides",
-      path: "/resources",
     },
     {
       icon: FaUserMd,
       title: "Book Expert",
-      description: "Schedule a session with mental health professionals",
+      description: "Schedule individual live guidance sessions with certified mental health experts",
       path: "/experts",
+    },
+  ];
+
+  const selfCareTools = [
+    {
+      icon: FaClipboardList,
+      title: "Self Assessments",
+      description: "Evaluate your anxiety, mood, and stress using research-backed check-ins",
+      path: "/assessment",
+    },
+    {
+      icon: FaUsers,
+      title: "Peer Support Groups",
+      description: "Connect with local university students to share stories and grow in a secure group",
+      path: "/peer-support",
+    },
+    {
+      icon: FaBook,
+      title: "Resource Library",
+      description: "Explore clinical articles, guided audio sessions, and wellness literature",
+      path: "/resources",
     },
   ];
 
@@ -190,13 +193,13 @@ const DashboardPage = () => {
             <Link
               to="/profile"
               title="View Profile"
-              className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#5bb5a1] shadow-sm hover:scale-105 transition-transform cursor-pointer"
+              className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-[#2c6e5f] shadow-sm hover:scale-105 transition-transform cursor-pointer"
             >
               {user.name.charAt(0).toUpperCase()}
             </Link>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-white text-red-400 rounded-lg flex items-center space-x-2 hover:bg-red-50 border border-gray-100 shadow-sm transition-all"
+              className="px-4 py-2 bg-white text-red-400 rounded-lg flex items-center space-x-2 hover:bg-red-50 border border-gray-100 shadow-sm transition-all cursor-pointer"
             >
               <FaSignOutAlt />
               <span>Logout</span>
@@ -212,14 +215,14 @@ const DashboardPage = () => {
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8 transition-all hover:shadow-md">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5bb5a1] bg-[#5bb5a1]/10 px-3 py-1 rounded-full">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#2c6e5f] bg-[#2c6e5f]/10 px-3 py-1 rounded-full">
                 Daily Check-in
               </span>
               <h2 className="text-xl font-bold text-gray-800 mt-2.5">
                 How is your emotional balance right now?
               </h2>
               <p className="text-gray-500 text-sm mt-1">
-                Your current mood streak is <span className="font-semibold text-[#5bb5a1]">{moodStreak}</span>. Log today's mood to keep it up!
+                Your current mood streak is <span className="font-semibold text-[#2c6e5f]">{moodStreak}</span>. Log today's mood to keep it up!
               </p>
             </div>
             {/* Check-in status / interactive buttons */}
@@ -255,53 +258,90 @@ const DashboardPage = () => {
         </div>
 
         {/* Affirmation Widget */}
-        <div className="bg-gradient-to-r from-[#5bb5a1]/10 to-[#5bb5a1]/5 rounded-3xl p-6 border border-[#5bb5a1]/20 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-[#2c6e5f]/10 to-[#2c6e5f]/5 rounded-3xl p-6 border border-[#2c6e5f]/20 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <span className="text-3xl">🌱</span>
             <div>
-              <p className="text-xs font-bold text-[#5bb5a1] uppercase tracking-wider">Mindful Affirmation</p>
+              <p className="text-xs font-bold text-[#2c6e5f] uppercase tracking-wider">Mindful Affirmation</p>
               <p className="text-gray-700 italic font-medium mt-1">"{affirmation}"</p>
             </div>
           </div>
           <button
             onClick={handleAffirmationCycle}
-            className="px-4 py-2 bg-white text-[#5bb5a1] hover:bg-[#5bb5a1] hover:text-white border border-[#5bb5a1]/20 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 shrink-0 cursor-pointer"
+            className="px-4 py-2 bg-white text-[#2c6e5f] hover:bg-[#2c6e5f] hover:text-white border border-[#2c6e5f]/20 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 shrink-0 cursor-pointer"
           >
             New Affirmation 🔄
           </button>
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {quickActions.map((action, index) => {
-            const Icon = action.icon;
-            return (
-              <Link key={index} to={action.path} className="group">
-                <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="bg-[#5bb5a1]/10 text-[#5bb5a1] w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-xl group-hover:scale-110 transition-transform duration-300">
-                      <Icon />
+        {/* Primary Actions Grid */}
+        <div className="mb-10">
+          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span>🎯</span> Primary Support & Care
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {primaryActions.map((action, index) => {
+              const Icon = action.icon;
+              return (
+                <Link key={index} to={action.path} className="group">
+                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
+                    <div>
+                      <div className="bg-[#2c6e5f]/10 text-[#2c6e5f] w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-xl group-hover:scale-110 transition-transform duration-300">
+                        <Icon />
+                      </div>
+                      <h3 className="font-bold text-gray-800 mb-1 group-hover:text-[#2c6e5f] transition-colors duration-200">
+                        {action.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 leading-relaxed">
+                        {action.description}
+                      </p>
                     </div>
-                    <h3 className="font-bold text-gray-800 mb-1 group-hover:text-[#5bb5a1] transition-colors duration-200">
-                      {action.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      {action.description}
-                    </p>
+                    <div className="mt-5 text-xs font-semibold text-[#2c6e5f] flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
+                      Get Started <span>→</span>
+                    </div>
                   </div>
-                  <div className="mt-5 text-xs font-semibold text-[#5bb5a1] flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
-                    Get Started <span>→</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Secondary Tools and Resources */}
+        <div className="mb-10">
+          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span>🌿</span> Self-Care Tools & Resources
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {selfCareTools.map((action, index) => {
+              const Icon = action.icon;
+              return (
+                <Link key={index} to={action.path} className="group">
+                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
+                    <div>
+                      <div className="bg-slate-50 text-slate-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-xl group-hover:bg-[#2c6e5f]/10 group-hover:text-[#2c6e5f] transition-all duration-300">
+                        <Icon />
+                      </div>
+                      <h3 className="font-bold text-gray-800 mb-1 group-hover:text-[#2c6e5f] transition-colors duration-200">
+                        {action.title}
+                      </h3>
+                      <p className="text-sm text-gray-400 leading-relaxed group-hover:text-gray-500 transition-colors">
+                        {action.description}
+                      </p>
+                    </div>
+                    <div className="mt-5 text-xs font-semibold text-slate-500 group-hover:text-[#2c6e5f] flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
+                      Explore Tool <span>→</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* Quick Tips */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Quick Tips for Today
+          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span>💡</span> Daily Mental Wellness Tips
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickTips.map((tip, index) => (
@@ -310,7 +350,7 @@ const DashboardPage = () => {
                 className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100"
               >
                 <div className="text-4xl mb-3">{tip.emoji}</div>
-                <h3 className="font-semibold text-[#5bb5a1] mb-2">
+                <h3 className="font-semibold text-[#2c6e5f] mb-2">
                   {tip.title}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{tip.description}</p>
