@@ -348,13 +348,14 @@ const AdminExpertApplications = () => {
                     }
                     disabled={
                       actionLoadingId === selectedApplication.id ||
-                      selectedApplication.status === "rejected" ||
-                      selectedApplication.status === "approved"
+                      selectedApplication.status === "rejected"
                     }
                     className="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 cursor-pointer"
                   >
                     {selectedApplication.status === "rejected"
                       ? "Rejected"
+                      : selectedApplication.status === "approved"
+                      ? "Revoke Approval"
                       : "Reject"}
                   </button>
                 </div>
