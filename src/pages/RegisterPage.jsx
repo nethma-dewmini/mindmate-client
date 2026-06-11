@@ -289,8 +289,9 @@ const RegisterPage = () => {
           studentData.password,
         );
 
-        // Success - redirect to login or dashboard
-        navigate("/login");
+        // Success - show verification message
+        setSuccessMessage("Registration successful! Please check your university email to verify your account before logging in.");
+        setStudentData({ title: "", name: "", email: "", studentId: "", password: "", confirmPassword: "" });
       } else if (step === "expert") {
         // Validate form
         if (
