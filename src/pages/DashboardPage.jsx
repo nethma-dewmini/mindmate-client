@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   FaComments,
   FaChartLine,
@@ -10,6 +11,19 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { authService } from "../services/authService";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -212,7 +226,12 @@ const DashboardPage = () => {
       <div className="max-w-6xl mx-auto px-6 py-8">
         
         {/* Interactive Mood Check-in Widget */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8 transition-all hover:shadow-md">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8 transition-all hover:shadow-md"
+        >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#2c6e5f] bg-[#2c6e5f]/10 px-3 py-1 rounded-full">
@@ -255,10 +274,15 @@ const DashboardPage = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Affirmation Widget */}
-        <div className="bg-gradient-to-r from-[#2c6e5f]/10 to-[#2c6e5f]/5 rounded-3xl p-6 border border-[#2c6e5f]/20 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-gradient-to-r from-[#2c6e5f]/10 to-[#2c6e5f]/5 rounded-3xl p-6 border border-[#2c6e5f]/20 mb-8 flex flex-col md:flex-row items-center justify-between gap-4"
+        >
           <div className="flex items-center gap-4">
             <span className="text-3xl">🌱</span>
             <div>
@@ -272,19 +296,25 @@ const DashboardPage = () => {
           >
             New Affirmation 🔄
           </button>
-        </div>
+        </motion.div>
 
         {/* Primary Actions Grid */}
         <div className="mb-10">
           <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span>🎯</span> Primary Support & Care
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {primaryActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <Link key={index} to={action.path} className="group">
-                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
+                <motion.div key={index} variants={itemVariants} className="h-full">
+                  <Link to={action.path} className="group block h-full">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
                     <div>
                       <div className="bg-[#2c6e5f]/10 text-[#2c6e5f] w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-xl group-hover:scale-110 transition-transform duration-300">
                         <Icon />
@@ -300,10 +330,11 @@ const DashboardPage = () => {
                       Get Started <span>→</span>
                     </div>
                   </div>
-                </Link>
+                  </Link>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         {/* Secondary Tools and Resources */}
@@ -311,12 +342,18 @@ const DashboardPage = () => {
           <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span>🌿</span> Self-Care Tools & Resources
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {selfCareTools.map((action, index) => {
               const Icon = action.icon;
               return (
-                <Link key={index} to={action.path} className="group">
-                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
+                <motion.div key={index} variants={itemVariants} className="h-full">
+                  <Link to={action.path} className="group block h-full">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-gray-100 h-full flex flex-col justify-between">
                     <div>
                       <div className="bg-slate-50 text-slate-600 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-xl group-hover:bg-[#2c6e5f]/10 group-hover:text-[#2c6e5f] transition-all duration-300">
                         <Icon />
@@ -332,10 +369,11 @@ const DashboardPage = () => {
                       Explore Tool <span>→</span>
                     </div>
                   </div>
-                </Link>
+                  </Link>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         {/* Quick Tips */}
@@ -343,10 +381,17 @@ const DashboardPage = () => {
           <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span>💡</span> Daily Mental Wellness Tips
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
             {quickTips.map((tip, index) => (
-              <div
+              <motion.div
                 key={index}
+                variants={itemVariants}
                 className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100"
               >
                 <div className="text-4xl mb-3">{tip.emoji}</div>
@@ -354,9 +399,9 @@ const DashboardPage = () => {
                   {tip.title}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{tip.description}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
       </div>
