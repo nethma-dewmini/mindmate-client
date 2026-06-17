@@ -219,24 +219,8 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f5e7] pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Navigation Breadcrumb */}
-        <div className="mb-6">
-          <Link
-            to={
-              userRole === "admin"
-                ? "/admin/dashboard"
-                : userRole === "expert"
-                ? "/expert/dashboard"
-                : "/dashboard"
-            }
-            className="inline-flex items-center text-sm font-bold text-[#2c6e5f] hover:text-[#1b4d42] transition-colors link-arrow-left"
-          >
-            <span className="mr-1">←</span> Back to Dashboard
-          </Link>
-        </div>
+    <div className="min-h-screen bg-[#f9f5e7] pt-12 pb-16">
+      <div className="max-w-6xl mx-auto px-6">
 
         {error && (
           <motion.div 
