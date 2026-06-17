@@ -23,7 +23,6 @@ export { default as ExpertAccountRegisterPage } from "./ExpertAccountRegisterPag
 export { default as ExpertDashboardPage } from "./ExpertDashboardPage";
 export { default as ExpertAssessmentsPage } from "./ExpertAssessmentsPage";
 export { default as ExpertAssessmentDetailPage } from "./ExpertAssessmentDetailPage";
-export { default as ExpertUploadResourcesPage } from "./ExpertUploadResourcesPage";
 export { default as ExpertResourceUploadPage } from "./ExpertResourceUploadPage";
 export { default as ExpertResourceLibraryPage } from "./ExpertResourceLibraryPage";
 export { default as ExpertSessionsPage } from "./ExpertSessionsPage";

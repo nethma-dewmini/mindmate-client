@@ -30,7 +30,6 @@ import {
   ExpertAccountRegisterPage,
   AboutPage,
   ContactPage,
-  ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
   ExpertSessionsPage,
@@ -198,7 +197,6 @@ function App() {
   const appPages = [
     "/dashboard",
     "/expert/dashboard",
-    "/expert/upload-resources",
     "/expert/resource-upload",
     "/expert/resource-library",
     "/expert/assessments",
@@ -268,10 +266,6 @@ function App() {
             <Route
               path="/expert/assessments/:id"
               element={<PageTransition><ExpertAssessmentDetailPage /></PageTransition>}
-            />
-            <Route
-              path="/expert/upload-resources"
-              element={<PageTransition><ExpertUploadResourcesPage /></PageTransition>}
             />
             <Route
               path="/expert/resource-upload"
