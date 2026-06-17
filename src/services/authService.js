@@ -1133,4 +1133,44 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Verify email using token
+   */
+  async verifyEmail(token) {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Email verification failed");
+    }
+
+    return data;
+  },
+
+  /**
+   * Resend email verification link
+   */
+  async resendVerification(email) {
+    const response = await fetch(`${API_BASE_URL}/auth/resend-verification`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to resend verification email");
+    }
+
+    return data;
+  },
 };

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSignOutAlt, FaClipboardList, FaCalendarAlt, FaBookOpen } from "react-icons/fa";
+import { FaSignOutAlt, FaClipboardList, FaCalendarAlt, FaFileUpload, FaFolderOpen } from "react-icons/fa";
 import { authService } from "../services/authService";
 
 const ExpertDashboardPage = () => {
@@ -35,7 +35,6 @@ const ExpertDashboardPage = () => {
       path: "/expert/assessments",
       linkText: "Open Assessments",
     },
-
     {
       title: "Sessions Schedule",
       description: "Define your student support hours, coordinate check-ins, and schedule upcoming sessions held.",
@@ -44,11 +43,18 @@ const ExpertDashboardPage = () => {
       linkText: "Manage Sessions",
     },
     {
-      title: "Resource Management",
+      title: "Upload Resource",
       description: "Contribute clinical sheets, guidebooks, and self-help articles for the student resource library.",
-      icon: FaBookOpen,
-      path: "/expert/upload-resources",
-      linkText: "Manage Resources",
+      icon: FaFileUpload,
+      path: "/expert/resource-upload",
+      linkText: "Upload Resource",
+    },
+    {
+      title: "Resource Library",
+      description: "Review, edit, publish or delete the clinical resources you have already uploaded.",
+      icon: FaFolderOpen,
+      path: "/expert/resource-library",
+      linkText: "Manage Uploads",
     },
   ];
 
@@ -89,7 +95,7 @@ const ExpertDashboardPage = () => {
 
       {/* Grid Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {expertActions.map((action, index) => {
             const Icon = action.icon;
             return (

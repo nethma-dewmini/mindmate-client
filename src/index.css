@@ -146,3 +146,205 @@ body {
 .animate-toast-out {
   animation: fadeOut 0.2s ease-in forwards;
 }
+
+/* Custom dashboard interactive styles */
+.gradient-premium-header {
+  background: radial-gradient(circle at 10% 20%, rgba(168, 213, 186, 0.6) 0%, transparent 60%),
+              radial-gradient(circle at 90% 10%, rgba(91, 181, 161, 0.4) 0%, transparent 55%),
+              radial-gradient(circle at 50% 80%, rgba(254, 252, 246, 0.7) 0%, transparent 50%),
+              linear-gradient(135deg, #eef7f2 0%, #e2eedb 100%);
+  border-bottom: 1px solid rgba(44, 110, 95, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 30px rgba(44, 110, 95, 0.03);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(44, 110, 95, 0.15);
+  box-shadow: 0 15px 35px rgba(44, 110, 95, 0.06);
+}
+
+/* Interactive dynamic glows */
+.hover-glow-teal {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-glow-teal:hover {
+  box-shadow: 0 12px 30px -5px rgba(44, 110, 95, 0.18);
+  border-color: rgba(44, 110, 95, 0.25);
+}
+
+.hover-glow-amber {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-glow-amber:hover {
+  box-shadow: 0 12px 30px -5px rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.hover-glow-blue {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-glow-blue:hover {
+  box-shadow: 0 12px 30px -5px rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.hover-glow-indigo {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-glow-indigo:hover {
+  box-shadow: 0 12px 30px -5px rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.hover-glow-emerald {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-glow-emerald:hover {
+  box-shadow: 0 12px 30px -5px rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.hover-glow-rose {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-glow-rose:hover {
+  box-shadow: 0 12px 30px -5px rgba(244, 63, 94, 0.18);
+  border-color: rgba(244, 63, 94, 0.25);
+}
+
+/* Float Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Streak Flame Animation */
+@keyframes flameGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.7));
+  }
+}
+
+.animate-flame {
+  animation: flameGlow 2s ease-in-out infinite;
+}
+
+/* Smooth Arrow Slide */
+.arrow-slide span {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.arrow-slide:hover span {
+  transform: translateX(4px);
+}
+
+/* Confetti particles */
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(60px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.confetti-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: confetti 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+/* Tip card interactive */
+.tip-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tip-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(44, 110, 95, 0.08);
+  border-color: rgba(44, 110, 95, 0.15);
+}
+
+/* Profile page custom interactive styles */
+.link-arrow-left span {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.link-arrow-left:hover span {
+  transform: translateX(-4px);
+}
+
+.badge-unlocked {
+  background: linear-gradient(135deg, rgba(168, 213, 186, 0.8) 0%, rgba(91, 181, 161, 0.9) 100%);
+  border: 1px solid rgba(44, 110, 95, 0.2);
+  box-shadow: 0 4px 15px rgba(44, 110, 95, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.badge-unlocked:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 10px 25px rgba(44, 110, 95, 0.2);
+  border-color: rgba(44, 110, 95, 0.4);
+}
+
+.badge-locked {
+  background: rgba(241, 245, 249, 0.6);
+  border: 2px dashed rgba(203, 213, 225, 0.8);
+  opacity: 0.6;
+  filter: grayscale(1);
+  transition: all 0.3s ease;
+}
+
+.badge-locked:hover {
+  opacity: 0.85;
+  filter: grayscale(0.6);
+  background: rgba(241, 245, 249, 0.9);
+}
+
+/* Custom interactive border animation for input fields */
+.interactive-input {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.interactive-input:focus-within {
+  transform: translateY(-2px);
+}
+
+/* Pop animation for reactions click */
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop {
+  animation: pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+

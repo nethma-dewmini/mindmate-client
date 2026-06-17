@@ -63,6 +63,18 @@ const LoginPage = () => {
     }
   };
 
+  const handleResendVerification = async () => {
+    try {
+      setIsLoading(true);
+      await authService.resendVerification(formData.email);
+      setErrors({ general: "Verification email resent successfully! Please check your inbox.", type: "success" });
+    } catch (err) {
+      setErrors({ general: err.message || "Failed to resend verification email." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center gradient-teal">
       <div className="w-full max-w-md mx-4">
@@ -77,8 +89,17 @@ const LoginPage = () => {
           </div>
 
           {errors.general && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+            <div className={`mb-6 p-4 rounded-xl text-sm border ${errors.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-600'}`}>
               {errors.general}
+              {errors.general === "Please verify your email address to log in." && (
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  className="mt-2 block text-sm font-semibold underline text-red-700 hover:text-red-800 cursor-pointer"
+                >
+                  Resend Verification Email
+                </button>
+              )}
             </div>
           )}
 

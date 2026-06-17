@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { Navbar, Footer } from "./components";
+import { Navbar, Footer, PageTransition } from "./components";
+import { AnimatePresence } from "framer-motion";
 import { authService } from "./services/authService";
 import { FaClock, FaExclamationCircle, FaInfoCircle, FaCheckCircle } from "react-icons/fa";
 import {
@@ -29,10 +30,10 @@ import {
   ExpertAccountRegisterPage,
   AboutPage,
   ContactPage,
-  ExpertUploadResourcesPage,
   ExpertResourceUploadPage,
   ExpertResourceLibraryPage,
   ExpertSessionsPage,
+  VerifyEmailPage,
 } from "./pages";
 
 function App() {
@@ -191,12 +192,11 @@ function App() {
   };
 
   // Pages where we don't show navbar/footer
-  const authPages = ["/login", "/register", "/forgot-password"];
+  const authPages = ["/login", "/register", "/forgot-password", "/verify-email"];
   const expertPages = ["/expert/register"];
   const appPages = [
     "/dashboard",
     "/expert/dashboard",
-    "/expert/upload-resources",
     "/expert/resource-upload",
     "/expert/resource-library",
     "/expert/assessments",
@@ -245,64 +245,63 @@ function App() {
       )}
 
       <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route
-            path="/expert/register"
-            element={<ExpertAccountRegisterPage />}
-          />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/expert/dashboard" element={<ExpertDashboardPage />} />
-          <Route
-            path="/expert/assessments"
-            element={<ExpertAssessmentsPage />}
-          />
-          <Route
-            path="/expert/assessments/:id"
-            element={<ExpertAssessmentDetailPage />}
-          />
-          <Route
-            path="/expert/upload-resources"
-            element={<ExpertUploadResourcesPage />}
-          />
-          <Route
-            path="/expert/resource-upload"
-            element={<ExpertResourceUploadPage />}
-          />
-          <Route
-            path="/expert/resource-library"
-            element={<ExpertResourceLibraryPage />}
-          />
-          <Route
-            path="/expert/sessions"
-            element={<ExpertSessionsPage />}
-          />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/assessment" element={<AssessmentPage />} />
-          <Route path="/assessment/:id" element={<AssessmentTaking />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin" element={<AdminEntry />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route
-            path="/admin/expert-applications"
-            element={<AdminExpertApplicationsPage />}
-          />
-          <Route path="/admin/peer-groups" element={<AdminPeerGroups />} />
-          <Route
-            path="/admin/student-registry"
-            element={<AdminStudentRegistryPage />}
-          />
-          <Route path="/mood" element={<MoodTrackerPage />} />
-          <Route path="/resources" element={<ResourcesPage />} />
-          <Route path="/experts" element={<ExpertsPage />} />
-          <Route path="/peer-support" element={<PeerSupportPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-        </Routes>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
+            <Route path="/register" element={<PageTransition><RegisterPage /></PageTransition>} />
+            <Route path="/verify-email" element={<PageTransition><VerifyEmailPage /></PageTransition>} />
+            <Route path="/forgot-password" element={<PageTransition><ForgotPasswordPage /></PageTransition>} />
+            <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
+            <Route
+              path="/expert/register"
+              element={<PageTransition><ExpertAccountRegisterPage /></PageTransition>}
+            />
+            <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
+            <Route path="/expert/dashboard" element={<PageTransition><ExpertDashboardPage /></PageTransition>} />
+            <Route
+              path="/expert/assessments"
+              element={<PageTransition><ExpertAssessmentsPage /></PageTransition>}
+            />
+            <Route
+              path="/expert/assessments/:id"
+              element={<PageTransition><ExpertAssessmentDetailPage /></PageTransition>}
+            />
+            <Route
+              path="/expert/resource-upload"
+              element={<PageTransition><ExpertResourceUploadPage /></PageTransition>}
+            />
+            <Route
+              path="/expert/resource-library"
+              element={<PageTransition><ExpertResourceLibraryPage /></PageTransition>}
+            />
+            <Route
+              path="/expert/sessions"
+              element={<PageTransition><ExpertSessionsPage /></PageTransition>}
+            />
+            <Route path="/chat" element={<PageTransition><ChatPage /></PageTransition>} />
+            <Route path="/assessment" element={<PageTransition><AssessmentPage /></PageTransition>} />
+            <Route path="/assessment/:id" element={<PageTransition><AssessmentTaking /></PageTransition>} />
+            <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
+            <Route path="/admin" element={<PageTransition><AdminEntry /></PageTransition>} />
+            <Route path="/admin/dashboard" element={<PageTransition><AdminDashboard /></PageTransition>} />
+            <Route
+              path="/admin/expert-applications"
+              element={<PageTransition><AdminExpertApplicationsPage /></PageTransition>}
+            />
+            <Route path="/admin/peer-groups" element={<PageTransition><AdminPeerGroups /></PageTransition>} />
+            <Route
+              path="/admin/student-registry"
+              element={<PageTransition><AdminStudentRegistryPage /></PageTransition>}
+            />
+            <Route path="/mood" element={<PageTransition><MoodTrackerPage /></PageTransition>} />
+            <Route path="/resources" element={<PageTransition><ResourcesPage /></PageTransition>} />
+            <Route path="/experts" element={<PageTransition><ExpertsPage /></PageTransition>} />
+            <Route path="/peer-support" element={<PageTransition><PeerSupportPage /></PageTransition>} />
+            <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
+            <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
+          </Routes>
+        </AnimatePresence>
       </main>
 
       {showFooter && <Footer />}
