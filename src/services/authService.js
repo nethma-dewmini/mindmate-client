@@ -1173,4 +1173,44 @@ export const authService = {
 
     return data;
   },
+
+  /**
+   * Send registration OTP code to student's email
+   */
+  async sendRegistrationOtp(email, studentId, name) {
+    const response = await fetch(`${API_BASE_URL}/auth/send-registration-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, studentId, name }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send verification code");
+    }
+
+    return data;
+  },
+
+  /**
+   * Verify the registration OTP code
+   */
+  async verifyRegistrationOtp(email, studentId, otpCode) {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-registration-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, studentId, otpCode }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Invalid or expired verification code");
+    }
+
+    return data;
+  },
 };
