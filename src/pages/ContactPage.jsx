@@ -1,8 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaEnvelope, FaClock, FaShieldAlt, FaPaperPlane } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
 import { authService } from "../services/authService";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
@@ -30,48 +53,74 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f5e7] flex flex-col pt-16">
-      <div className="max-w-4xl w-full mx-auto px-6 py-12 flex-grow">
-        {/* Back Link */}
-        <div className="mb-6">
-          <Link
-            to="/"
-            className="inline-flex items-center text-sm text-[#2c6e5f] hover:text-[#1b4d42] font-semibold transition-colors"
-          >
-            <span className="mr-1.5">←</span> Back to Home
-          </Link>
-        </div>
+    <div className="min-h-screen bg-[#f9f5e7] flex flex-col pt-16 relative overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-100/40 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" style={{ animationDuration: "8s" }} />
+      <div className="absolute bottom-1/3 right-10 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" style={{ animationDuration: "12s" }} />
 
+      <div className="max-w-6xl w-full mx-auto px-6 py-12 flex-grow relative z-10">
         {/* Title Banner */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">
+        <div className="text-center mb-12">
+          <motion.h1 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl md:text-5xl font-extrabold text-[#1b4d42] tracking-tight"
+          >
             Contact Support & Admin
-          </h1>
-          <p className="mt-3 text-gray-600 max-w-2xl mx-auto text-sm leading-relaxed">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="mt-4 text-[#2c6e5f]/85 max-w-2xl mx-auto text-sm md:text-base leading-relaxed font-medium"
+          >
             We are here to listen, support, and assist you. Reach out to our system administrator for technical help, account assistance, or platform inquiries.
-          </p>
+          </motion.p>
         </div>
 
         {/* Core Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-12 gap-8"
+        >
           {/* Support Form */}
-          <div className="md:col-span-7 bg-white rounded-3xl p-8 border border-gray-100 shadow-soft">
+          <motion.div 
+            variants={cardVariants}
+            className="md:col-span-7 glass-card bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 hover-glow-teal transition-all duration-300"
+          >
             <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2.5">
               <span>✉️</span> Send a Message
             </h2>
-            {successMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 text-sm animate-in fade-in">
-                {successMessage}
-              </div>
-            )}
-            {errorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-100 text-sm animate-in fade-in">
-                {errorMessage}
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            
+            <AnimatePresence mode="wait">
+              {successMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mb-4 p-3.5 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-100 text-xs font-semibold"
+                >
+                  {successMessage}
+                </motion.div>
+              )}
+              {errorMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mb-4 p-3.5 rounded-2xl bg-rose-50 text-rose-800 border border-rose-100 text-xs font-semibold"
+                >
+                  {errorMessage}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                   Full Name
                 </label>
                 <input
@@ -80,12 +129,12 @@ const ContactPage = () => {
                   placeholder="Your name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2c6e5f]/20 focus:border-[#2c6e5f] transition-all text-sm"
+                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none rounded-xl transition-all duration-300 text-xs font-medium text-gray-700 placeholder-gray-400 focus:scale-[1.005]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                   Email Address
                 </label>
                 <input
@@ -94,12 +143,12 @@ const ContactPage = () => {
                   placeholder="you@example.com"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2c6e5f]/20 focus:border-[#2c6e5f] transition-all text-sm"
+                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none rounded-xl transition-all duration-300 text-xs font-medium text-gray-700 placeholder-gray-400 focus:scale-[1.005]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                   Subject
                 </label>
                 <input
@@ -107,12 +156,12 @@ const ContactPage = () => {
                   placeholder="What is this regarding?"
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2c6e5f]/20 focus:border-[#2c6e5f] transition-all text-sm"
+                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none rounded-xl transition-all duration-300 text-xs font-medium text-gray-700 placeholder-gray-400 focus:scale-[1.005]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                   Message
                 </label>
                 <textarea
@@ -121,83 +170,101 @@ const ContactPage = () => {
                   placeholder="Type your message here..."
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2c6e5f]/20 focus:border-[#2c6e5f] transition-all text-sm resize-none"
+                  className="w-full px-4 py-3 bg-gray-50/50 hover:bg-gray-50/80 border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none rounded-xl transition-all duration-300 text-xs font-medium text-gray-700 placeholder-gray-400 focus:scale-[1.005] resize-none leading-relaxed"
                 />
               </div>
 
-              <button
+              <motion.button
                 type="submit"
                 disabled={submitted}
-                className="w-full py-3.5 bg-[#2c6e5f] hover:bg-[#1b4d42] text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer disabled:opacity-75"
+                whileHover={{ scale: 1.015 }}
+                whileTap={{ scale: 0.985 }}
+                className="w-full py-3.5 bg-[#2c6e5f] hover:bg-[#1b4d42] text-white font-extrabold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer disabled:opacity-75 text-xs uppercase tracking-wider"
               >
-                <FaPaperPlane size={14} />
+                <FaPaperPlane size={11} />
                 <span>{submitted ? "Sending..." : "Submit Inquiry"}</span>
-              </button>
+              </motion.button>
             </form>
-          </div>
+          </motion.div>
 
           {/* Contact Details Card */}
-          <div className="md:col-span-5 flex flex-col gap-6">
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-soft">
+          <motion.div 
+            variants={cardVariants}
+            className="md:col-span-5 flex flex-col gap-6"
+          >
+            <div className="glass-card bg-white rounded-3xl p-6 border border-gray-150 shadow-sm hover-glow-indigo transition-all duration-300">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#2c6e5f] bg-[#2c6e5f]/10 px-3 py-1 rounded-full">
                 Primary Contact
               </span>
               
               <h2 className="text-lg font-bold text-gray-800 mt-4 mb-2">Administrator Support</h2>
-              <p className="text-gray-500 text-xs leading-relaxed mb-6">
+              <p className="text-gray-500 text-xs leading-relaxed mb-6 font-semibold">
                 For administrative matters, expert requests, and policy concerns, contact our designated site admin directly.
               </p>
 
               <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#2c6e5f]/10 text-[#2c6e5f] flex items-center justify-center shrink-0">
+                <motion.div 
+                  whileHover={{ x: 4 }}
+                  className="flex items-start gap-3 group cursor-pointer"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-[#2c6e5f]/10 text-[#2c6e5f] flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                     <FaEnvelope size={14} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Support Email</h4>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Support Email</h4>
                     <a
                       href="mailto:nethmadewmini24@gmail.com"
-                      className="text-sm font-bold text-[#2c6e5f] hover:underline break-all"
+                      className="text-xs font-bold text-[#2c6e5f] hover:underline break-all mt-1.5 inline-block"
                     >
                       nethmadewmini24@gmail.com
                     </a>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#2c6e5f]/10 text-[#2c6e5f] flex items-center justify-center shrink-0">
+                <motion.div 
+                  whileHover={{ x: 4 }}
+                  className="flex items-start gap-3 group cursor-pointer"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                     <FaShieldAlt size={14} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</h4>
-                    <p className="text-sm font-bold text-gray-700">Platform Administrator</p>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Role</h4>
+                    <p className="text-xs font-bold text-gray-700 mt-1.5">Platform Administrator</p>
                   </div>
-                </div>
+                </motion.div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#2c6e5f]/10 text-[#2c6e5f] flex items-center justify-center shrink-0">
+                <motion.div 
+                  whileHover={{ x: 4 }}
+                  className="flex items-start gap-3 group cursor-pointer"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                     <FaClock size={14} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Response Hours</h4>
-                    <p className="text-sm font-bold text-gray-700">Mon - Fri: 9am - 5pm</p>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Response Hours</h4>
+                    <p className="text-xs font-bold text-gray-700 mt-1.5">Mon - Fri: 9am - 5pm</p>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
 
             {/* Crisis Alert Banner */}
-            <div className="bg-rose-50/60 border border-rose-200/50 rounded-3xl p-6 shadow-sm">
+            <motion.div 
+              variants={cardVariants}
+              whileHover={{ scale: 1.01 }}
+              className="bg-rose-50/60 border border-rose-200/50 rounded-3xl p-6 shadow-sm hover:border-rose-300/60 transition-all duration-300 hover-glow-rose"
+            >
               <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-100 px-3 py-1 rounded-full">
                 Emergency Alert
               </span>
               <h3 className="text-sm font-bold text-rose-800 mt-4 mb-1">Need Immediate Help?</h3>
-              <p className="text-xs text-rose-700 leading-relaxed">
+              <p className="text-xs text-rose-700 leading-relaxed font-semibold">
                 If you are in immediate danger or facing a mental health emergency, please contact local emergency medical services or a crisis helpline. Support emails are not monitored 24/7 for crisis situations.
               </p>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* Footer */}
