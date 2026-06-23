@@ -378,10 +378,11 @@ const RegisterPage = () => {
           studentData.password,
         );
 
-        // Success - redirect directly to dashboard
-        setSuccessMessage("Registration successful! Redirecting to dashboard...");
+        // Success - clear auto-login session and redirect to login page
+        authService.logout();
+        setSuccessMessage("Registration successful! Redirecting to login page...");
         setStudentData({ title: "", name: "", email: "", studentId: "", password: "", confirmPassword: "" });
-        setTimeout(() => navigate("/dashboard"), 1500);
+        setTimeout(() => navigate("/login"), 2000);
       } else if (step === "expert") {
         // Validate form
         if (
