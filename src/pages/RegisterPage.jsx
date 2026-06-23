@@ -26,6 +26,13 @@ const RegisterPage = () => {
   const [showExpertPassword, setShowExpertPassword] = useState(false);
   const [showExpertConfirmPassword, setShowExpertConfirmPassword] = useState(false);
 
+  // OTP Verification States
+  const [otpCode, setOtpCode] = useState("");
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpMessage, setOtpMessage] = useState("");
+
   const isValidUomEmail = (value) =>
     /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
 
@@ -232,6 +239,81 @@ const RegisterPage = () => {
     return () => clearTimeout(timeoutId);
   }, [expertData.email, step]);
 
+  const handleSendOtp = async () => {
+    setErrors({});
+    setOtpMessage("");
+    
+    if (!studentData.name) {
+      setErrors({ name: "Name is required" });
+      return;
+    }
+    if (!studentData.email) {
+      setErrors({ email: "Email is required" });
+      return;
+    }
+    if (!isValidUomEmail(studentData.email)) {
+      setErrors({ email: "Enter a valid University of Moratuwa email ending with @uom.lk" });
+      return;
+    }
+    if (!studentData.studentId) {
+      setErrors({ studentId: "Registration number is required" });
+      return;
+    }
+    if (!isValidRegistrationNo(studentData.studentId)) {
+      setErrors({ studentId: "Enter a valid registration number like 221234X. The last letter must be a capital letter." });
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      const studentDisplayName = `${studentData.title ? studentData.title + " " : ""}${studentData.name}`;
+      const response = await authService.sendRegistrationOtp(
+        studentData.email,
+        studentData.studentId,
+        studentDisplayName
+      );
+      setIsOtpSent(true);
+      setOtpMessage(response.message || "Verification code sent successfully to your university email.");
+    } catch (err) {
+      setErrors({ general: err.message || "Failed to send verification code. Please check your details." });
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setErrors({});
+    setOtpMessage("");
+    
+    if (!otpCode || otpCode.length !== 6) {
+      setErrors({ general: "Please enter a valid 6-digit verification code." });
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      await authService.verifyRegistrationOtp(
+        studentData.email,
+        studentData.studentId,
+        otpCode
+      );
+      setIsOtpVerified(true);
+      setOtpMessage("Email verified successfully! You can now set your password to complete registration.");
+    } catch (err) {
+      setErrors({ general: err.message || "Verification failed. The code may be incorrect or expired." });
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResetOtpFlow = () => {
+    setIsOtpSent(false);
+    setIsOtpVerified(false);
+    setOtpCode("");
+    setOtpMessage("");
+    setErrors({});
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -261,8 +343,15 @@ const RegisterPage = () => {
             "Enter a valid registration number like 221234X. The last letter must be a capital letter.";
         }
 
+        // Ensure email OTP verification has been completed
+        if (!isOtpVerified) {
+          setErrors({ general: "Please verify your email using a verification code first." });
+          setIsLoading(false);
+          return;
+        }
+
         if (!studentData.password || !studentData.confirmPassword) {
-          nextErrors.general = "All fields are required";
+          nextErrors.general = "Password fields are required";
         } else if (!isValidPassword(studentData.password)) {
           nextErrors.password =
             "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.";
@@ -282,16 +371,17 @@ const RegisterPage = () => {
 
         // Prepare name with title and call backend
         const studentDisplayName = `${studentData.title ? studentData.title + " " : ""}${studentData.name}`;
-        const response = await authService.registerStudent(
+        await authService.registerStudent(
           studentDisplayName,
           studentData.email,
           studentData.studentId,
           studentData.password,
         );
 
-        // Success - show verification message
-        setSuccessMessage("Registration successful! Please check your university email to verify your account before logging in.");
+        // Success - redirect directly to dashboard
+        setSuccessMessage("Registration successful! Redirecting to dashboard...");
         setStudentData({ title: "", name: "", email: "", studentId: "", password: "", confirmPassword: "" });
+        setTimeout(() => navigate("/dashboard"), 1500);
       } else if (step === "expert") {
         // Validate form
         if (
@@ -482,7 +572,8 @@ const RegisterPage = () => {
                     name="title"
                     value={studentData.title}
                     onChange={handleStudentChange}
-                    className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    disabled={isOtpSent || isOtpVerified}
+                    className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-50 disabled:text-gray-500"
                   >
                     <option value="">Select</option>
                     <option value="Mr">Mr</option>
@@ -502,7 +593,8 @@ const RegisterPage = () => {
                     name="name"
                     value={studentData.name}
                     onChange={handleStudentChange}
-                    className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                    disabled={isOtpSent || isOtpVerified}
+                    className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-50 disabled:text-gray-500 ${
                       errors.name ? "border-red-300" : "border-gray-200"
                     }`}
                   />
@@ -522,7 +614,8 @@ const RegisterPage = () => {
                   value={studentData.email}
                   onChange={handleStudentChange}
                   placeholder="@uom.lk"
-                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                  disabled={isOtpSent || isOtpVerified}
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-50 disabled:text-gray-500 ${
                     errors.email ? "border-red-300" : "border-gray-200"
                   }`}
                 />
@@ -543,7 +636,8 @@ const RegisterPage = () => {
                   name="studentId"
                   value={studentData.studentId}
                   onChange={handleStudentChange}
-                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                  disabled={isOtpSent || isOtpVerified}
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-50 disabled:text-gray-500 ${
                     errors.studentId ? "border-red-300" : "border-gray-200"
                   }`}
                 />
@@ -553,63 +647,140 @@ const RegisterPage = () => {
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showStudentPassword ? "text" : "password"}
-                      name="password"
-                      value={studentData.password}
-                      onChange={handleStudentChange}
-                      className={`w-full pl-4 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
-                        errors.password ? "border-red-300" : "border-gray-200"
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowStudentPassword(!showStudentPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
-                    >
-                      {showStudentPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
+
+              {/* Status and Notification messages */}
+              {otpMessage && (
+                <div className={`rounded-xl px-4 py-3 text-sm border ${
+                  isOtpVerified 
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
+                    : "bg-teal-50 border-teal-200 text-teal-800"
+                }`}>
+                  <div className="flex justify-between items-center">
+                    <span>{otpMessage}</span>
+                    {isOtpVerified && (
+                      <button
+                        type="button"
+                        onClick={handleResetOtpFlow}
+                        className="text-emerald-700 underline font-medium hover:text-emerald-950 ml-2 cursor-pointer"
+                      >
+                        Change Info
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showStudentConfirmPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={studentData.confirmPassword}
-                      onChange={handleStudentChange}
-                      className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowStudentConfirmPassword(!showStudentConfirmPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
-                    >
-                      {showStudentConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-red-600 mt-1">{errors.password}</p>
               )}
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </button>
+              {/* OTP Code Request and Code Submission Controls */}
+              {!isOtpVerified && (
+                <div className="pt-2">
+                  {!isOtpSent ? (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={otpLoading || !studentData.name || !studentData.email || !studentData.studentId}
+                      className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      {otpLoading ? "Sending Verification Code..." : "Verify Email Address"}
+                    </button>
+                  ) : (
+                    <div className="space-y-4 p-4 border border-teal-100 bg-teal-50/30 rounded-2xl">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Verification Code (OTP)
+                        </label>
+                        <input
+                          type="text"
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value.trim())}
+                          placeholder="Enter 6-digit code"
+                          maxLength={6}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 text-center text-xl font-mono tracking-widest"
+                        />
+                      </div>
+                      <div className="flex space-x-3">
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          disabled={otpLoading || otpCode.length !== 6}
+                          className="flex-1 py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          {otpLoading ? "Verifying..." : "Confirm Code"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResetOtpFlow}
+                          className="px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all cursor-pointer"
+                        >
+                          Change Details
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Password Fields & final submit, shown ONLY when OTP is verified */}
+              {isOtpVerified && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showStudentPassword ? "text" : "password"}
+                          name="password"
+                          value={studentData.password}
+                          onChange={handleStudentChange}
+                          className={`w-full pl-4 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                            errors.password ? "border-red-300" : "border-gray-200"
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowStudentPassword(!showStudentPassword)}
+                          className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                        >
+                          {showStudentPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Confirm Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showStudentConfirmPassword ? "text" : "password"}
+                          name="confirmPassword"
+                          value={studentData.confirmPassword}
+                          onChange={handleStudentChange}
+                          className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowStudentConfirmPassword(!showStudentConfirmPassword)}
+                          className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                        >
+                          {showStudentConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-600 mt-1">{errors.password}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    {isLoading ? "Creating Account..." : "Create Account"}
+                  </button>
+                </>
+              )}
             </form>
 
             <p className="mt-6 text-center text-gray-600">
