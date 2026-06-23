@@ -40,6 +40,9 @@ const AdminStudentRegistry = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Selection States
+  const [selectedIds, setSelectedIds] = useState([]);
+
   useEffect(() => {
     if (!user) {
       navigate("/login");
@@ -64,6 +67,7 @@ const AdminStudentRegistry = () => {
   async function loadRegistry(q = "") {
     setLoading(true);
     setError("");
+    setSelectedIds([]); // Clear selection when search changes or list reloads
     try {
       const params = new URLSearchParams();
       if (q) params.set("q", q);
@@ -121,23 +125,39 @@ const AdminStudentRegistry = () => {
     }
   }
 
-  // Deletion logic
+  // Deletion logic (supports single or bulk delete)
   async function handleDeleteConfirm() {
     if (!deletingId) return;
     setError("");
     setSuccessMsg("");
     setDeleting(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/student-registry/${deletingId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...authService.getAuthHeaders(),
-        },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to delete entry");
-      setSuccessMsg("Student registry entry deleted successfully");
+      if (deletingId === "bulk") {
+        const res = await fetch(`${API_BASE_URL}/student-registry/bulk-delete`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...authService.getAuthHeaders(),
+          },
+          body: JSON.stringify({ ids: selectedIds }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to delete entries");
+        setSuccessMsg(`${data.count || selectedIds.length} student registry entries deleted successfully`);
+        setSelectedIds([]);
+      } else {
+        const res = await fetch(`${API_BASE_URL}/student-registry/${deletingId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            ...authService.getAuthHeaders(),
+          },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to delete entry");
+        setSuccessMsg("Student registry entry deleted successfully");
+        setSelectedIds((prev) => prev.filter((x) => x !== deletingId));
+      }
       await loadRegistry(query);
     } catch (err) {
       setError(err.message || "Failed to delete entry");
@@ -146,6 +166,28 @@ const AdminStudentRegistry = () => {
       setShowDeleteConfirm(false);
       setDeletingId(null);
       setDeletingRecord(null);
+    }
+  }
+
+  // Checkbox interactions
+  function handleSelectRow(id) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }
+
+  function handleSelectAll() {
+    const visibleIds = registry.map((r) => r.id);
+    const allVisibleSelected = visibleIds.every((id) => selectedIds.includes(id));
+    if (allVisibleSelected) {
+      // Unselect all visible rows
+      setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
+    } else {
+      // Select all visible rows
+      setSelectedIds((prev) => {
+        const unique = new Set([...prev, ...visibleIds]);
+        return Array.from(unique);
+      });
     }
   }
 
@@ -458,11 +500,40 @@ const AdminStudentRegistry = () => {
               </button>
             </form>
 
+            {/* Bulk Action Bar (Shown when multiple items are selected) */}
+            {selectedIds.length > 0 && (
+              <div className="mb-4 p-4 bg-teal-50 border border-[#2c6e5f]/20 rounded-xl flex items-center justify-between animate-fade-in shadow-sm">
+                <div className="text-sm font-semibold text-[#2c6e5f] flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-[#2c6e5f] animate-ping"></span>
+                  {selectedIds.length} student{selectedIds.length > 1 ? "s" : ""} selected
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeletingId("bulk");
+                    setShowDeleteConfirm(true);
+                  }}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
+                >
+                  <FaTrash className="text-[10px]" />
+                  Delete Selected
+                </button>
+              </div>
+            )}
+
             {/* Registry List Table */}
             <div className="overflow-x-auto rounded-xl border border-slate-100">
               <table className="w-full text-left table-auto border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-5 py-3.5 text-center w-12">
+                      <input
+                        type="checkbox"
+                        checked={registry.length > 0 && registry.every((r) => selectedIds.includes(r.id))}
+                        onChange={handleSelectAll}
+                        className="rounded border-gray-300 text-[#2c6e5f] focus:ring-[#2c6e5f] h-4 w-4 cursor-pointer"
+                      />
+                    </th>
                     <th className="px-5 py-3.5">Registration No</th>
                     <th className="px-5 py-3.5">Email</th>
                     <th className="px-5 py-3.5">Approved On</th>
@@ -471,9 +542,10 @@ const AdminStudentRegistry = () => {
                 </thead>
                 <tbody className="text-sm">
                   {loading ? (
-                    // Premium Skeleton Loaders
+                    // Skeleton Loaders
                     Array.from({ length: 5 }).map((_, idx) => (
                       <tr key={idx} className="border-b border-slate-50 animate-pulse">
+                        <td className="px-5 py-4 text-center"><div className="h-4 w-4 bg-slate-100 rounded mx-auto"></div></td>
                         <td className="px-5 py-4"><div className="h-4 bg-slate-100 rounded w-24"></div></td>
                         <td className="px-5 py-4"><div className="h-4 bg-slate-100 rounded w-44"></div></td>
                         <td className="px-5 py-4"><div className="h-4 bg-slate-100 rounded w-28"></div></td>
@@ -482,48 +554,61 @@ const AdminStudentRegistry = () => {
                     ))
                   ) : registry.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="p-8 text-center text-slate-400 font-medium bg-slate-50/50">
+                      <td colSpan={5} className="p-8 text-center text-slate-400 font-medium bg-slate-50/50">
                         No registry entries found.
                       </td>
                     </tr>
                   ) : (
-                    registry.map((r) => (
-                      <tr 
-                        key={r.id} 
-                        className="bg-white border-b border-slate-100 hover:bg-[#2c6e5f]/5 transition-colors duration-150 group"
-                      >
-                        <td className="px-5 py-4 font-semibold text-slate-800">
-                          {highlightMatch(r.registration_no, debouncedQuery)}
-                        </td>
-                        <td className="px-5 py-4 text-slate-600 font-medium">
-                          {highlightMatch(r.email, debouncedQuery)}
-                        </td>
-                        <td className="px-5 py-4 text-slate-500 text-xs">
-                          {r.created_at
-                            ? new Date(r.created_at).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                              })
-                            : "-"}
-                        </td>
-                        <td className="px-5 py-4 text-center">
-                          <button
-                            onClick={() => {
-                              setDeletingId(r.id);
-                              setDeletingRecord(r);
-                              setShowDeleteConfirm(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer inline-flex items-center"
-                            title="Remove student approval"
-                          >
-                            <FaTrash className="text-xs" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    registry.map((r) => {
+                      const isSelected = selectedIds.includes(r.id);
+                      return (
+                        <tr 
+                          key={r.id} 
+                          className={`border-b border-slate-100 transition-colors duration-150 group ${
+                            isSelected ? "bg-[#2c6e5f]/5 hover:bg-[#2c6e5f]/10" : "bg-white hover:bg-slate-50"
+                          }`}
+                        >
+                          <td className="px-5 py-4 text-center">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleSelectRow(r.id)}
+                              className="rounded border-gray-300 text-[#2c6e5f] focus:ring-[#2c6e5f] h-4 w-4 cursor-pointer"
+                            />
+                          </td>
+                          <td className="px-5 py-4 font-semibold text-slate-800">
+                            {highlightMatch(r.registration_no, debouncedQuery)}
+                          </td>
+                          <td className="px-5 py-4 text-slate-600 font-medium">
+                            {highlightMatch(r.email, debouncedQuery)}
+                          </td>
+                          <td className="px-5 py-4 text-slate-500 text-xs">
+                            {r.created_at
+                              ? new Date(r.created_at).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit"
+                                })
+                              : "-"}
+                          </td>
+                          <td className="px-5 py-4 text-center">
+                            <button
+                              onClick={() => {
+                                setDeletingId(r.id);
+                                setDeletingRecord(r);
+                                setShowDeleteConfirm(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer inline-flex items-center"
+                              title="Remove student approval"
+                            >
+                              <FaTrash className="text-xs" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -544,15 +629,24 @@ const AdminStudentRegistry = () => {
                 <FaExclamationTriangle className="text-lg" />
               </div>
               <h3 className="text-lg font-bold text-slate-800">
-                Remove Student Pre-approval
+                {deletingId === "bulk" ? "Bulk Remove Pre-approvals" : "Remove Student Pre-approval"}
               </h3>
             </div>
 
             <p className="text-slate-600 text-sm mb-5 leading-relaxed">
-              Are you sure you want to remove the pre-approval for student 
-              <strong className="text-slate-800"> {deletingRecord?.registration_no}</strong> (email: <strong className="text-slate-800">{deletingRecord?.email}</strong>)? 
+              {deletingId === "bulk" ? (
+                <>
+                  Are you sure you want to remove the pre-approval for the 
+                  <strong className="text-slate-800"> {selectedIds.length} selected students</strong>?
+                </>
+              ) : (
+                <>
+                  Are you sure you want to remove the pre-approval for student 
+                  <strong className="text-slate-800"> {deletingRecord?.registration_no}</strong> (email: <strong className="text-slate-800">{deletingRecord?.email}</strong>)? 
+                </>
+              )}
               <span className="block mt-2 text-xs text-red-500 font-semibold">
-                This will prevent this student from registering unless they are added back.
+                This action is permanent and will prevent these students from registering unless they are added back.
               </span>
             </p>
 
