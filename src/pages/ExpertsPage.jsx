@@ -18,6 +18,50 @@ const cardVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
 };
 
+const isSessionConducted = (sessionDateStr, sessionTimeStr) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const sessionDate = new Date(sessionDateStr);
+    sessionDate.setHours(0, 0, 0, 0);
+
+    if (sessionDate < today) {
+      return true;
+    }
+    if (sessionDate > today) {
+      return false;
+    }
+
+    if (sessionTimeStr) {
+      const parts = sessionTimeStr.split(/-|to/);
+      const endTimeStr = (parts[parts.length - 1] || "").trim();
+      
+      const match = endTimeStr.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
+      if (match) {
+        let hours = parseInt(match[1]);
+        const minutes = match[2] ? parseInt(match[2]) : 0;
+        const ampm = match[3].toUpperCase();
+
+        if (ampm === "PM" && hours !== 12) {
+          hours += 12;
+        } else if (ampm === "AM" && hours === 12) {
+          hours = 0;
+        }
+
+        const sessionEndTime = new Date();
+        sessionEndTime.setHours(hours, minutes, 0, 0);
+
+        return new Date() > sessionEndTime;
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error("Error parsing session end time:", e);
+    return false;
+  }
+};
+
 const ExpertsPage = () => {
   const [sessions, setSessions] = useState([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
@@ -212,135 +256,167 @@ const ExpertsPage = () => {
             animate="show"
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            {filteredSessions.map((session) => (
-              <motion.div
-                key={session.id}
-                variants={cardVariants}
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className={`glass-card p-6 rounded-3xl flex flex-col justify-between ${
-                  session.is_booked ? "hover-glow-emerald border-emerald-100/40 bg-white" : "hover-glow-teal bg-white"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-3.5">
-                    <span className={`px-3 py-1 text-[10px] rounded-full font-bold flex items-center gap-1.5 ${
-                      session.is_booked ? "bg-emerald-50 text-emerald-600" : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
-                    }`}>
-                      <FaVideo size={9} /> Live Group Session
-                    </span>
-                    {session.is_booked && (
-                      <span className="px-3 py-1 text-[10px] rounded-full bg-emerald-100 text-emerald-800 font-extrabold shadow-sm animate-pulse">
-                        ✓ Booked
+            {filteredSessions.map((session) => {
+              const conducted = isSessionConducted(session.session_date, session.session_time);
+              return (
+                <motion.div
+                  key={session.id}
+                  variants={cardVariants}
+                  whileHover={conducted ? {} : { y: -5 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className={`glass-card p-6 rounded-3xl flex flex-col justify-between ${
+                    conducted
+                      ? "bg-gray-50/50 border-gray-200/65 opacity-85"
+                      : session.is_booked 
+                        ? "hover-glow-emerald border-emerald-100/40 bg-white" 
+                        : "hover-glow-teal bg-white"
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center gap-2 mb-3.5">
+                      <span className={`px-3 py-1 text-[10px] rounded-full font-bold flex items-center gap-1.5 ${
+                        conducted 
+                          ? "bg-gray-100 text-gray-500"
+                          : session.is_booked 
+                            ? "bg-emerald-50 text-emerald-600" 
+                            : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
+                      }`}>
+                        <FaVideo size={9} /> Live Group Session
                       </span>
+                      {session.is_booked && (
+                        <span className={`px-3 py-1 text-[10px] rounded-full font-extrabold shadow-sm ${
+                          conducted ? "bg-gray-100 text-gray-500" : "bg-emerald-100 text-emerald-800 animate-pulse"
+                        }`}>
+                          {conducted ? "✓ Attended" : "✓ Booked"}
+                        </span>
+                      )}
+                      {conducted && !session.is_booked && (
+                        <span className="px-3 py-1 text-[10px] rounded-full bg-gray-100 text-gray-500 font-extrabold shadow-sm">
+                          Conducted
+                        </span>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-xl font-extrabold text-gray-800 mb-1 leading-tight group-hover:text-[#2c6e5f] transition-colors">
+                      {session.topic}
+                    </h3>
+                    <p className="text-xs text-gray-500 font-semibold mb-4">
+                      Hosted by {session.expert_name || "Mental Health Expert"}
+                    </p>
+
+                    <div className="flex flex-wrap gap-4 text-[10px] text-gray-400 font-bold mb-4">
+                      <span className="flex items-center gap-1 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl">
+                        <FaCalendarAlt className="text-slate-400" />
+                        {new Date(session.session_date).toLocaleDateString(
+                          undefined,
+                          {
+                            weekday: "short",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )}
+                      </span>
+                      <span className="flex items-center gap-1 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl">
+                        <FaClock className="text-slate-400" />
+                        {session.session_time}
+                      </span>
+                    </div>
+
+                    {session.content && (
+                      <p className="text-sm text-gray-600 mb-5 whitespace-pre-line leading-relaxed font-medium">
+                        {session.content}
+                      </p>
+                    )}
+
+                    {/* Booking details: only visible if student is booked */}
+                    {session.is_booked && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="mt-4 p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100/60 mb-6 space-y-2.5 shadow-inner"
+                      >
+                        <p className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1">
+                          <FaVideo /> Joining Information
+                        </p>
+                        {conducted ? (
+                          <p className="text-[11px] text-gray-500 italic flex items-center gap-1.5 font-medium">
+                            <FaInfoCircle className="text-gray-400" /> The session has ended. Meeting links are no longer active.
+                          </p>
+                        ) : session.meeting_link ? (
+                          <div className="space-y-2">
+                            <a
+                              href={session.meeting_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-bold bg-white px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm transition-all active:scale-95"
+                            >
+                              Join Live Meeting <FaExternalLinkAlt size={10} className="text-emerald-600" />
+                            </a>
+                            {session.meeting_details && (
+                              <p className="text-[11px] text-gray-600 bg-white/70 p-2 rounded-xl border border-gray-100 mt-1.5 whitespace-pre-line leading-relaxed">
+                                {session.meeting_details}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-[11px] text-gray-500 italic flex items-center gap-1.5 font-medium">
+                            <FaInfoCircle className="text-emerald-600" /> Meeting link will be updated by the expert before the session.
+                          </p>
+                        )}
+                      </motion.div>
                     )}
                   </div>
-                  
-                  <h3 className="text-xl font-extrabold text-gray-800 mb-1 leading-tight group-hover:text-[#2c6e5f] transition-colors">
-                    {session.topic}
-                  </h3>
-                  <p className="text-xs text-gray-500 font-semibold mb-4">
-                    Hosted by {session.expert_name || "Mental Health Expert"}
-                  </p>
 
-                  <div className="flex flex-wrap gap-4 text-[10px] text-gray-400 font-bold mb-4">
-                    <span className="flex items-center gap-1 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl">
-                      <FaCalendarAlt className="text-slate-400" />
-                      {new Date(session.session_date).toLocaleDateString(
-                        undefined,
-                        {
-                          weekday: "short",
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        }
-                      )}
-                    </span>
-                    <span className="flex items-center gap-1 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl">
-                      <FaClock className="text-slate-400" />
-                      {session.session_time}
-                    </span>
-                  </div>
-
-                  {session.content && (
-                    <p className="text-sm text-gray-600 mb-5 whitespace-pre-line leading-relaxed font-medium">
-                      {session.content}
-                    </p>
-                  )}
-
-                  {/* Booking details: only visible if student is booked */}
-                  {session.is_booked && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4 p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100/60 mb-6 space-y-2.5 shadow-inner"
+                  {conducted ? (
+                    session.is_booked ? (
+                      <div className="w-full py-3.5 px-4 rounded-2xl bg-gray-100 text-gray-500 font-extrabold text-center border border-gray-250 flex items-center justify-center gap-2 shadow-sm">
+                        <span className="text-sm">✓ Conducted and Attended</span>
+                      </div>
+                    ) : (
+                      <div className="w-full py-3.5 px-4 rounded-2xl bg-gray-100 text-gray-400 font-extrabold text-center border border-gray-250 flex items-center justify-center gap-2 shadow-sm">
+                        <span className="text-sm">Conducted</span>
+                      </div>
+                    )
+                  ) : session.is_booked ? (
+                    <div className="space-y-3">
+                      <div className="w-full py-3 px-4 rounded-2xl bg-emerald-500 text-white font-extrabold text-center border border-emerald-600 flex items-center justify-center gap-2 shadow-sm">
+                        <span className="text-lg leading-none">✓</span> Booked the session
+                      </div>
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 bg-gray-50 rounded-2xl border border-gray-100 text-[11px]">
+                        <span className="text-gray-500 font-semibold">Do you want to cancel the booking?</span>
+                        <motion.button
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleCancelClick(session.id)}
+                          disabled={bookingLoading[session.id]}
+                          className="text-red-500 hover:text-white font-extrabold py-1.5 px-3 hover:bg-red-500 bg-red-50 rounded-xl border border-red-100 transition-all disabled:opacity-50 shrink-0 shadow-sm cursor-pointer"
+                        >
+                          {bookingLoading[session.id] ? "Cancelling..." : "Cancel Booking"}
+                        </motion.button>
+                      </div>
+                    </div>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleBookingToggle(session.id, false)}
+                      disabled={bookingLoading[session.id] || !isStudent}
+                      className={`w-full py-3.5 rounded-2xl font-bold transition-all shadow-md active:scale-95 cursor-pointer text-sm ${
+                        bookingLoading[session.id] || !isStudent
+                          ? "bg-gray-100 text-gray-400 shadow-none cursor-not-allowed"
+                          : "bg-[#2c6e5f] text-white hover:bg-[#1b4d42] hover:shadow-lg"
+                      }`}
                     >
-                      <p className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1">
-                        <FaVideo /> Joining Information
-                      </p>
-                      {session.meeting_link ? (
-                        <div className="space-y-2">
-                          <a
-                            href={session.meeting_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-bold bg-white px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm transition-all active:scale-95"
-                          >
-                            Join Live Meeting <FaExternalLinkAlt size={10} className="text-emerald-600" />
-                          </a>
-                          {session.meeting_details && (
-                            <p className="text-[11px] text-gray-600 bg-white/70 p-2 rounded-xl border border-gray-100 mt-1.5 whitespace-pre-line leading-relaxed">
-                              {session.meeting_details}
-                            </p>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-[11px] text-gray-500 italic flex items-center gap-1.5 font-medium">
-                          <FaInfoCircle className="text-emerald-600" /> Meeting link will be updated by the expert before the session.
-                        </p>
-                      )}
-                    </motion.div>
+                      {bookingLoading[session.id]
+                        ? "Booking..."
+                        : !isStudent
+                        ? "Log in as student to book"
+                        : "Book Session"}
+                    </motion.button>
                   )}
-                </div>
-
-                {session.is_booked ? (
-                  <div className="space-y-3">
-                    <div className="w-full py-3 px-4 rounded-2xl bg-emerald-500 text-white font-extrabold text-center border border-emerald-600 flex items-center justify-center gap-2 shadow-sm">
-                      <span className="text-lg leading-none">✓</span> Booked the session
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 bg-gray-50 rounded-2xl border border-gray-100 text-[11px]">
-                      <span className="text-gray-500 font-semibold">Do you want to cancel the booking?</span>
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleCancelClick(session.id)}
-                        disabled={bookingLoading[session.id]}
-                        className="text-red-500 hover:text-white font-extrabold py-1.5 px-3 hover:bg-red-500 bg-red-50 rounded-xl border border-red-100 transition-all disabled:opacity-50 shrink-0 shadow-sm cursor-pointer"
-                      >
-                        {bookingLoading[session.id] ? "Cancelling..." : "Cancel Booking"}
-                      </motion.button>
-                    </div>
-                  </div>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleBookingToggle(session.id, false)}
-                    disabled={bookingLoading[session.id] || !isStudent}
-                    className={`w-full py-3.5 rounded-2xl font-bold transition-all shadow-md active:scale-95 cursor-pointer text-sm ${
-                      bookingLoading[session.id] || !isStudent
-                        ? "bg-gray-100 text-gray-400 shadow-none cursor-not-allowed"
-                        : "bg-[#2c6e5f] text-white hover:bg-[#1b4d42] hover:shadow-lg"
-                    }`}
-                  >
-                    {bookingLoading[session.id]
-                      ? "Booking..."
-                      : !isStudent
-                      ? "Log in as student to book"
-                      : "Book Session"}
-                  </motion.button>
-                )}
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
 
