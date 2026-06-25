@@ -133,7 +133,7 @@ const ExpertAssessmentDetailPage = () => {
         prompt: question.prompt,
         options: question.options,
       })),
-    [editor],
+    [editor]
   );
 
   const updateQuestion = (questionIndex, field, value) => {
@@ -167,9 +167,7 @@ const ExpertAssessmentDetailPage = () => {
   const removeQuestion = (questionIndex) => {
     setEditor((current) => ({
       ...current,
-      questions: current.questions.filter(
-        (_, index) => index !== questionIndex,
-      ),
+      questions: current.questions.filter((_, index) => index !== questionIndex),
     }));
   };
 
@@ -244,7 +242,9 @@ const ExpertAssessmentDetailPage = () => {
         <div className="absolute top-1/3 right-10 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#2c6e5f] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm font-semibold text-[#2c6e5f] animate-pulse">Loading assessment details...</p>
+          <p className="text-sm font-semibold text-[#2c6e5f] animate-pulse">
+            Loading assessment details...
+          </p>
         </div>
       </div>
     );
@@ -259,9 +259,7 @@ const ExpertAssessmentDetailPage = () => {
           <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mb-4 mx-auto text-2xl">
             ⚠️
           </div>
-          <h1 className="text-xl font-bold text-gray-800 mb-2">
-            Assessment not found
-          </h1>
+          <h1 className="text-xl font-bold text-gray-800 mb-2">Assessment not found</h1>
           <p className="text-sm text-gray-500 mb-6 leading-relaxed">
             The selected assessment could not be loaded or does not exist.
           </p>
@@ -290,11 +288,13 @@ const ExpertAssessmentDetailPage = () => {
         <div>
           <h1 className="text-3xl font-extrabold text-[#1b4d42] tracking-tight">{title}</h1>
           <p className="text-[#2c6e5f]/80 mt-1 font-medium max-w-2xl leading-relaxed text-sm">
-            View the assessment details here. Switch to edit mode to update the title, questions, visibility, or delete it.
+            View the assessment details here. Switch to edit mode to update the title, questions,
+            visibility, or delete it.
           </p>
           {!isNew && assessment?.createdAt && (
             <p className="mt-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-              Created on {new Date(assessment.createdAt).toLocaleDateString(undefined, {
+              Created on{" "}
+              {new Date(assessment.createdAt).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -324,7 +324,7 @@ const ExpertAssessmentDetailPage = () => {
               </>
             )}
           </button>
-          
+
           <button
             type="button"
             onClick={saveAssessment}
@@ -333,7 +333,7 @@ const ExpertAssessmentDetailPage = () => {
           >
             <FaSave /> {isNew ? "Create" : "Save Changes"}
           </button>
-          
+
           <button
             type="button"
             onClick={deleteAssessment}
@@ -347,7 +347,6 @@ const ExpertAssessmentDetailPage = () => {
       {/* Main Details Panel */}
       <div className="max-w-6xl mx-auto">
         <section className="glass-card rounded-3xl overflow-hidden p-6 sm:p-8">
-          
           {/* Header Title Section */}
           <div className="pb-6 border-b border-gray-100 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 w-full">
@@ -360,9 +359,7 @@ const ExpertAssessmentDetailPage = () => {
                   <input
                     type="text"
                     value={editor.title}
-                    onChange={(e) =>
-                      setEditor((curr) => ({ ...curr, title: e.target.value }))
-                    }
+                    onChange={(e) => setEditor((curr) => ({ ...curr, title: e.target.value }))}
                     placeholder="Assessment Title"
                     className="w-full text-2xl font-bold text-gray-800 border-b border-gray-150 focus:border-[#2c6e5f] outline-none py-1 mt-1 bg-transparent transition-colors"
                   />
@@ -412,7 +409,6 @@ const ExpertAssessmentDetailPage = () => {
           {/* Configuration Grid */}
           <div className="py-6 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              
               {/* Duration Card */}
               <div className="rounded-2xl bg-gray-50/50 hover:bg-gray-50 p-4 border border-gray-100 transition-all duration-200">
                 <div className="text-[10px] uppercase font-bold tracking-wider text-gray-400 mb-1">
@@ -477,9 +473,7 @@ const ExpertAssessmentDetailPage = () => {
 
             {/* Description Block */}
             <div>
-              <h3 className="text-base font-bold text-gray-800 mb-2">
-                Assessment Description
-              </h3>
+              <h3 className="text-base font-bold text-gray-800 mb-2">Assessment Description</h3>
               {editing ? (
                 <textarea
                   rows="3"
@@ -495,18 +489,14 @@ const ExpertAssessmentDetailPage = () => {
                 />
               ) : (
                 <p className="text-gray-500 text-xs leading-relaxed bg-gray-50/30 rounded-xl p-4 border border-gray-100/50">
-                  {editor.description ||
-                    assessment?.description ||
-                    "No description provided."}
+                  {editor.description || assessment?.description || "No description provided."}
                 </p>
               )}
             </div>
 
             {/* Questions Builder Block */}
             <div>
-              <h3 className="text-base font-bold text-gray-800 mb-4">
-                Questions Setup
-              </h3>
+              <h3 className="text-base font-bold text-gray-800 mb-4">Questions Setup</h3>
 
               <div className="space-y-4">
                 {parsedQuestions.map((question, index) => (
@@ -529,12 +519,10 @@ const ExpertAssessmentDetailPage = () => {
                             Remove Question
                           </button>
                         </div>
-                        
+
                         <input
                           value={editor.questions[index].prompt}
-                          onChange={(event) =>
-                            updateQuestion(index, "prompt", event.target.value)
-                          }
+                          onChange={(event) => updateQuestion(index, "prompt", event.target.value)}
                           placeholder="Type your question here..."
                           className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 transition-all duration-200 text-xs font-semibold text-gray-750"
                         />
@@ -547,11 +535,7 @@ const ExpertAssessmentDetailPage = () => {
                             rows="4"
                             value={editor.questions[index].optionsText}
                             onChange={(event) =>
-                              updateQuestion(
-                                index,
-                                "optionsText",
-                                event.target.value,
-                              )
+                              updateQuestion(index, "optionsText", event.target.value)
                             }
                             placeholder="Never&#10;Rarely&#10;Sometimes&#10;Often&#10;Always"
                             className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 transition-all duration-200 text-xs text-gray-650 leading-relaxed"
@@ -644,4 +628,3 @@ const ExpertAssessmentDetailPage = () => {
 };
 
 export default ExpertAssessmentDetailPage;
-

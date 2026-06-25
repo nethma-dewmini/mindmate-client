@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
-import { 
-  FaTrash, 
-  FaPlus, 
-  FaUpload, 
-  FaSearch, 
-  FaGraduationCap, 
+import {
+  FaTrash,
+  FaPlus,
+  FaUpload,
+  FaSearch,
+  FaGraduationCap,
   FaExclamationTriangle,
   FaFileCsv,
-  FaSpinner
+  FaSpinner,
 } from "react-icons/fa";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const AdminStudentRegistry = () => {
   const navigate = useNavigate();
@@ -72,15 +71,12 @@ const AdminStudentRegistry = () => {
       const params = new URLSearchParams();
       if (q) params.set("q", q);
       params.set("limit", "200");
-      const res = await fetch(
-        `${API_BASE_URL}/student-registry?${params.toString()}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            ...authService.getAuthHeaders(),
-          },
+      const res = await fetch(`${API_BASE_URL}/student-registry?${params.toString()}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...authService.getAuthHeaders(),
         },
-      );
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load registry");
       setRegistry(data.registry || []);
@@ -100,7 +96,9 @@ const AdminStudentRegistry = () => {
       return setError("Registration number and email are required");
     }
     if (!/^\d{6}[A-Z]$/.test(registrationNo.trim())) {
-      return setError("Enter a valid registration number like 221234X. The last letter must be a capital letter.");
+      return setError(
+        "Enter a valid registration number like 221234X. The last letter must be a capital letter."
+      );
     }
     setCreating(true);
     try {
@@ -143,7 +141,9 @@ const AdminStudentRegistry = () => {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to delete entries");
-        setSuccessMsg(`${data.count || selectedIds.length} student registry entries deleted successfully`);
+        setSuccessMsg(
+          `${data.count || selectedIds.length} student registry entries deleted successfully`
+        );
         setSelectedIds([]);
       } else {
         const res = await fetch(`${API_BASE_URL}/student-registry/${deletingId}`, {
@@ -171,9 +171,7 @@ const AdminStudentRegistry = () => {
 
   // Checkbox interactions
   function handleSelectRow(id) {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
   function handleSelectAll() {
@@ -290,8 +288,7 @@ const AdminStudentRegistry = () => {
     }
   }
 
-  const escapeRegExp = (string = "") =>
-    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapeRegExp = (string = "") => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   const highlightMatch = (text = "", q = "") => {
     if (!q) return text;
@@ -299,10 +296,7 @@ const AdminStudentRegistry = () => {
     return parts.map((part, i) => {
       if (part.toLowerCase() === q.toLowerCase()) {
         return (
-          <mark
-            key={i}
-            className="bg-teal-100 text-[#2c6e5f] font-semibold rounded px-0.5"
-          >
+          <mark key={i} className="bg-teal-100 text-[#2c6e5f] font-semibold rounded px-0.5">
             {part}
           </mark>
         );
@@ -322,11 +316,10 @@ const AdminStudentRegistry = () => {
               Admin Tools
             </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-800 mt-2">
-            Student Registry
-          </h1>
+          <h1 className="text-3xl font-extrabold text-slate-800 mt-2">Student Registry</h1>
           <p className="text-slate-500 mt-1 max-w-2xl text-sm">
-            Manage pre-approved University of Moratuwa student records. Students can only register if their details are added here.
+            Manage pre-approved University of Moratuwa student records. Students can only register
+            if their details are added here.
           </p>
         </div>
         <div className="text-sm font-medium bg-[#2c6e5f]/10 text-[#2c6e5f] px-4 py-2 rounded-full border border-[#2c6e5f]/20 shadow-sm self-start sm:self-auto">
@@ -350,10 +343,8 @@ const AdminStudentRegistry = () => {
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Left Column - Controls Panel (1/3 Width) */}
         <div className="space-y-6 lg:col-span-1">
-          
           {/* Add Student Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 transition-all hover:shadow-md duration-300">
             <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -405,13 +396,10 @@ const AdminStudentRegistry = () => {
               <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:border-[#2c6e5f]/50 transition-colors">
                 <FaFileCsv className="mx-auto text-3xl text-slate-400 mb-2" />
                 <label className="block text-xs font-medium text-slate-600 cursor-pointer">
-                  <span className="text-[#2c6e5f] hover:underline font-semibold">Choose CSV File</span>
-                  <input 
-                    type="file" 
-                    accept=".csv" 
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
+                  <span className="text-[#2c6e5f] hover:underline font-semibold">
+                    Choose CSV File
+                  </span>
+                  <input type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
                 </label>
                 {csvFile && (
                   <p className="text-xs text-[#2c6e5f] font-semibold mt-2 truncate">
@@ -421,7 +409,9 @@ const AdminStudentRegistry = () => {
               </div>
 
               <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100 leading-relaxed">
-                <strong>CSV Format:</strong> <code className="bg-white px-1.5 py-0.5 rounded border">registration_no,email</code> (Header row is optional)
+                <strong>CSV Format:</strong>{" "}
+                <code className="bg-white px-1.5 py-0.5 rounded border">registration_no,email</code>{" "}
+                (Header row is optional)
               </div>
 
               <button
@@ -444,7 +434,7 @@ const AdminStudentRegistry = () => {
 
               {uploading && (
                 <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
-                  <div 
+                  <div
                     className="bg-[#2c6e5f] h-1.5 rounded-full transition-all duration-300"
                     style={{ width: `${(uploadProgress.done / uploadProgress.total) * 100}%` }}
                   ></div>
@@ -460,9 +450,7 @@ const AdminStudentRegistry = () => {
                   </div>
                   <ul className="text-xs mt-2 list-disc pl-5 space-y-1 max-h-36 overflow-y-auto leading-relaxed">
                     {uploadErrors.map((err, idx) => (
-                      <li key={idx}>
-                        {`Row ${err.row}: ${err.registration_no} - ${err.error}`}
-                      </li>
+                      <li key={idx}>{`Row ${err.row}: ${err.registration_no} - ${err.error}`}</li>
                     ))}
                   </ul>
                 </div>
@@ -474,7 +462,6 @@ const AdminStudentRegistry = () => {
         {/* Right Column - Table & Search Directory (2/3 Width) */}
         <div className="space-y-6 lg:col-span-2">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 transition-all hover:shadow-md duration-300">
-            
             {/* Search Form */}
             <form
               className="mb-6 flex gap-3"
@@ -492,8 +479,8 @@ const AdminStudentRegistry = () => {
                   className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2c6e5f] focus:border-transparent transition-all text-sm"
                 />
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="px-6 py-3 bg-[#2c6e5f]/10 text-[#2c6e5f] hover:bg-[#2c6e5f]/20 font-semibold rounded-xl transition-all cursor-pointer text-sm"
               >
                 Search
@@ -529,7 +516,9 @@ const AdminStudentRegistry = () => {
                     <th className="px-5 py-3.5 text-center w-12">
                       <input
                         type="checkbox"
-                        checked={registry.length > 0 && registry.every((r) => selectedIds.includes(r.id))}
+                        checked={
+                          registry.length > 0 && registry.every((r) => selectedIds.includes(r.id))
+                        }
                         onChange={handleSelectAll}
                         className="rounded border-gray-300 text-[#2c6e5f] focus:ring-[#2c6e5f] h-4 w-4 cursor-pointer"
                       />
@@ -545,16 +534,29 @@ const AdminStudentRegistry = () => {
                     // Skeleton Loaders
                     Array.from({ length: 5 }).map((_, idx) => (
                       <tr key={idx} className="border-b border-slate-50 animate-pulse">
-                        <td className="px-5 py-4 text-center"><div className="h-4 w-4 bg-slate-100 rounded mx-auto"></div></td>
-                        <td className="px-5 py-4"><div className="h-4 bg-slate-100 rounded w-24"></div></td>
-                        <td className="px-5 py-4"><div className="h-4 bg-slate-100 rounded w-44"></div></td>
-                        <td className="px-5 py-4"><div className="h-4 bg-slate-100 rounded w-28"></div></td>
-                        <td className="px-5 py-4 flex justify-center"><div className="h-8 w-8 bg-slate-100 rounded-full"></div></td>
+                        <td className="px-5 py-4 text-center">
+                          <div className="h-4 w-4 bg-slate-100 rounded mx-auto"></div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="h-4 bg-slate-100 rounded w-24"></div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="h-4 bg-slate-100 rounded w-44"></div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="h-4 bg-slate-100 rounded w-28"></div>
+                        </td>
+                        <td className="px-5 py-4 flex justify-center">
+                          <div className="h-8 w-8 bg-slate-100 rounded-full"></div>
+                        </td>
                       </tr>
                     ))
                   ) : registry.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-slate-400 font-medium bg-slate-50/50">
+                      <td
+                        colSpan={5}
+                        className="p-8 text-center text-slate-400 font-medium bg-slate-50/50"
+                      >
                         No registry entries found.
                       </td>
                     </tr>
@@ -562,10 +564,12 @@ const AdminStudentRegistry = () => {
                     registry.map((r) => {
                       const isSelected = selectedIds.includes(r.id);
                       return (
-                        <tr 
-                          key={r.id} 
+                        <tr
+                          key={r.id}
                           className={`border-b border-slate-100 transition-colors duration-150 group ${
-                            isSelected ? "bg-[#2c6e5f]/5 hover:bg-[#2c6e5f]/10" : "bg-white hover:bg-slate-50"
+                            isSelected
+                              ? "bg-[#2c6e5f]/5 hover:bg-[#2c6e5f]/10"
+                              : "bg-white hover:bg-slate-50"
                           }`}
                         >
                           <td className="px-5 py-4 text-center">
@@ -589,7 +593,7 @@ const AdminStudentRegistry = () => {
                                   month: "short",
                                   day: "numeric",
                                   hour: "2-digit",
-                                  minute: "2-digit"
+                                  minute: "2-digit",
                                 })
                               : "-"}
                           </td>
@@ -620,7 +624,7 @@ const AdminStudentRegistry = () => {
       {/* Delete Confirmation Modal Overlay */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div 
+          <div
             className="bg-white w-full max-w-md rounded-3xl p-6 shadow-xl border border-slate-100 animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
@@ -629,24 +633,35 @@ const AdminStudentRegistry = () => {
                 <FaExclamationTriangle className="text-lg" />
               </div>
               <h3 className="text-lg font-bold text-slate-800">
-                {deletingId === "bulk" ? "Bulk Remove Pre-approvals" : "Remove Student Pre-approval"}
+                {deletingId === "bulk"
+                  ? "Bulk Remove Pre-approvals"
+                  : "Remove Student Pre-approval"}
               </h3>
             </div>
 
             <p className="text-slate-600 text-sm mb-5 leading-relaxed">
               {deletingId === "bulk" ? (
                 <>
-                  Are you sure you want to remove the pre-approval for the 
-                  <strong className="text-slate-800"> {selectedIds.length} selected students</strong>?
+                  Are you sure you want to remove the pre-approval for the
+                  <strong className="text-slate-800">
+                    {" "}
+                    {selectedIds.length} selected students
+                  </strong>
+                  ?
                 </>
               ) : (
                 <>
-                  Are you sure you want to remove the pre-approval for student 
-                  <strong className="text-slate-800"> {deletingRecord?.registration_no}</strong> (email: <strong className="text-slate-800">{deletingRecord?.email}</strong>)? 
+                  Are you sure you want to remove the pre-approval for student
+                  <strong className="text-slate-800">
+                    {" "}
+                    {deletingRecord?.registration_no}
+                  </strong>{" "}
+                  (email: <strong className="text-slate-800">{deletingRecord?.email}</strong>)?
                 </>
               )}
               <span className="block mt-2 text-xs text-red-500 font-semibold">
-                This action is permanent and will prevent these students from registering unless they are added back.
+                This action is permanent and will prevent these students from registering unless
+                they are added back.
               </span>
             </p>
 

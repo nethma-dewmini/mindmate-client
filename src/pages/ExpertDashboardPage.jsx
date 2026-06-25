@@ -1,6 +1,12 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSignOutAlt, FaClipboardList, FaCalendarAlt, FaFileUpload, FaFolderOpen } from "react-icons/fa";
+import {
+  FaSignOutAlt,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaFileUpload,
+  FaFolderOpen,
+} from "react-icons/fa";
 import { authService } from "../services/authService";
 
 const ExpertDashboardPage = () => {
@@ -30,28 +36,32 @@ const ExpertDashboardPage = () => {
   const expertActions = [
     {
       title: "Manage Assessments",
-      description: "Open your assessment library to view every assessment, see details, and manage publishing options.",
+      description:
+        "Open your assessment library to view every assessment, see details, and manage publishing options.",
       icon: FaClipboardList,
       path: "/expert/assessments",
       linkText: "Open Assessments",
     },
     {
       title: "Sessions Schedule",
-      description: "Define your student support hours, coordinate check-ins, and schedule upcoming sessions held.",
+      description:
+        "Define your student support hours, coordinate check-ins, and schedule upcoming sessions held.",
       icon: FaCalendarAlt,
       path: "/expert/sessions",
       linkText: "Manage Sessions",
     },
     {
       title: "Upload Resource",
-      description: "Contribute clinical sheets, guidebooks, and self-help articles for the student resource library.",
+      description:
+        "Contribute clinical sheets, guidebooks, and self-help articles for the student resource library.",
       icon: FaFileUpload,
       path: "/expert/resource-upload",
       linkText: "Upload Resource",
     },
     {
       title: "Resource Library",
-      description: "Review, edit, publish or delete the clinical resources you have already uploaded.",
+      description:
+        "Review, edit, publish or delete the clinical resources you have already uploaded.",
       icon: FaFolderOpen,
       path: "/expert/resource-library",
       linkText: "Manage Uploads",
@@ -67,12 +77,8 @@ const ExpertDashboardPage = () => {
             <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
               Expert Dashboard
             </p>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Welcome back, {user.name}!
-            </h1>
-            <p className="text-gray-600">
-              Your professional workspace for student support.
-            </p>
+            <h1 className="text-2xl font-bold text-gray-800">Welcome back, {user.name}!</h1>
+            <p className="text-gray-600">Your professional workspace for student support.</p>
           </div>
           <div className="flex items-center space-x-4">
             <Link
@@ -108,9 +114,7 @@ const ExpertDashboardPage = () => {
                     <h3 className="font-bold text-gray-800 mb-1 group-hover:text-[#5bb5a1] transition-colors duration-200 text-lg">
                       {action.title}
                     </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      {action.description}
-                    </p>
+                    <p className="text-sm text-gray-500 leading-relaxed">{action.description}</p>
                   </div>
                   <div className="mt-5 text-xs font-semibold text-[#5bb5a1] flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
                     {action.linkText} <span>→</span>

@@ -15,11 +15,10 @@ import {
   FaDownload,
   FaUserCircle,
   FaUndo,
-  FaGraduationCap
+  FaGraduationCap,
 } from "react-icons/fa";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const STATUS_LABELS = {
   pending: "Pending",
@@ -89,11 +88,10 @@ const AdminExpertApplications = () => {
             "Content-Type": "application/json",
             ...authService.getAuthHeaders(),
           },
-        },
+        }
       );
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Failed to load applications");
+      if (!res.ok) throw new Error(data.message || "Failed to load applications");
 
       setApplications(data.applications || []);
       setCount(data.count || 0);
@@ -119,8 +117,7 @@ const AdminExpertApplications = () => {
         },
       });
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Failed to load application");
+      if (!res.ok) throw new Error(data.message || "Failed to load application");
 
       setSelectedApplication(data.application);
       setReviewNotes(data.application?.admin_notes || "");
@@ -146,8 +143,7 @@ const AdminExpertApplications = () => {
         body: JSON.stringify({ status: nextStatus, admin_notes: reviewNotes }),
       });
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Failed to update application");
+      if (!res.ok) throw new Error(data.message || "Failed to update application");
 
       setSelectedApplication(data.application);
       setRefreshKey((value) => value + 1);
@@ -246,7 +242,11 @@ const AdminExpertApplications = () => {
             { id: "pending", label: "Pending", count: summary.pending },
             { id: "approved", label: "Approved", count: summary.approved },
             { id: "rejected", label: "Rejected", count: summary.rejected },
-            { id: "all", label: "All", count: summary.pending + summary.approved + summary.rejected },
+            {
+              id: "all",
+              label: "All",
+              count: summary.pending + summary.approved + summary.rejected,
+            },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -300,11 +300,12 @@ const AdminExpertApplications = () => {
 
       {/* Main Two-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
         {/* Left Column: Applications List */}
         <div className="lg:col-span-5 flex flex-col border border-slate-100 rounded-3xl bg-white/70 overflow-hidden shadow-sm">
           <div className="bg-slate-50/50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-            <span className="text-xs md:text-sm font-semibold text-slate-700">Application List</span>
+            <span className="text-xs md:text-sm font-semibold text-slate-700">
+              Application List
+            </span>
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
               {filteredApplications.length} listed
             </span>
@@ -314,7 +315,10 @@ const AdminExpertApplications = () => {
             {loading ? (
               /* Skeletal loaders for List */
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="p-4 bg-white rounded-2xl border border-transparent flex items-center gap-3 animate-pulse">
+                <div
+                  key={i}
+                  className="p-4 bg-white rounded-2xl border border-transparent flex items-center gap-3 animate-pulse"
+                >
                   <div className="w-10 h-10 rounded-full bg-slate-200" />
                   <div className="flex-1 space-y-2">
                     <div className="h-4 bg-slate-200 rounded w-2/3" />
@@ -344,9 +348,11 @@ const AdminExpertApplications = () => {
                     }`}
                   >
                     {/* Circle Avatar with Initials */}
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
-                      isSelected ? "bg-[#2c6e5f] text-white" : "bg-teal-50 text-[#2c6e5f]"
-                    }`}>
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                        isSelected ? "bg-[#2c6e5f] text-white" : "bg-teal-50 text-[#2c6e5f]"
+                      }`}
+                    >
                       {getInitials(application.name)}
                     </div>
 
@@ -357,10 +363,8 @@ const AdminExpertApplications = () => {
                           {application.name}
                         </h4>
                       </div>
-                      <p className="text-xs text-slate-500 truncate mt-0.5">
-                        {application.email}
-                      </p>
-                      
+                      <p className="text-xs text-slate-500 truncate mt-0.5">{application.email}</p>
+
                       <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-400">
                         <FaClock className="text-[9px]" />
                         <span>
@@ -372,9 +376,12 @@ const AdminExpertApplications = () => {
                     </div>
 
                     {/* Status Badge */}
-                    <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border ${
-                      STATUS_STYLES[application.status] || "bg-slate-100 text-slate-600 border-slate-200"
-                    }`}>
+                    <span
+                      className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border ${
+                        STATUS_STYLES[application.status] ||
+                        "bg-slate-100 text-slate-600 border-slate-200"
+                      }`}
+                    >
                       {STATUS_LABELS[application.status] || application.status}
                     </span>
                   </button>
@@ -399,7 +406,8 @@ const AdminExpertApplications = () => {
                 </div>
                 <h3 className="font-bold text-slate-700 text-lg">Select an Application</h3>
                 <p className="text-slate-400 max-w-sm text-sm">
-                  Click on an expert from the list to view their verification documents, qualifications, and make an approval decision.
+                  Click on an expert from the list to view their verification documents,
+                  qualifications, and make an approval decision.
                 </p>
               </div>
             ) : selectedLoading ? (
@@ -421,7 +429,6 @@ const AdminExpertApplications = () => {
             ) : (
               /* Loaded Application detail view */
               <div className="space-y-6 flex-1 flex flex-col justify-between">
-                
                 {/* Header Banner */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-slate-100">
                   <div className="flex items-center gap-4">
@@ -440,9 +447,12 @@ const AdminExpertApplications = () => {
                     </div>
                   </div>
 
-                  <span className={`self-start text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border ${
-                    STATUS_STYLES[selectedApplication.status] || "bg-slate-100 text-slate-600 border-slate-200"
-                  }`}>
+                  <span
+                    className={`self-start text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border ${
+                      STATUS_STYLES[selectedApplication.status] ||
+                      "bg-slate-100 text-slate-600 border-slate-200"
+                    }`}
+                  >
                     {STATUS_LABELS[selectedApplication.status] || selectedApplication.status}
                   </span>
                 </div>
@@ -450,14 +460,18 @@ const AdminExpertApplications = () => {
                 {/* Grid Info fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Specialization</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                      Specialization
+                    </span>
                     <span className="font-semibold text-slate-700 text-sm mt-1 block">
                       {selectedApplication.specialization || "General Counseling"}
                     </span>
                   </div>
 
                   <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Submission Date</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                      Submission Date
+                    </span>
                     <span className="font-semibold text-slate-700 text-sm mt-1 block">
                       {selectedApplication.created_at
                         ? new Date(selectedApplication.created_at).toLocaleString()
@@ -555,23 +569,22 @@ const AdminExpertApplications = () => {
                       {selectedApplication.status === "rejected"
                         ? "Rejected"
                         : selectedApplication.status === "approved"
-                        ? "Revoke Approval"
-                        : "Reject Expert"}
+                          ? "Revoke Approval"
+                          : "Reject Expert"}
                     </button>
                   </div>
 
                   {selectedApplication.reviewed_at && (
                     <div className="text-[10px] text-slate-400 font-medium">
-                      Decision made: {new Date(selectedApplication.reviewed_at).toLocaleDateString()}
+                      Decision made:{" "}
+                      {new Date(selectedApplication.reviewed_at).toLocaleDateString()}
                     </div>
                   )}
                 </div>
-
               </div>
             )}
           </div>
         </div>
-
       </div>
 
       {/* Confirmation Modal Overlay */}
@@ -581,8 +594,12 @@ const AdminExpertApplications = () => {
             <div className="flex items-center gap-4 text-amber-600 mb-4 bg-amber-50 p-4 rounded-2xl border border-amber-100">
               <FaExclamationTriangle className="text-2xl shrink-0" />
               <div>
-                <h4 className="font-bold text-slate-800 text-sm md:text-base">Confirm Action Required</h4>
-                <p className="text-xs text-amber-700 mt-0.5">Please review the details below before executing.</p>
+                <h4 className="font-bold text-slate-800 text-sm md:text-base">
+                  Confirm Action Required
+                </h4>
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Please review the details below before executing.
+                </p>
               </div>
             </div>
 
@@ -593,19 +610,23 @@ const AdminExpertApplications = () => {
                 {confirmModal.application?.name}
               </strong>{" "}
               to{" "}
-              <span className={`font-bold px-2 py-0.5 rounded text-xs uppercase tracking-wider ${
-                confirmModal.type === "approved"
-                  ? "bg-emerald-100 text-emerald-800"
-                  : "bg-rose-100 text-rose-800"
-              }`}>
+              <span
+                className={`font-bold px-2 py-0.5 rounded text-xs uppercase tracking-wider ${
+                  confirmModal.type === "approved"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "bg-rose-100 text-rose-800"
+                }`}
+              >
                 {confirmModal.type}
               </span>
               ?
-              {confirmModal.type === "rejected" && confirmModal.application?.status === "approved" && (
-                <span className="block mt-3 p-3 bg-rose-50 text-rose-800 text-xs rounded-xl border border-rose-200">
-                  <strong>Notice:</strong> This action will revoke their approved expert status and delete their registered user account.
-                </span>
-              )}
+              {confirmModal.type === "rejected" &&
+                confirmModal.application?.status === "approved" && (
+                  <span className="block mt-3 p-3 bg-rose-50 text-rose-800 text-xs rounded-xl border border-rose-200">
+                    <strong>Notice:</strong> This action will revoke their approved expert status
+                    and delete their registered user account.
+                  </span>
+                )}
             </p>
 
             <div className="flex gap-3 justify-end">

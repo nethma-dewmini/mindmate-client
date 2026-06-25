@@ -19,8 +19,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
   ];
 
   // Show public links only on the homepage; otherwise use auth links when logged in
-  const links =
-    location.pathname === "/" ? publicLinks : isAuthenticated ? authLinks : [];
+  const links = location.pathname === "/" ? publicLinks : isAuthenticated ? authLinks : [];
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -69,7 +68,7 @@ const Navbar = ({ isAuthenticated = false, user = null, onLogout }) => {
         {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <motion.div 
+            <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}

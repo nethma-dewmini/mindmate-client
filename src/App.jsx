@@ -37,9 +37,7 @@ import {
 } from "./pages";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() =>
-    authService.isAuthenticated(),
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(() => authService.isAuthenticated());
   const [user, setUser] = useState(() => authService.getCurrentUser());
   const location = useLocation();
   const navigate = useNavigate();
@@ -52,9 +50,7 @@ function App() {
     const id = Date.now() + Math.random();
     setToasts((prev) => [...prev, { id, message, type, isFading: false }]);
     setTimeout(() => {
-      setToasts((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, isFading: true } : t))
-      );
+      setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, isFading: true } : t)));
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 300);
@@ -63,11 +59,7 @@ function App() {
 
   const getAlertType = (message) => {
     const msg = message.toLowerCase();
-    if (
-      msg.includes("expired") ||
-      msg.includes("timeout") ||
-      msg.includes("inactivity")
-    ) {
+    if (msg.includes("expired") || msg.includes("timeout") || msg.includes("inactivity")) {
       return "warning";
     }
     if (
@@ -165,13 +157,7 @@ function App() {
       }
     };
 
-    const activityEvents = [
-      "mousedown",
-      "mousemove",
-      "keypress",
-      "scroll",
-      "touchstart",
-    ];
+    const activityEvents = ["mousedown", "mousemove", "keypress", "scroll", "touchstart"];
 
     activityEvents.forEach((event) => {
       window.addEventListener(event, resetTimer);
@@ -237,69 +223,244 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       {showNavbar && (
-        <Navbar
-          isAuthenticated={isAuthenticated}
-          user={user}
-          onLogout={handleLogout}
-        />
+        <Navbar isAuthenticated={isAuthenticated} user={user} onLogout={handleLogout} />
       )}
 
       <main className="flex-grow">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
-            <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
-            <Route path="/register" element={<PageTransition><RegisterPage /></PageTransition>} />
-            <Route path="/verify-email" element={<PageTransition><VerifyEmailPage /></PageTransition>} />
-            <Route path="/forgot-password" element={<PageTransition><ForgotPasswordPage /></PageTransition>} />
-            <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
+            <Route
+              path="/"
+              element={
+                <PageTransition>
+                  <LandingPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PageTransition>
+                  <LoginPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PageTransition>
+                  <RegisterPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <PageTransition>
+                  <VerifyEmailPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PageTransition>
+                  <ForgotPasswordPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <PageTransition>
+                  <ResetPasswordPage />
+                </PageTransition>
+              }
+            />
             <Route
               path="/expert/register"
-              element={<PageTransition><ExpertAccountRegisterPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <ExpertAccountRegisterPage />
+                </PageTransition>
+              }
             />
-            <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
-            <Route path="/expert/dashboard" element={<PageTransition><ExpertDashboardPage /></PageTransition>} />
+            <Route
+              path="/dashboard"
+              element={
+                <PageTransition>
+                  <DashboardPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/expert/dashboard"
+              element={
+                <PageTransition>
+                  <ExpertDashboardPage />
+                </PageTransition>
+              }
+            />
             <Route
               path="/expert/assessments"
-              element={<PageTransition><ExpertAssessmentsPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <ExpertAssessmentsPage />
+                </PageTransition>
+              }
             />
             <Route
               path="/expert/assessments/:id"
-              element={<PageTransition><ExpertAssessmentDetailPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <ExpertAssessmentDetailPage />
+                </PageTransition>
+              }
             />
             <Route
               path="/expert/resource-upload"
-              element={<PageTransition><ExpertResourceUploadPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <ExpertResourceUploadPage />
+                </PageTransition>
+              }
             />
             <Route
               path="/expert/resource-library"
-              element={<PageTransition><ExpertResourceLibraryPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <ExpertResourceLibraryPage />
+                </PageTransition>
+              }
             />
             <Route
               path="/expert/sessions"
-              element={<PageTransition><ExpertSessionsPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <ExpertSessionsPage />
+                </PageTransition>
+              }
             />
-            <Route path="/chat" element={<PageTransition><ChatPage /></PageTransition>} />
-            <Route path="/assessment" element={<PageTransition><AssessmentPage /></PageTransition>} />
-            <Route path="/assessment/:id" element={<PageTransition><AssessmentTaking /></PageTransition>} />
-            <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
-            <Route path="/admin" element={<PageTransition><AdminEntry /></PageTransition>} />
-            <Route path="/admin/dashboard" element={<PageTransition><AdminDashboard /></PageTransition>} />
+            <Route
+              path="/chat"
+              element={
+                <PageTransition>
+                  <ChatPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/assessment"
+              element={
+                <PageTransition>
+                  <AssessmentPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/assessment/:id"
+              element={
+                <PageTransition>
+                  <AssessmentTaking />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PageTransition>
+                  <ProfilePage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <PageTransition>
+                  <AdminEntry />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <PageTransition>
+                  <AdminDashboard />
+                </PageTransition>
+              }
+            />
             <Route
               path="/admin/expert-applications"
-              element={<PageTransition><AdminExpertApplicationsPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <AdminExpertApplicationsPage />
+                </PageTransition>
+              }
             />
-            <Route path="/admin/peer-groups" element={<PageTransition><AdminPeerGroups /></PageTransition>} />
+            <Route
+              path="/admin/peer-groups"
+              element={
+                <PageTransition>
+                  <AdminPeerGroups />
+                </PageTransition>
+              }
+            />
             <Route
               path="/admin/student-registry"
-              element={<PageTransition><AdminStudentRegistryPage /></PageTransition>}
+              element={
+                <PageTransition>
+                  <AdminStudentRegistryPage />
+                </PageTransition>
+              }
             />
-            <Route path="/mood" element={<PageTransition><MoodTrackerPage /></PageTransition>} />
-            <Route path="/resources" element={<PageTransition><ResourcesPage /></PageTransition>} />
-            <Route path="/experts" element={<PageTransition><ExpertsPage /></PageTransition>} />
-            <Route path="/peer-support" element={<PageTransition><PeerSupportPage /></PageTransition>} />
-            <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
-            <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
+            <Route
+              path="/mood"
+              element={
+                <PageTransition>
+                  <MoodTrackerPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/resources"
+              element={
+                <PageTransition>
+                  <ResourcesPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/experts"
+              element={
+                <PageTransition>
+                  <ExpertsPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/peer-support"
+              element={
+                <PageTransition>
+                  <PeerSupportPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <PageTransition>
+                  <AboutPage />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <PageTransition>
+                  <ContactPage />
+                </PageTransition>
+              }
+            />
           </Routes>
         </AnimatePresence>
       </main>
@@ -341,7 +502,7 @@ function App() {
                 {toast.message}
               </p>
             </div>
-            
+
             <button
               onClick={() => {
                 setToasts((prev) => prev.filter((t) => t.id !== toast.id));
@@ -366,7 +527,10 @@ function App() {
             <h3 className="text-lg font-bold text-gray-800 mb-2">Are you still there?</h3>
             <p className="text-sm text-gray-500 mb-6 leading-relaxed">
               We care about your safety. For security, your session will automatically lock in{" "}
-              <span className="font-semibold text-amber-600 text-base">{timeoutCountdown} seconds</span> due to inactivity.
+              <span className="font-semibold text-amber-600 text-base">
+                {timeoutCountdown} seconds
+              </span>{" "}
+              due to inactivity.
             </p>
 
             <div className="w-full flex flex-col gap-3">

@@ -1,10 +1,4 @@
-const Card = ({
-  children,
-  className = "",
-  padding = "md",
-  hover = false,
-  onClick,
-}) => {
+const Card = ({ children, className = "", padding = "md", hover = false, onClick }) => {
   const paddings = {
     none: "",
     sm: "p-4",
@@ -12,9 +6,7 @@ const Card = ({
     lg: "p-8",
   };
 
-  const hoverStyles = hover
-    ? "hover:shadow-lg hover:-translate-y-1 cursor-pointer"
-    : "";
+  const hoverStyles = hover ? "hover:shadow-lg hover:-translate-y-1 cursor-pointer" : "";
 
   return (
     <div

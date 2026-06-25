@@ -25,11 +25,12 @@ const ResetPasswordPage = () => {
     setError("");
     if (!password || !confirm) return setError("Both fields are required");
 
-    const isValidPassword = (value) =>
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+    const isValidPassword = (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
 
     if (!isValidPassword(password)) {
-      return setError("Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.");
+      return setError(
+        "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number."
+      );
     }
 
     if (password !== confirm) return setError("Passwords do not match");
@@ -52,12 +53,8 @@ const ResetPasswordPage = () => {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FaCheck className="text-2xl text-green-500" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              Password reset
-            </h1>
-            <p className="text-gray-500 mb-6">
-              Your password has been updated.
-            </p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Password reset</h1>
+            <p className="text-gray-500 mb-6">Your password has been updated.</p>
             <Link to="/login" className="text-[#5bb5a1] hover:underline">
               Back to login
             </Link>
@@ -72,12 +69,8 @@ const ResetPasswordPage = () => {
       <div className="w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-xl p-8">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              Reset Password
-            </h1>
-            <p className="text-gray-500">
-              Enter a new password for your account
-            </p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Reset Password</h1>
+            <p className="text-gray-500">Enter a new password for your account</p>
           </div>
 
           {error && (
@@ -88,9 +81,7 @@ const ResetPasswordPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -138,10 +129,7 @@ const ResetPasswordPage = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <Link
-              to="/login"
-              className="text-[#5bb5a1] hover:underline inline-flex items-center"
-            >
+            <Link to="/login" className="text-[#5bb5a1] hover:underline inline-flex items-center">
               <FaArrowLeft className="mr-2" />
               Back to login
             </Link>

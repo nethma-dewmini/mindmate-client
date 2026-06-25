@@ -79,7 +79,7 @@ const ExpertAssessmentsPage = () => {
 
   const summary = useMemo(() => {
     const publicCount = assessments.filter(
-      (assessment) => assessment.visibility === "public",
+      (assessment) => assessment.visibility === "public"
     ).length;
 
     return {
@@ -95,7 +95,9 @@ const ExpertAssessmentsPage = () => {
         <div className="absolute top-1/3 right-10 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#2c6e5f] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm font-semibold text-[#2c6e5f] animate-pulse">Loading assessments...</p>
+          <p className="text-sm font-semibold text-[#2c6e5f] animate-pulse">
+            Loading assessments...
+          </p>
         </div>
       </div>
     );
@@ -109,9 +111,7 @@ const ExpertAssessmentsPage = () => {
 
       {/* Header Section */}
       <div className="max-w-6xl mx-auto mb-8 pb-4 border-b border-[#2c6e5f]/10">
-        <h1 className="text-3xl font-extrabold text-[#1b4d42] tracking-tight">
-          Your Assessments
-        </h1>
+        <h1 className="text-3xl font-extrabold text-[#1b4d42] tracking-tight">Your Assessments</h1>
         <p className="text-[#2c6e5f]/80 mt-1 font-medium max-w-2xl leading-relaxed text-sm md:text-base">
           Open an assessment to view its questions and details. Use the "Create an Assessment"
           button to start a new assessment.
@@ -126,7 +126,7 @@ const ExpertAssessmentsPage = () => {
               <span className="text-xs font-extrabold text-[#2c6e5f] uppercase tracking-wider">
                 Assessment Overview
               </span>
-              
+
               {/* Dynamic Tab Filter Bar */}
               <div className="bg-white/60 p-1 border border-[#2c6e5f]/15 rounded-2xl relative flex space-x-1 shadow-sm max-w-max">
                 {[
@@ -139,7 +139,7 @@ const ExpertAssessmentsPage = () => {
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => tab.id === "all" ? setFilter("all") : toggleFilter(tab.id)}
+                      onClick={() => (tab.id === "all" ? setFilter("all") : toggleFilter(tab.id))}
                       className="relative px-4 py-2.5 rounded-xl text-xs font-extrabold transition-colors cursor-pointer z-10"
                       style={{ color: isActive ? "#ffffff" : "#2c6e5f" }}
                     >
@@ -180,7 +180,8 @@ const ExpertAssessmentsPage = () => {
 
           {filter === "private" && (
             <div className="mb-6 rounded-xl px-4 py-2.5 text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-100/50 flex items-center gap-1.5 max-w-max">
-              <span>💡</span> Complete your modifications and publish them to make these assessments visible to students.
+              <span>💡</span> Complete your modifications and publish them to make these assessments
+              visible to students.
             </div>
           )}
 
@@ -285,4 +286,3 @@ const ExpertAssessmentsPage = () => {
 };
 
 export default ExpertAssessmentsPage;
-

@@ -6,7 +6,7 @@ import { FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  
+
   const [status, setStatus] = useState("loading"); // 'loading', 'success', 'error'
   const [message, setMessage] = useState("Verifying your email address...");
   const hasAttempted = useRef(false);
@@ -39,26 +39,21 @@ const VerifyEmailPage = () => {
     <div className="min-h-screen flex items-center justify-center gradient-teal py-12">
       <div className="w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
-          
           <div className="flex justify-center mb-6">
-            {status === "loading" && (
-              <FaSpinner className="text-5xl text-teal-500 animate-spin" />
-            )}
-            {status === "success" && (
-              <FaCheckCircle className="text-5xl text-green-500" />
-            )}
-            {status === "error" && (
-              <FaTimesCircle className="text-5xl text-red-500" />
-            )}
+            {status === "loading" && <FaSpinner className="text-5xl text-teal-500 animate-spin" />}
+            {status === "success" && <FaCheckCircle className="text-5xl text-green-500" />}
+            {status === "error" && <FaTimesCircle className="text-5xl text-red-500" />}
           </div>
 
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            {status === "loading" ? "Verifying Email" : status === "success" ? "Email Verified" : "Verification Failed"}
+            {status === "loading"
+              ? "Verifying Email"
+              : status === "success"
+                ? "Email Verified"
+                : "Verification Failed"}
           </h1>
-          
-          <p className="text-gray-600 mb-8">
-            {message}
-          </p>
+
+          <p className="text-gray-600 mb-8">{message}</p>
 
           {status !== "loading" && (
             <Link
@@ -68,7 +63,6 @@ const VerifyEmailPage = () => {
               Go to Login
             </Link>
           )}
-
         </div>
       </div>
     </div>

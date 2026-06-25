@@ -14,18 +14,13 @@ const Button = ({
     "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
 
   const variants = {
-    primary:
-      "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm",
+    primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm",
     secondary:
       "bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-indigo-500",
-    success:
-      "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm",
-    danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
-    ghost:
-      "bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-indigo-500",
-    gradient:
-      "gradient-primary text-white hover:opacity-90 focus:ring-indigo-500 shadow-md",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
+    ghost: "bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-indigo-500",
+    gradient: "gradient-primary text-white hover:opacity-90 focus:ring-indigo-500 shadow-md",
   };
 
   const sizes = {

@@ -1,6 +1,5 @@
 // API service for authentication endpoints
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const USER_STORAGE_KEY = "mindmate_user";
 const TOKEN_STORAGE_KEY = "mindmate_token";
@@ -77,14 +76,7 @@ export const authService = {
   /**
    * Submit an expert application with supporting documents
    */
-  async submitExpertApplication({
-    name,
-    title,
-    email,
-    specialization,
-    experience,
-    documents,
-  }) {
+  async submitExpertApplication({ name, title, email, specialization, experience, documents }) {
     const formData = new FormData();
     formData.append("name", name);
     if (title) formData.append("title", title);
@@ -121,7 +113,7 @@ export const authService = {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const data = await response.json();
@@ -186,15 +178,12 @@ export const authService = {
     if (category) params.set("category", category);
     if (type) params.set("type", type);
 
-    const response = await fetch(
-      `${API_BASE_URL}/resources?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const response = await fetch(`${API_BASE_URL}/resources?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     const data = await response.json();
 
@@ -239,7 +228,7 @@ export const authService = {
       audioUrl,
       type = "GUIDE",
       visibility = "public",
-    },
+    }
   ) {
     const formData = new FormData();
     formData.append("title", title);
@@ -532,9 +521,7 @@ export const authService = {
   async getPeerGroups({ publicOnly = true } = {}) {
     const params = new URLSearchParams();
     if (publicOnly) params.set("publicOnly", "true");
-    const resp = await fetch(
-      `${API_BASE_URL}/peer-groups?${params.toString()}`,
-    );
+    const resp = await fetch(`${API_BASE_URL}/peer-groups?${params.toString()}`);
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.message || "Failed to load groups");
     return data;
@@ -630,33 +617,27 @@ export const authService = {
   },
 
   async reactToPeerGroupMessage(id, messageId, { userId, type }) {
-    const resp = await fetch(
-      `${API_BASE_URL}/peer-groups/${id}/messages/${messageId}/reactions`,
-      {
-        method: "POST",
-        headers: {
-          ...this.getAuthHeaders(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: userId, type }),
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${id}/messages/${messageId}/reactions`, {
+      method: "POST",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ user_id: userId, type }),
+    });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.message || "Failed to react");
     return data;
   },
 
   async adminDeletePeerGroupMessage(groupId, messageId) {
-    const resp = await fetch(
-      `${API_BASE_URL}/peer-groups/${groupId}/messages/${messageId}`,
-      {
-        method: "DELETE",
-        headers: {
-          ...this.getAuthHeaders(),
-          "Content-Type": "application/json",
-        },
+    const resp = await fetch(`${API_BASE_URL}/peer-groups/${groupId}/messages/${messageId}`, {
+      method: "DELETE",
+      headers: {
+        ...this.getAuthHeaders(),
+        "Content-Type": "application/json",
       },
-    );
+    });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.message || "Failed to delete message");
     return data;

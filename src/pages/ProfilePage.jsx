@@ -28,10 +28,10 @@ const AnimatedCounter = ({ targetValue }) => {
       setCount(targetValue);
       return;
     }
-    
+
     const duration = 1000; // 1s total duration
     const incrementTime = Math.max(Math.floor(duration / end), 15);
-    
+
     const timer = setInterval(() => {
       start += 1;
       if (start >= end) {
@@ -59,7 +59,7 @@ const ProfilePage = () => {
     daysActive: 0,
     moodLogsCount: 0,
     assessmentsCount: 0,
-    moodStreak: 0
+    moodStreak: 0,
   });
 
   const [userData, setUserData] = useState({
@@ -104,16 +104,40 @@ const ProfilePage = () => {
               daysActive: data.stats.daysActive || 0,
               moodLogsCount: data.stats.moodLogsCount || 0,
               assessmentsCount: data.stats.assessmentsCount || 0,
-              moodStreak: data.stats.moodStreak || 0
+              moodStreak: data.stats.moodStreak || 0,
             });
           }
 
           // Build dynamic stats
           const statsArray = [
-            { label: "Days Active", value: String(data.stats.daysActive || 1), icon: FaCalendarAlt, glow: "hover-glow-emerald", iconColor: "text-emerald-500" },
-            { label: "Mood Logs", value: String(data.stats.moodLogsCount || 0), icon: FaBrain, glow: "hover-glow-teal", iconColor: "text-teal-500" },
-            { label: "Assessments", value: String(data.stats.assessmentsCount || 0), icon: FaClipboardList, glow: "hover-glow-blue", iconColor: "text-blue-500" },
-            { label: "Streak", value: `${data.stats.moodStreak || 0} days`, icon: FaTrophy, glow: "hover-glow-amber", iconColor: "text-amber-500" },
+            {
+              label: "Days Active",
+              value: String(data.stats.daysActive || 1),
+              icon: FaCalendarAlt,
+              glow: "hover-glow-emerald",
+              iconColor: "text-emerald-500",
+            },
+            {
+              label: "Mood Logs",
+              value: String(data.stats.moodLogsCount || 0),
+              icon: FaBrain,
+              glow: "hover-glow-teal",
+              iconColor: "text-teal-500",
+            },
+            {
+              label: "Assessments",
+              value: String(data.stats.assessmentsCount || 0),
+              icon: FaClipboardList,
+              glow: "hover-glow-blue",
+              iconColor: "text-blue-500",
+            },
+            {
+              label: "Streak",
+              value: `${data.stats.moodStreak || 0} days`,
+              icon: FaTrophy,
+              glow: "hover-glow-amber",
+              iconColor: "text-amber-500",
+            },
           ];
           setProfileStats(statsArray);
         }
@@ -142,7 +166,7 @@ const ProfilePage = () => {
         phone: userData.phone,
       });
       setIsEditing(false);
-      
+
       // Refresh stats/details
       const data = await authService.getUserProfile();
       if (data && data.user) {
@@ -167,9 +191,20 @@ const ProfilePage = () => {
   const getUserLevel = (days) => {
     const val = parseInt(days, 10);
     if (val >= 30) return { title: "Mindfulness Master 🌟", badgeColor: "bg-[#2c6e5f] text-white" };
-    if (val >= 14) return { title: "Self-Care Scholar 🌿", badgeColor: "bg-emerald-50 text-emerald-800 border border-emerald-100" };
-    if (val >= 7) return { title: "Emotional Explorer 🧭", badgeColor: "bg-teal-50 text-teal-800 border border-teal-100" };
-    return { title: "Mindful Beginner 🌱", badgeColor: "bg-indigo-50 text-indigo-700 border border-indigo-100" };
+    if (val >= 14)
+      return {
+        title: "Self-Care Scholar 🌿",
+        badgeColor: "bg-emerald-50 text-emerald-800 border border-emerald-100",
+      };
+    if (val >= 7)
+      return {
+        title: "Emotional Explorer 🧭",
+        badgeColor: "bg-teal-50 text-teal-800 border border-teal-100",
+      };
+    return {
+      title: "Mindful Beginner 🌱",
+      badgeColor: "bg-indigo-50 text-indigo-700 border border-indigo-100",
+    };
   };
 
   const levelDetails = getUserLevel(statsData.daysActive);
@@ -221,9 +256,8 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] pt-12 pb-16">
       <div className="max-w-6xl mx-auto px-6">
-
         {error && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-center font-medium shadow-sm"
@@ -235,9 +269,8 @@ const ProfilePage = () => {
         {/* Profile Header */}
         <Card className="mb-8 rounded-3xl border border-gray-100 shadow-sm bg-white p-6 relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 relative z-10">
-            
             {/* Interactive Avatar Photo Trigger */}
-            <motion.div 
+            <motion.div
               className="relative group cursor-pointer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
@@ -256,20 +289,25 @@ const ProfilePage = () => {
                 {userData.name}
               </h1>
               <p className="text-gray-500 mt-1 font-medium text-sm">{userData.email}</p>
-              
+
               <div className="flex items-center gap-2 justify-center md:justify-start mt-2">
                 <span className="text-gray-400 text-[10px] uppercase font-bold bg-gray-100 px-2.5 py-0.5 rounded-full">
                   {userRole}
                 </span>
                 {userRole === "student" && (
-                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${levelDetails.badgeColor}`}>
+                  <span
+                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${levelDetails.badgeColor}`}
+                  >
                     {levelDetails.title}
                   </span>
                 )}
               </div>
-              
+
               <p className="text-gray-600 mt-4 text-sm italic font-medium leading-relaxed max-w-lg">
-                "{userData.bio || "No bio added yet. Click edit to tell us a little about your journey."}"
+                "
+                {userData.bio ||
+                  "No bio added yet. Click edit to tell us a little about your journey."}
+                "
               </p>
             </div>
 
@@ -293,8 +331,8 @@ const ProfilePage = () => {
                 const StatIcon = stat.icon;
                 const isStreakFlame = stat.label === "Streak" && statsData.moodStreak > 0;
                 return (
-                  <motion.div 
-                    key={index} 
+                  <motion.div
+                    key={index}
                     whileHover={{ y: -4 }}
                     className={`text-center p-4 bg-gray-50/50 rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${stat.glow} ${isStreakFlame ? "animate-flame" : ""}`}
                   >
@@ -386,9 +424,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="interactive-input">
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Bio
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Bio</label>
               <textarea
                 name="bio"
                 value={userData.bio}
@@ -403,16 +439,16 @@ const ProfilePage = () => {
             {/* Expandable Save Changes with animation */}
             <AnimatePresence>
               {isEditing && (
-                <motion.div 
+                <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   className="flex justify-end pt-3"
                 >
-                  <Button 
-                    variant="primary" 
-                    onClick={handleSave} 
-                    icon={FaSave} 
+                  <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    icon={FaSave}
                     className="bg-[#2c6e5f] hover:bg-[#1b4d42] px-6 py-2.5 rounded-2xl font-bold shadow-md hover:shadow-lg text-sm transition-all cursor-pointer active:scale-95"
                   >
                     Save Changes
@@ -439,17 +475,19 @@ const ProfilePage = () => {
                 <div
                   key={badge.id}
                   className={`p-5 rounded-3xl flex flex-col items-center text-center transition-all ${
-                    badge.unlocked
-                      ? "badge-unlocked"
-                      : "badge-locked"
+                    badge.unlocked ? "badge-unlocked" : "badge-locked"
                   }`}
                 >
                   <div className="text-4xl mb-3">{badge.icon}</div>
                   <h4 className="text-sm font-bold text-gray-800 leading-tight">{badge.title}</h4>
-                  <p className="text-[10px] text-gray-500 font-semibold mt-1.5 max-w-[150px] leading-relaxed">{badge.description}</p>
-                  <div className={`mt-4 text-[9px] font-extrabold px-3 py-1 rounded-full ${
-                    badge.unlocked ? "bg-white/40 text-[#1b4d42]" : "bg-gray-200 text-gray-400"
-                  }`}>
+                  <p className="text-[10px] text-gray-500 font-semibold mt-1.5 max-w-[150px] leading-relaxed">
+                    {badge.description}
+                  </p>
+                  <div
+                    className={`mt-4 text-[9px] font-extrabold px-3 py-1 rounded-full ${
+                      badge.unlocked ? "bg-white/40 text-[#1b4d42]" : "bg-gray-200 text-gray-400"
+                    }`}
+                  >
                     {badge.requirement}
                   </div>
                 </div>
@@ -457,7 +495,6 @@ const ProfilePage = () => {
             </div>
           </motion.div>
         )}
-
       </div>
     </div>
   );

@@ -6,7 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 const MoodTrackerPage = () => {
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState("");
-  const [summary, setSummary] = useState({ count: 0, avg_mood: 0, avg_mood_yesterday: 0, streak: 0 });
+  const [summary, setSummary] = useState({
+    count: 0,
+    avg_mood: 0,
+    avg_mood_yesterday: 0,
+    streak: 0,
+  });
   const [recentEntries, setRecentEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,24 +19,87 @@ const MoodTrackerPage = () => {
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
 
   const moods = [
-    { id: 5, icon: FaSmileBeam, label: "Excellent", color: "bg-emerald-400", iconColor: "text-emerald-500", activeBg: "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-50", ringColor: "focus:ring-emerald-400" },
-    { id: 4, icon: FaSmile, label: "Good", color: "bg-teal-400", iconColor: "text-teal-500", activeBg: "bg-teal-50 border-teal-200 text-teal-700 hover:bg-teal-50", ringColor: "focus:ring-teal-400" },
-    { id: 3, icon: FaMeh, label: "Okay", color: "bg-amber-400", iconColor: "text-amber-500", activeBg: "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-50", ringColor: "focus:ring-amber-400" },
-    { id: 2, icon: FaFrown, label: "Bad", color: "bg-orange-400", iconColor: "text-orange-500", activeBg: "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-50", ringColor: "focus:ring-orange-400" },
-    { id: 1, icon: FaSadCry, label: "Terrible", color: "bg-rose-400", iconColor: "text-rose-500", activeBg: "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-50", ringColor: "focus:ring-rose-400" },
+    {
+      id: 5,
+      icon: FaSmileBeam,
+      label: "Excellent",
+      color: "bg-emerald-400",
+      iconColor: "text-emerald-500",
+      activeBg: "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-50",
+      ringColor: "focus:ring-emerald-400",
+    },
+    {
+      id: 4,
+      icon: FaSmile,
+      label: "Good",
+      color: "bg-teal-400",
+      iconColor: "text-teal-500",
+      activeBg: "bg-teal-50 border-teal-200 text-teal-700 hover:bg-teal-50",
+      ringColor: "focus:ring-teal-400",
+    },
+    {
+      id: 3,
+      icon: FaMeh,
+      label: "Okay",
+      color: "bg-amber-400",
+      iconColor: "text-amber-500",
+      activeBg: "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-50",
+      ringColor: "focus:ring-amber-400",
+    },
+    {
+      id: 2,
+      icon: FaFrown,
+      label: "Bad",
+      color: "bg-orange-400",
+      iconColor: "text-orange-500",
+      activeBg: "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-50",
+      ringColor: "focus:ring-orange-400",
+    },
+    {
+      id: 1,
+      icon: FaSadCry,
+      label: "Terrible",
+      color: "bg-rose-400",
+      iconColor: "text-rose-500",
+      activeBg: "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-50",
+      ringColor: "focus:ring-rose-400",
+    },
   ];
 
   const moodFeedback = {
-    5: { text: "Awesome! What's making today so wonderful? 🌟", theme: "text-emerald-600 bg-emerald-50 border-emerald-100" },
-    4: { text: "Glad to hear that! What went well today? 😊", theme: "text-teal-600 bg-teal-50 border-teal-100" },
-    3: { text: "A balanced day. Anything particular on your mind? 🍃", theme: "text-amber-600 bg-amber-50 border-amber-100" },
-    2: { text: "Sorry to hear that. Writing it down can help lift some weight. 🧡", theme: "text-orange-600 bg-orange-50 border-orange-100" },
-    1: { text: "We are so sorry. Remember, you don't have to carry this alone. 💚", theme: "text-rose-600 bg-rose-50 border-rose-100" }
+    5: {
+      text: "Awesome! What's making today so wonderful? 🌟",
+      theme: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    },
+    4: {
+      text: "Glad to hear that! What went well today? 😊",
+      theme: "text-teal-600 bg-teal-50 border-teal-100",
+    },
+    3: {
+      text: "A balanced day. Anything particular on your mind? 🍃",
+      theme: "text-amber-600 bg-amber-50 border-amber-100",
+    },
+    2: {
+      text: "Sorry to hear that. Writing it down can help lift some weight. 🧡",
+      theme: "text-orange-600 bg-orange-50 border-orange-100",
+    },
+    1: {
+      text: "We are so sorry. Remember, you don't have to carry this alone. 💚",
+      theme: "text-rose-600 bg-rose-50 border-rose-100",
+    },
   };
 
   const quickTags = [
-    "Academic Pressure", "Lack of Sleep", "Relationships", "Family", "Health & Fitness", 
-    "Social Outing", "Hobby Time", "Productive Day", "Feeling Lonely", "Anxiety Spike"
+    "Academic Pressure",
+    "Lack of Sleep",
+    "Relationships",
+    "Family",
+    "Health & Fitness",
+    "Social Outing",
+    "Hobby Time",
+    "Productive Day",
+    "Feeling Lonely",
+    "Anxiety Spike",
   ];
 
   const fetchMoodData = async () => {
@@ -94,9 +162,7 @@ const MoodTrackerPage = () => {
     setNote((prev) => {
       const trimmed = prev.trim();
       if (trimmed.includes(formattedTag)) {
-        return trimmed
-          .replace(new RegExp(`\\s*${formattedTag}\\b`, "g"), "")
-          .trim();
+        return trimmed.replace(new RegExp(`\\s*${formattedTag}\\b`, "g"), "").trim();
       } else {
         return trimmed ? `${trimmed} ${formattedTag}` : formattedTag;
       }
@@ -171,7 +237,8 @@ const MoodTrackerPage = () => {
             <span className="text-2xl animate-pulse">✨</span>
           </h1>
           <p className="text-gray-500 mt-1 max-w-2xl">
-            Reflect on your emotional well-being, observe your daily patterns, and nurture your inner peace
+            Reflect on your emotional well-being, observe your daily patterns, and nurture your
+            inner peace
           </p>
         </div>
 
@@ -198,8 +265,8 @@ const MoodTrackerPage = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className={`flex flex-col items-center p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer min-w-[90px] ${
-                    isSelected 
-                      ? `${mood.activeBg} shadow-md` 
+                    isSelected
+                      ? `${mood.activeBg} shadow-md`
                       : "border-transparent hover:bg-gray-50 text-gray-400 hover:text-gray-500"
                   }`}
                 >
@@ -269,8 +336,8 @@ const MoodTrackerPage = () => {
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleToggleTag(tag)}
                       className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
-                        isSelected 
-                          ? "bg-[#5bb5a1] border-[#5bb5a1] text-white" 
+                        isSelected
+                          ? "bg-[#5bb5a1] border-[#5bb5a1] text-white"
                           : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                       }`}
                     >
@@ -295,7 +362,10 @@ const MoodTrackerPage = () => {
 
         {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <motion.div whileHover={{ y: -3 }} className="bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-white/40 flex items-center space-x-3">
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-white/40 flex items-center space-x-3"
+          >
             <span className="text-3xl p-2 bg-blue-50 rounded-xl">📊</span>
             <div>
               <p className="text-xs font-medium text-gray-500">Average Mood for today</p>
@@ -304,13 +374,19 @@ const MoodTrackerPage = () => {
                   {summary.avg_mood > 0 ? summary.avg_mood : "N/A"}
                 </span>
                 {summary.avg_mood > 0 && AverageMoodIcon && (
-                  <AverageMoodIcon className={getMoodIconColor(Math.round(summary.avg_mood))} size={18} />
+                  <AverageMoodIcon
+                    className={getMoodIconColor(Math.round(summary.avg_mood))}
+                    size={18}
+                  />
                 )}
               </div>
             </div>
           </motion.div>
-          
-          <motion.div whileHover={{ y: -3 }} className="bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-white/40 flex items-center space-x-3">
+
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-white/40 flex items-center space-x-3"
+          >
             <span className="text-3xl p-2 bg-green-50 rounded-xl">📅</span>
             <div>
               <p className="text-xs font-medium text-gray-500">Days Tracked</p>
@@ -318,7 +394,10 @@ const MoodTrackerPage = () => {
             </div>
           </motion.div>
 
-          <motion.div whileHover={{ y: -3 }} className="bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-white/40 flex items-center space-x-3">
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-white/40 flex items-center space-x-3"
+          >
             <span className="text-3xl p-2 bg-amber-50 rounded-xl">🔥</span>
             <div>
               <p className="text-xs font-medium text-gray-500">Current Streak</p>
@@ -333,8 +412,12 @@ const MoodTrackerPage = () => {
         <div className="bg-white/85 backdrop-blur-md rounded-2xl p-5 shadow-sm mb-6 border-l-4 border-[#5bb5a1] border-y border-r border-gray-100 flex items-start space-x-3">
           <span className="text-2xl p-1 bg-teal-50 rounded-lg">🌱</span>
           <div>
-            <h3 className="font-bold text-gray-800 text-sm mb-0.5">Your Mental Wellness Reflection</h3>
-            <p className="text-sm text-gray-600 leading-relaxed font-medium">{getWellnessMessage()}</p>
+            <h3 className="font-bold text-gray-800 text-sm mb-0.5">
+              Your Mental Wellness Reflection
+            </h3>
+            <p className="text-sm text-gray-600 leading-relaxed font-medium">
+              {getWellnessMessage()}
+            </p>
           </div>
         </div>
 
@@ -360,14 +443,21 @@ const MoodTrackerPage = () => {
             <div className="flex items-end justify-between h-48 px-4 relative mt-8">
               {journeyEntries.map((entry, index) => {
                 const dateObj = new Date(entry.created_at);
-                const dateStr = dateObj.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-                const timeStr = dateObj.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", hour12: true });
+                const dateStr = dateObj.toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                });
+                const timeStr = dateObj.toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                });
                 const JourneyIcon = getMoodIcon(entry.mood);
                 const isHovered = hoveredBarIndex === index;
 
                 return (
-                  <div 
-                    key={entry.id || index} 
+                  <div
+                    key={entry.id || index}
                     className="flex flex-col items-center relative flex-1"
                     onMouseEnter={() => setHoveredBarIndex(index)}
                     onMouseLeave={() => setHoveredBarIndex(null)}
@@ -382,7 +472,7 @@ const MoodTrackerPage = () => {
                           className="absolute bottom-full mb-6 bg-gray-800 text-white text-[11px] p-3 rounded-xl shadow-lg z-10 w-36 text-center leading-normal border border-gray-700 pointer-events-none"
                         >
                           <div className="font-bold text-[#5bb5a1] mb-0.5">
-                            {moods.find(m => m.id === entry.mood)?.label} ({entry.mood}/5)
+                            {moods.find((m) => m.id === entry.mood)?.label} ({entry.mood}/5)
                           </div>
                           {entry.note ? (
                             <div className="italic text-gray-200 mt-1 break-words line-clamp-2">
@@ -405,13 +495,13 @@ const MoodTrackerPage = () => {
                           <JourneyIcon className={getMoodIconColor(entry.mood)} size={20} />
                         </motion.div>
                       )}
-                      
+
                       {/* Animated growing bar */}
                       <motion.div
                         custom={entry.mood * 20}
                         variants={{
                           hidden: { height: 0 },
-                          show: { height: entry.mood * 20 }
+                          show: { height: entry.mood * 20 },
                         }}
                         initial="hidden"
                         animate="show"
@@ -439,7 +529,9 @@ const MoodTrackerPage = () => {
           </h2>
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
             {loading && recentEntries.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-4 font-medium">Loading entries...</p>
+              <p className="text-gray-400 text-sm text-center py-4 font-medium">
+                Loading entries...
+              </p>
             ) : recentEntries.length === 0 ? (
               <p className="text-gray-400 text-sm text-center py-4 font-medium">
                 No recent entries found. Record your first mood entry today!
@@ -479,7 +571,9 @@ const MoodTrackerPage = () => {
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold text-gray-700">{displayDateTime}</p>
                             {entry.note && (
-                              <p className="text-xs text-gray-500 mt-1 leading-relaxed break-words pr-4">{entry.note}</p>
+                              <p className="text-xs text-gray-500 mt-1 leading-relaxed break-words pr-4">
+                                {entry.note}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -506,15 +600,15 @@ const MoodTrackerPage = () => {
       <AnimatePresence>
         {deleteConfirmId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
               onClick={() => setDeleteConfirmId(null)}
             ></motion.div>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}

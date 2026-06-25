@@ -1,13 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  FaShieldAlt,
-  FaRobot,
-  FaUserMd,
-  FaUsers,
-  FaChartLine,
-  FaBook,
-} from "react-icons/fa";
+import { FaShieldAlt, FaRobot, FaUserMd, FaUsers, FaChartLine, FaBook } from "react-icons/fa";
 import mindmateLogo from "../assets/mindmate_logo.png";
 
 const LandingPage = () => {
@@ -16,7 +9,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto text-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -31,7 +24,7 @@ const LandingPage = () => {
             />
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -40,25 +33,24 @@ const LandingPage = () => {
             Your Mental Health Matters
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto"
           >
-            A safe, confidential space for university students to access mental
-            health support, connect with professionals, and track their wellness
-            journey.
+            A safe, confidential space for university students to access mental health support,
+            connect with professionals, and track their wellness journey.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <Link to="/register">
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-full sm:w-auto px-8 py-4 bg-[#5bb5a1] text-white rounded-xl font-semibold hover:bg-[#4a9d8b] shadow-md transition-colors"
@@ -67,7 +59,7 @@ const LandingPage = () => {
               </motion.button>
             </Link>
             <Link to="/login">
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-full sm:w-auto px-8 py-4 bg-white text-gray-700 rounded-xl font-semibold border border-gray-200 hover:bg-gray-50 shadow-sm transition-colors"
@@ -81,7 +73,7 @@ const LandingPage = () => {
 
       {/* CTA Section */}
       <section className="py-16 px-6 bg-white">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.8 }}
@@ -92,8 +84,7 @@ const LandingPage = () => {
             Start Your Wellness Journey Today
           </h2>
           <p className="text-gray-600 mb-8">
-            Join thousands of students who are taking control of their mental
-            health.
+            Join thousands of students who are taking control of their mental health.
           </p>
           {/* CTA button removed per request */}
         </motion.div>

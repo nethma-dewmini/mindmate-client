@@ -15,11 +15,7 @@ const AdminSectionCard = ({ title, description, active, onClick }) => {
           <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
         </div>
 
-        <div
-          className={`mt-1 h-3 w-3 rounded-full ${
-            active ? "bg-[#5bb5a1]" : "bg-slate-300"
-          }`}
-        />
+        <div className={`mt-1 h-3 w-3 rounded-full ${active ? "bg-[#5bb5a1]" : "bg-slate-300"}`} />
       </div>
     </button>
   );

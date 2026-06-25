@@ -18,19 +18,19 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const user = authService.getCurrentUser() || { name: "Student" };
-  
+
   const [moodStreak, setMoodStreak] = useState("0 days tracked");
   const [streakCount, setStreakCount] = useState(0);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
@@ -49,7 +49,7 @@ const DashboardPage = () => {
     "Your strength is stronger than your anxiety.",
     "Allow yourself to rest when you need it.",
     "In the middle of difficulty lies opportunity.",
-    "Focus on the present moment; that is where your power lies."
+    "Focus on the present moment; that is where your power lies.",
   ];
 
   const handleLogout = () => {
@@ -107,7 +107,7 @@ const DashboardPage = () => {
       setTodayMood(moodVal);
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 2000);
-      
+
       // Refresh streak/summary
       const summary = await authService.getMoodSummary(30);
       if (summary && typeof summary.streak !== "undefined") {
@@ -132,13 +132,33 @@ const DashboardPage = () => {
 
   const getMoodFeedback = (val) => {
     const map = {
-      5: { text: "Awesome! Keep shining bright! 🌟", sub: "Share your high energy with others or reflect on this positive wave." },
-      4: { text: "So glad you are feeling good today! 😊", sub: "Keep building on this momentum. You are doing fantastic." },
-      3: { text: "A steady, balanced day is a good day. ⚖️", sub: "Take a deep breath and maintain this comfortable rhythm." },
-      2: { text: "It is okay to have off days. Be gentle with yourself. 💛", sub: "Consider chatting with our AI Companion or listening to wellness audio." },
-      1: { text: "We are sending you a warm digital hug. 🫂 You are not alone.", sub: "Reach out to a peer support group or connect with a professional." }
+      5: {
+        text: "Awesome! Keep shining bright! 🌟",
+        sub: "Share your high energy with others or reflect on this positive wave.",
+      },
+      4: {
+        text: "So glad you are feeling good today! 😊",
+        sub: "Keep building on this momentum. You are doing fantastic.",
+      },
+      3: {
+        text: "A steady, balanced day is a good day. ⚖️",
+        sub: "Take a deep breath and maintain this comfortable rhythm.",
+      },
+      2: {
+        text: "It is okay to have off days. Be gentle with yourself. 💛",
+        sub: "Consider chatting with our AI Companion or listening to wellness audio.",
+      },
+      1: {
+        text: "We are sending you a warm digital hug. 🫂 You are not alone.",
+        sub: "Reach out to a peer support group or connect with a professional.",
+      },
     };
-    return map[val] || { text: "Thanks for checking in!", sub: "Logging your daily feelings builds excellent emotional self-awareness." };
+    return (
+      map[val] || {
+        text: "Thanks for checking in!",
+        sub: "Logging your daily feelings builds excellent emotional self-awareness.",
+      }
+    );
   };
 
   const getGreeting = () => {
@@ -154,7 +174,8 @@ const DashboardPage = () => {
     {
       icon: FaComments,
       title: "AI Companion",
-      description: "Talk to our compassionate AI assistant for immediate feedback and emotional relief",
+      description:
+        "Talk to our compassionate AI assistant for immediate feedback and emotional relief",
       path: "/chat",
       glowClass: "hover-glow-teal",
       tagColor: "bg-[#2c6e5f]/10 text-[#2c6e5f]",
@@ -170,7 +191,8 @@ const DashboardPage = () => {
     {
       icon: FaUserMd,
       title: "Book Expert",
-      description: "Schedule individual live guidance sessions with certified mental health experts",
+      description:
+        "Schedule individual live guidance sessions with certified mental health experts",
       path: "/experts",
       glowClass: "hover-glow-rose",
       tagColor: "bg-rose-50 text-rose-600",
@@ -189,7 +211,8 @@ const DashboardPage = () => {
     {
       icon: FaUsers,
       title: "Peer Support Groups",
-      description: "Connect with local university students to share stories and grow in a secure group",
+      description:
+        "Connect with local university students to share stories and grow in a secure group",
       path: "/peer-support",
       glowClass: "hover-glow-emerald",
       tagColor: "bg-emerald-50 text-emerald-600",
@@ -259,28 +282,35 @@ const DashboardPage = () => {
 
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, x: -15 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
               className="text-3xl font-extrabold text-[#1b4d42] tracking-tight flex items-center gap-2"
             >
-              {greeting.text}, {user.name.split(" ")[0]}! <span className="inline-block animate-bounce">{greeting.icon}</span>
+              {greeting.text}, {user.name.split(" ")[0]}!{" "}
+              <span className="inline-block animate-bounce">{greeting.icon}</span>
             </motion.h1>
-            <p className="text-[#2c6e5f]/80 mt-1 font-medium">How are you feeling today? Take a moment for yourself.</p>
+            <p className="text-[#2c6e5f]/80 mt-1 font-medium">
+              How are you feeling today? Take a moment for yourself.
+            </p>
           </div>
-          
+
           <div className="flex items-center gap-4 flex-wrap">
             {/* Gamified Mood Streak Badge */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.05 }}
               className={`flex items-center space-x-3 bg-white border border-[#2c6e5f]/10 px-5 py-2.5 rounded-2xl shadow-sm ${streakCount > 0 ? "animate-flame" : ""}`}
             >
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg ${streakCount > 0 ? "bg-amber-100 text-amber-500" : "bg-gray-100 text-gray-400"}`}>
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg ${streakCount > 0 ? "bg-amber-100 text-amber-500" : "bg-gray-100 text-gray-400"}`}
+              >
                 <FaFire className={streakCount > 0 ? "text-amber-500" : "text-gray-400"} />
               </div>
               <div className="text-left">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Mood Streak</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">
+                  Mood Streak
+                </p>
                 <p className="text-xs font-bold text-gray-800 mt-0.5">{moodStreak}</p>
               </div>
             </motion.div>
@@ -308,9 +338,8 @@ const DashboardPage = () => {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
-        
         {/* Interactive Mood Check-in Widget */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -331,14 +360,16 @@ const DashboardPage = () => {
                 How is your emotional balance right now?
               </h2>
               <p className="text-gray-500 text-sm mt-1">
-                Your current mood streak is <span className="font-semibold text-[#2c6e5f]">{moodStreak}</span>. Log today's mood to keep it up!
+                Your current mood streak is{" "}
+                <span className="font-semibold text-[#2c6e5f]">{moodStreak}</span>. Log today's mood
+                to keep it up!
               </p>
             </div>
-            
+
             {/* Check-in status / interactive buttons */}
             <AnimatePresence mode="wait">
               {hasCheckedInToday ? (
-                <motion.div 
+                <motion.div
                   key="checked-in"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -348,15 +379,19 @@ const DashboardPage = () => {
                 >
                   <span className="text-3xl shrink-0 animate-bounce">🌟</span>
                   <div>
-                    <h4 className="text-sm font-bold text-emerald-800">{getMoodFeedback(todayMood).text}</h4>
-                    <p className="text-xs text-emerald-600/80 mt-1 leading-relaxed">{getMoodFeedback(todayMood).sub}</p>
+                    <h4 className="text-sm font-bold text-emerald-800">
+                      {getMoodFeedback(todayMood).text}
+                    </h4>
+                    <p className="text-xs text-emerald-600/80 mt-1 leading-relaxed">
+                      {getMoodFeedback(todayMood).sub}
+                    </p>
                     <div className="mt-2.5 inline-block text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">
                       Logged: {getMoodEmoji(todayMood)}
                     </div>
                   </div>
                 </motion.div>
               ) : (
-                <motion.div 
+                <motion.div
                   key="needs-check-in"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -364,11 +399,36 @@ const DashboardPage = () => {
                   className="flex items-center gap-3 flex-wrap w-full md:w-auto"
                 >
                   {[
-                    { val: 1, label: "Sad", emoji: "😢", color: "hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600" },
-                    { val: 2, label: "Down", emoji: "🙁", color: "hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600" },
-                    { val: 3, label: "Neutral", emoji: "😐", color: "hover:bg-amber-50 hover:border-amber-300 hover:text-amber-600" },
-                    { val: 4, label: "Good", emoji: "🙂", color: "hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600" },
-                    { val: 5, label: "Great", emoji: "😄", color: "hover:bg-teal-50 hover:border-teal-300 hover:text-teal-600" },
+                    {
+                      val: 1,
+                      label: "Sad",
+                      emoji: "😢",
+                      color: "hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600",
+                    },
+                    {
+                      val: 2,
+                      label: "Down",
+                      emoji: "🙁",
+                      color: "hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600",
+                    },
+                    {
+                      val: 3,
+                      label: "Neutral",
+                      emoji: "😐",
+                      color: "hover:bg-amber-50 hover:border-amber-300 hover:text-amber-600",
+                    },
+                    {
+                      val: 4,
+                      label: "Good",
+                      emoji: "🙂",
+                      color: "hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600",
+                    },
+                    {
+                      val: 5,
+                      label: "Great",
+                      emoji: "😄",
+                      color: "hover:bg-teal-50 hover:border-teal-300 hover:text-teal-600",
+                    },
                   ].map((item) => (
                     <motion.button
                       key={item.val}
@@ -388,7 +448,7 @@ const DashboardPage = () => {
         </motion.div>
 
         {/* Affirmation Widget */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -397,10 +457,12 @@ const DashboardPage = () => {
           <div className="flex items-center gap-4">
             <span className="text-3xl animate-float">🌱</span>
             <div>
-              <p className="text-xs font-bold text-[#2c6e5f] uppercase tracking-wider">Mindful Affirmation</p>
+              <p className="text-xs font-bold text-[#2c6e5f] uppercase tracking-wider">
+                Mindful Affirmation
+              </p>
               <div className="h-auto overflow-hidden">
                 <AnimatePresence mode="wait">
-                  <motion.p 
+                  <motion.p
                     key={affirmation}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -419,7 +481,11 @@ const DashboardPage = () => {
             className="px-5 py-2.5 bg-white text-[#2c6e5f] hover:bg-[#2c6e5f] hover:text-white border border-[#2c6e5f]/15 hover:border-[#2c6e5f] rounded-2xl text-xs font-bold shadow-sm transition-all duration-300 shrink-0 cursor-pointer flex items-center gap-2 active:scale-95 group"
           >
             <span>New Affirmation</span>
-            <span className={`transition-transform duration-500 ease-out inline-block ${isAffirming ? "rotate-180" : "group-hover:rotate-45"}`}>🔄</span>
+            <span
+              className={`transition-transform duration-500 ease-out inline-block ${isAffirming ? "rotate-180" : "group-hover:rotate-45"}`}
+            >
+              🔄
+            </span>
           </button>
         </motion.div>
 
@@ -428,7 +494,7 @@ const DashboardPage = () => {
           <h2 className="text-xl font-extrabold text-[#1b4d42] mb-5 flex items-center gap-2">
             <span>🎯</span> Primary Support & Care
           </h2>
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
@@ -439,9 +505,13 @@ const DashboardPage = () => {
               return (
                 <motion.div key={index} variants={itemVariants} className="h-full">
                   <Link to={action.path} className="group block h-full">
-                    <div className={`glass-card p-6 rounded-3xl h-full flex flex-col justify-between ${action.glowClass} border border-gray-100`}>
+                    <div
+                      className={`glass-card p-6 rounded-3xl h-full flex flex-col justify-between ${action.glowClass} border border-gray-100`}
+                    >
                       <div>
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 text-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ${action.tagColor}`}>
+                        <div
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 text-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ${action.tagColor}`}
+                        >
                           <Icon />
                         </div>
                         <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#2c6e5f] transition-colors duration-200">
@@ -468,7 +538,7 @@ const DashboardPage = () => {
           <h2 className="text-xl font-extrabold text-[#1b4d42] mb-5 flex items-center gap-2">
             <span>🌿</span> Self-Care Tools & Resources
           </h2>
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
@@ -479,9 +549,13 @@ const DashboardPage = () => {
               return (
                 <motion.div key={index} variants={itemVariants} className="h-full">
                   <Link to={action.path} className="group block h-full">
-                    <div className={`glass-card p-6 rounded-3xl h-full flex flex-col justify-between ${action.glowClass} border border-gray-100`}>
+                    <div
+                      className={`glass-card p-6 rounded-3xl h-full flex flex-col justify-between ${action.glowClass} border border-gray-100`}
+                    >
                       <div>
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 text-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ${action.tagColor}`}>
+                        <div
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 text-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ${action.tagColor}`}
+                        >
                           <Icon />
                         </div>
                         <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#2c6e5f] transition-colors duration-200">
@@ -508,7 +582,7 @@ const DashboardPage = () => {
           <h2 className="text-xl font-extrabold text-[#1b4d42] mb-5 flex items-center gap-2">
             <span>💡</span> Daily Mental Wellness Tips
           </h2>
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
@@ -524,15 +598,14 @@ const DashboardPage = () => {
                 <div className="text-4xl mb-4 bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center shadow-inner hover:scale-110 transition-transform duration-300">
                   {tip.emoji}
                 </div>
-                <h3 className="font-bold text-[#2c6e5f] mb-2 text-base">
-                  {tip.title}
-                </h3>
-                <p className="text-xs text-gray-500 leading-relaxed font-medium">{tip.description}</p>
+                <h3 className="font-bold text-[#2c6e5f] mb-2 text-base">{tip.title}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                  {tip.description}
+                </p>
               </motion.div>
             ))}
           </motion.div>
         </div>
-
       </div>
     </div>
   );

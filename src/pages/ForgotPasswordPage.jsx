@@ -57,9 +57,7 @@ const ForgotPasswordPage = () => {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FaCheck className="text-2xl text-green-500" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              Check Your Email
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Check Your Email</h1>
             <p className="text-gray-500 mb-6">
               We've sent a password reset link to{" "}
               <span className="font-medium text-gray-700">{email}</span>
@@ -93,9 +91,7 @@ const ForgotPasswordPage = () => {
             <div className="flex justify-center mb-4">
               <img src={mindmateLogo} alt="MindMate" className="w-16 h-16" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              Forgot Password?
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Forgot Password?</h1>
             <p className="text-gray-500">
               Enter your email and we'll send you a link to reset your password
             </p>
@@ -109,9 +105,7 @@ const ForgotPasswordPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
               <div className="relative">
                 <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input

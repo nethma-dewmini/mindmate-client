@@ -5,4 +5,3 @@ export { default as Card } from "./Card";
 export { default as Input } from "./Input";
 export { SkeletonCard } from "./SkeletonCard";
 export { default as PageTransition } from "./PageTransition";
-

@@ -16,7 +16,7 @@ import {
   FaTimesCircle,
   FaGraduationCap,
   FaUserShield,
-  FaInfoCircle
+  FaInfoCircle,
 } from "react-icons/fa";
 
 const AdminPeerGroups = () => {
@@ -37,8 +37,7 @@ const AdminPeerGroups = () => {
 
   const currentUser = authService.getCurrentUser();
   const currentUserId = currentUser?.id || currentUser?.user_id || null;
-  const selectedGroup =
-    groups.find((group) => group.id === selectedGroupId) || null;
+  const selectedGroup = groups.find((group) => group.id === selectedGroupId) || null;
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -131,7 +130,7 @@ const AdminPeerGroups = () => {
         is_public: !group.is_public,
       });
       setGroups((currentGroups) =>
-        currentGroups.map((item) => (item.id === updated.id ? updated : item)),
+        currentGroups.map((item) => (item.id === updated.id ? updated : item))
       );
       setNotice({
         type: "success",
@@ -175,7 +174,7 @@ const AdminPeerGroups = () => {
     setSelectedMessageIds((currentSelected) =>
       currentSelected.includes(messageId)
         ? currentSelected.filter((id) => id !== messageId)
-        : [...currentSelected, messageId],
+        : [...currentSelected, messageId]
     );
   };
 
@@ -184,9 +183,7 @@ const AdminPeerGroups = () => {
 
     setSelectedMessageIds((currentSelected) => {
       const visibleIds = groupMessages.map((message) => message.id);
-      const allSelected = visibleIds.every((id) =>
-        currentSelected.includes(id),
-      );
+      const allSelected = visibleIds.every((id) => currentSelected.includes(id));
       return allSelected ? [] : visibleIds;
     });
   };
@@ -200,22 +197,19 @@ const AdminPeerGroups = () => {
       if (deleteConfirm.kind === "group") {
         await authService.adminDeletePeerGroup(deleteConfirm.id);
         setGroups((currentGroups) =>
-          currentGroups.filter((group) => group.id !== deleteConfirm.id),
+          currentGroups.filter((group) => group.id !== deleteConfirm.id)
         );
         if (selectedGroupId === deleteConfirm.id) {
           setSelectedGroupId(null);
         }
         setNotice({ type: "success", message: "Group deleted successfully." });
       } else if (deleteConfirm.kind === "message" && selectedGroup) {
-        await authService.adminDeletePeerGroupMessage(
-          selectedGroup.id,
-          deleteConfirm.id,
-        );
+        await authService.adminDeletePeerGroupMessage(selectedGroup.id, deleteConfirm.id);
         setGroupMessages((currentMessages) =>
-          currentMessages.filter((message) => message.id !== deleteConfirm.id),
+          currentMessages.filter((message) => message.id !== deleteConfirm.id)
         );
         setSelectedMessageIds((currentSelected) =>
-          currentSelected.filter((id) => id !== deleteConfirm.id),
+          currentSelected.filter((id) => id !== deleteConfirm.id)
         );
         setNotice({
           type: "success",
@@ -223,15 +217,10 @@ const AdminPeerGroups = () => {
         });
       } else if (deleteConfirm.kind === "bulk-messages" && selectedGroup) {
         for (const messageId of deleteConfirm.ids) {
-          await authService.adminDeletePeerGroupMessage(
-            selectedGroup.id,
-            messageId,
-          );
+          await authService.adminDeletePeerGroupMessage(selectedGroup.id, messageId);
         }
         setGroupMessages((currentMessages) =>
-          currentMessages.filter(
-            (message) => !deleteConfirm.ids.includes(message.id),
-          ),
+          currentMessages.filter((message) => !deleteConfirm.ids.includes(message.id))
         );
         setSelectedMessageIds([]);
         setNotice({
@@ -287,7 +276,6 @@ const AdminPeerGroups = () => {
 
   return (
     <div className="bg-[#fcfdfc] min-h-[750px] p-2 md:p-6 rounded-3xl border border-teal-50 shadow-xl shadow-teal-900/5 transition-all">
-      
       {/* Banner / Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8 p-4 bg-gradient-to-r from-teal-50/60 to-transparent rounded-2xl border border-teal-100/30">
         <div>
@@ -328,17 +316,15 @@ const AdminPeerGroups = () => {
 
       {/* Two Column Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
         {/* Left Column: Create Form + Groups List */}
         <div className="lg:col-span-5 space-y-6">
-          
           {/* Create Group Form Card */}
           <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 flex items-center gap-2">
               <FaPlus className="text-teal-600 text-xs" />
               Create Support Group
             </h3>
-            
+
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <input
@@ -370,8 +356,12 @@ const AdminPeerGroups = () => {
                     <FaLock className="text-slate-400 text-xs" />
                   )}
                   <div>
-                    <span className="text-xs font-bold text-slate-700 block">Public Visibility</span>
-                    <span className="text-[10px] text-slate-400">Allow any student to discover and join</span>
+                    <span className="text-xs font-bold text-slate-700 block">
+                      Public Visibility
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      Allow any student to discover and join
+                    </span>
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -398,7 +388,9 @@ const AdminPeerGroups = () => {
           {/* Groups List */}
           <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
             <div className="bg-slate-50/50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-              <span className="text-xs md:text-sm font-semibold text-slate-700">Chatrooms List</span>
+              <span className="text-xs md:text-sm font-semibold text-slate-700">
+                Chatrooms List
+              </span>
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                 {groups.length} active
               </span>
@@ -408,7 +400,10 @@ const AdminPeerGroups = () => {
               {loading ? (
                 /* Skeletal Loaders */
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="p-4 bg-white rounded-2xl border border-transparent flex items-center gap-3 animate-pulse">
+                  <div
+                    key={i}
+                    className="p-4 bg-white rounded-2xl border border-transparent flex items-center gap-3 animate-pulse"
+                  >
                     <div className="w-10 h-10 rounded-full bg-slate-200" />
                     <div className="flex-1 space-y-2">
                       <div className="h-4 bg-slate-200 rounded w-2/3" />
@@ -435,14 +430,18 @@ const AdminPeerGroups = () => {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm ${
-                            isSelected ? "bg-[#2c6e5f] text-white" : "bg-teal-50 text-[#2c6e5f]"
-                          }`}>
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm ${
+                              isSelected ? "bg-[#2c6e5f] text-white" : "bg-teal-50 text-[#2c6e5f]"
+                            }`}
+                          >
                             <FaUsers />
                           </div>
                           <div>
                             <h4 className="font-bold text-slate-800 text-sm">{group.name}</h4>
-                            <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{group.description}</p>
+                            <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">
+                              {group.description}
+                            </p>
                             <span className="text-[10px] text-slate-400 flex items-center gap-1 mt-1.5">
                               <FaClock />
                               {new Date(group.created_at).toLocaleDateString()}
@@ -451,11 +450,13 @@ const AdminPeerGroups = () => {
                         </div>
 
                         {/* Visibility Badge */}
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border shrink-0 ${
-                          group.is_public
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : "bg-slate-50 text-slate-600 border-slate-200"
-                        }`}>
+                        <span
+                          className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border shrink-0 ${
+                            group.is_public
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : "bg-slate-50 text-slate-600 border-slate-200"
+                          }`}
+                        >
                           {group.is_public ? "Public" : "Private"}
                         </span>
                       </div>
@@ -496,7 +497,6 @@ const AdminPeerGroups = () => {
               )}
             </div>
           </div>
-
         </div>
 
         {/* Right Column: Messages Moderation */}
@@ -514,13 +514,13 @@ const AdminPeerGroups = () => {
                 </div>
                 <h3 className="font-bold text-slate-700 text-lg">Deselected/No Group Active</h3>
                 <p className="text-slate-400 max-w-sm text-sm">
-                  Select a support group card from the list to load its moderation feed, inspect student logs, or write official administrative broadcasts.
+                  Select a support group card from the list to load its moderation feed, inspect
+                  student logs, or write official administrative broadcasts.
                 </p>
               </div>
             ) : (
               /* Loaded Group Message Board */
               <div className="space-y-5 flex-1 flex flex-col justify-between">
-                
                 {/* Active Group Header details */}
                 <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-100">
                   <div>
@@ -528,7 +528,9 @@ const AdminPeerGroups = () => {
                       <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
                       {selectedGroup.name}
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{selectedGroup.description || "No description provided."}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
+                      {selectedGroup.description || "No description provided."}
+                    </p>
                   </div>
                   <button
                     type="button"
@@ -569,7 +571,7 @@ const AdminPeerGroups = () => {
                 <div className="flex-1 flex flex-col">
                   <div className="flex items-center justify-between gap-3 mb-3 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100 text-xs">
                     <span className="font-semibold text-slate-700">Recent Messages</span>
-                    
+
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -577,11 +579,12 @@ const AdminPeerGroups = () => {
                         disabled={groupMessages.length === 0}
                         className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-white transition-colors disabled:opacity-50 font-bold tracking-wide uppercase text-[10px] cursor-pointer"
                       >
-                        {selectedMessageIds.length === groupMessages.length && groupMessages.length > 0
+                        {selectedMessageIds.length === groupMessages.length &&
+                        groupMessages.length > 0
                           ? "Deselect All"
                           : "Select All"}
                       </button>
-                      
+
                       {selectedMessageIds.length > 0 && (
                         <button
                           type="button"
@@ -654,7 +657,10 @@ const AdminPeerGroups = () => {
                                 </div>
                                 <span className="text-[9px] text-slate-400 font-medium">
                                   {message.created_at
-                                    ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                    ? new Date(message.created_at).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })
                                     : "Just now"}
                                 </span>
                               </div>
@@ -675,19 +681,16 @@ const AdminPeerGroups = () => {
                                 </button>
                               </div>
                             </div>
-
                           </div>
                         );
                       })
                     )}
                   </div>
                 </div>
-
               </div>
             )}
           </div>
         </div>
-
       </div>
 
       {/* Confirmation Modal Overlay */}
@@ -706,7 +709,8 @@ const AdminPeerGroups = () => {
               {deleteConfirm.kind === "group" ? (
                 <>
                   Are you sure you want to delete the support group{" "}
-                  <strong className="text-slate-800">"{deleteConfirm.name}"</strong>? This will remove the chatroom and all its message history permanently.
+                  <strong className="text-slate-800">"{deleteConfirm.name}"</strong>? This will
+                  remove the chatroom and all its message history permanently.
                 </>
               ) : deleteConfirm.kind === "message" ? (
                 "Are you sure you want to delete this message? It will be removed from the chat history permanently."

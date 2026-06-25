@@ -55,13 +55,19 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] flex flex-col pt-16 relative overflow-hidden">
       {/* Decorative background blobs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-100/40 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" style={{ animationDuration: "8s" }} />
-      <div className="absolute bottom-1/3 right-10 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" style={{ animationDuration: "12s" }} />
+      <div
+        className="absolute top-0 left-1/4 w-96 h-96 bg-teal-100/40 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse"
+        style={{ animationDuration: "8s" }}
+      />
+      <div
+        className="absolute bottom-1/3 right-10 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse"
+        style={{ animationDuration: "12s" }}
+      />
 
       <div className="max-w-6xl w-full mx-auto px-6 py-12 flex-grow relative z-10">
         {/* Title Banner */}
         <div className="text-center mb-12">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -69,32 +75,33 @@ const ContactPage = () => {
           >
             Contact Support & Admin
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="mt-4 text-[#2c6e5f]/85 max-w-2xl mx-auto text-sm md:text-base leading-relaxed font-medium"
           >
-            We are here to listen, support, and assist you. Reach out to our system administrator for technical help, account assistance, or platform inquiries.
+            We are here to listen, support, and assist you. Reach out to our system administrator
+            for technical help, account assistance, or platform inquiries.
           </motion.p>
         </div>
 
         {/* Core Columns */}
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
           className="grid grid-cols-1 md:grid-cols-12 gap-8"
         >
           {/* Support Form */}
-          <motion.div 
+          <motion.div
             variants={cardVariants}
             className="md:col-span-7 glass-card bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 hover-glow-teal transition-all duration-300"
           >
             <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2.5">
               <span>✉️</span> Send a Message
             </h2>
-            
+
             <AnimatePresence mode="wait">
               {successMessage && (
                 <motion.div
@@ -188,22 +195,20 @@ const ContactPage = () => {
           </motion.div>
 
           {/* Contact Details Card */}
-          <motion.div 
-            variants={cardVariants}
-            className="md:col-span-5 flex flex-col gap-6"
-          >
+          <motion.div variants={cardVariants} className="md:col-span-5 flex flex-col gap-6">
             <div className="glass-card bg-white rounded-3xl p-6 border border-gray-150 shadow-sm hover-glow-indigo transition-all duration-300">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#2c6e5f] bg-[#2c6e5f]/10 px-3 py-1 rounded-full">
                 Primary Contact
               </span>
-              
+
               <h2 className="text-lg font-bold text-gray-800 mt-4 mb-2">Administrator Support</h2>
               <p className="text-gray-500 text-xs leading-relaxed mb-6 font-semibold">
-                For administrative matters, expert requests, and policy concerns, contact our designated site admin directly.
+                For administrative matters, expert requests, and policy concerns, contact our
+                designated site admin directly.
               </p>
 
               <div className="space-y-4">
-                <motion.div 
+                <motion.div
                   whileHover={{ x: 4 }}
                   className="flex items-start gap-3 group cursor-pointer"
                 >
@@ -211,7 +216,9 @@ const ContactPage = () => {
                     <FaEnvelope size={14} />
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Support Email</h4>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">
+                      Support Email
+                    </h4>
                     <a
                       href="mailto:nethmadewmini24@gmail.com"
                       className="text-xs font-bold text-[#2c6e5f] hover:underline break-all mt-1.5 inline-block"
@@ -221,7 +228,7 @@ const ContactPage = () => {
                   </div>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   whileHover={{ x: 4 }}
                   className="flex items-start gap-3 group cursor-pointer"
                 >
@@ -229,12 +236,14 @@ const ContactPage = () => {
                     <FaShieldAlt size={14} />
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Role</h4>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">
+                      Role
+                    </h4>
                     <p className="text-xs font-bold text-gray-700 mt-1.5">Platform Administrator</p>
                   </div>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   whileHover={{ x: 4 }}
                   className="flex items-start gap-3 group cursor-pointer"
                 >
@@ -242,7 +251,9 @@ const ContactPage = () => {
                     <FaClock size={14} />
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">Response Hours</h4>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none">
+                      Response Hours
+                    </h4>
                     <p className="text-xs font-bold text-gray-700 mt-1.5">Mon - Fri: 9am - 5pm</p>
                   </div>
                 </motion.div>
@@ -250,7 +261,7 @@ const ContactPage = () => {
             </div>
 
             {/* Crisis Alert Banner */}
-            <motion.div 
+            <motion.div
               variants={cardVariants}
               whileHover={{ scale: 1.01 }}
               className="bg-rose-50/60 border border-rose-200/50 rounded-3xl p-6 shadow-sm hover:border-rose-300/60 transition-all duration-300 hover-glow-rose"
@@ -260,7 +271,9 @@ const ContactPage = () => {
               </span>
               <h3 className="text-sm font-bold text-rose-800 mt-4 mb-1">Need Immediate Help?</h3>
               <p className="text-xs text-rose-700 leading-relaxed font-semibold">
-                If you are in immediate danger or facing a mental health emergency, please contact local emergency medical services or a crisis helpline. Support emails are not monitored 24/7 for crisis situations.
+                If you are in immediate danger or facing a mental health emergency, please contact
+                local emergency medical services or a crisis helpline. Support emails are not
+                monitored 24/7 for crisis situations.
               </p>
             </motion.div>
           </motion.div>

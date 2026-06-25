@@ -63,7 +63,7 @@ const ExpertResourceUploadPage = () => {
         // allow URL instead of a file for video/audio
       } else {
         setResourceError(
-          "Please attach a document to upload or provide a video/audio URL for media resources.",
+          "Please attach a document to upload or provide a video/audio URL for media resources."
         );
         return;
       }
@@ -120,14 +120,12 @@ const ExpertResourceUploadPage = () => {
         <div className="glass-card bg-white rounded-3xl p-6 md:p-8 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-8 pb-4 border-b border-gray-100">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                Resource Information
-              </h2>
+              <h2 className="text-xl font-bold text-gray-800">Resource Information</h2>
               <p className="text-xs text-gray-400 mt-1 font-semibold">
                 Fill in the details below to upload a resource.
               </p>
             </div>
-            
+
             <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-teal-50 border border-teal-100 text-[#2c6e5f] self-start md:self-center">
               Public Resource
             </span>
@@ -252,8 +250,8 @@ const ExpertResourceUploadPage = () => {
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none bg-white font-medium text-gray-700 transition-all duration-300 placeholder-gray-400 text-xs"
                     />
                     <p className="mt-2 text-[10px] text-gray-400 font-medium">
-                      Provide a video URL if you prefer linking to an external
-                      video instead of uploading a file.
+                      Provide a video URL if you prefer linking to an external video instead of
+                      uploading a file.
                     </p>
                   </div>
                 )}
@@ -272,25 +270,24 @@ const ExpertResourceUploadPage = () => {
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none bg-white font-medium text-gray-700 transition-all duration-300 placeholder-gray-400 text-xs"
                     />
                     <p className="mt-2 text-[10px] text-gray-400 font-medium">
-                      Provide an audio URL if you prefer linking instead of
-                      uploading a file.
+                      Provide an audio URL if you prefer linking instead of uploading a file.
                     </p>
                   </div>
                 )}
 
                 <p className="mt-2 text-[10px] text-gray-400 font-medium leading-relaxed">
-                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, WEBP files, video files
-                  (MP4/WEBM/MOV), and audio files (MP3/WAV/OGG) are supported.
+                  TXT, PDF, DOC, DOCX, PNG, JPG, JPEG, WEBP files, video files (MP4/WEBM/MOV), and
+                  audio files (MP3/WAV/OGG) are supported.
                 </p>
               </div>
             </div>
 
             <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <p className="text-xs text-gray-400 max-w-sm leading-relaxed font-semibold">
-                The document will be stored securely and made available in the
-                student resource library.
+                The document will be stored securely and made available in the student resource
+                library.
               </p>
-              
+
               <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
                 <Link
                   to="/expert/dashboard"

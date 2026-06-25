@@ -96,8 +96,7 @@ const ResourcesPage = () => {
       (resource.author && resource.author.toLowerCase().includes(q)) ||
       (resource.category && resource.category.toLowerCase().includes(q));
 
-    const matchesType =
-      typeFilter === "ALL" || !resource.type || resource.type === typeFilter;
+    const matchesType = typeFilter === "ALL" || !resource.type || resource.type === typeFilter;
 
     return matchesSearch && matchesType;
   });
@@ -158,16 +157,13 @@ const ResourcesPage = () => {
       case "GUIDE":
         return <FaBookOpen className="text-xl text-indigo-500" />;
       case "AUDIO":
-        return (
-          <FaVolumeUp className="text-xl text-emerald-500 animate-pulse" />
-        );
+        return <FaVolumeUp className="text-xl text-emerald-500 animate-pulse" />;
       default:
         return <FaFileAlt className="text-xl text-teal-500" />;
     }
   };
 
-  const escapeRegExp = (string = "") =>
-    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapeRegExp = (string = "") => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   const highlightMatch = (text = "", q = "") => {
     if (!q) return text;
@@ -175,10 +171,7 @@ const ResourcesPage = () => {
     return parts.map((part, i) => {
       if (part.toLowerCase() === q.toLowerCase()) {
         return (
-          <mark
-            key={i}
-            className="bg-yellow-200 text-yellow-900 rounded px-0.5"
-          >
+          <mark key={i} className="bg-yellow-200 text-yellow-900 rounded px-0.5">
             {part}
           </mark>
         );
@@ -217,9 +210,8 @@ const ResourcesPage = () => {
               Mental Health Resources
             </h1>
             <p className="text-[#2c6e5f]/80 mt-1 font-medium max-w-2xl leading-relaxed text-sm md:text-base">
-              Explore expert insights, mindful strategies, and therapeutic
-              guides to nurture your inner peace and empower your well-being
-              journey.
+              Explore expert insights, mindful strategies, and therapeutic guides to nurture your
+              inner peace and empower your well-being journey.
             </p>
           </div>
 
@@ -289,9 +281,7 @@ const ResourcesPage = () => {
             <SkeletonCard count={6} />
           </div>
         ) : loadError ? (
-          <div className="text-center text-red-600 py-12 font-semibold">
-            {loadError}
-          </div>
+          <div className="text-center text-red-600 py-12 font-semibold">{loadError}</div>
         ) : filteredResources.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -301,9 +291,7 @@ const ResourcesPage = () => {
             <div className="w-16 h-16 rounded-full bg-[#2c6e5f]/5 flex items-center justify-center mb-4 text-[#2c6e5f]">
               <FaSearch className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-1">
-              No resources found
-            </h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-1">No resources found</h3>
             <p className="text-sm text-gray-500 max-w-sm">
               We couldn't find any resources matching your search or filters.
             </p>
@@ -366,7 +354,7 @@ const ResourcesPage = () => {
                       >
                         {highlightMatch(
                           (resource.category || "General").replace("-", " "),
-                          debouncedSearch,
+                          debouncedSearch
                         )}
                       </span>
                     </div>
@@ -382,7 +370,7 @@ const ResourcesPage = () => {
                       <span className="font-semibold text-gray-600">
                         {highlightMatch(
                           resource.authorName || resource.author || "Expert",
-                          debouncedSearch,
+                          debouncedSearch
                         )}
                       </span>
                     </p>

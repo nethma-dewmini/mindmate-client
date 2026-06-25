@@ -223,7 +223,9 @@ const ExpertSessionsPage = () => {
         <div className="absolute top-1/3 right-10 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#2c6e5f] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm font-semibold text-[#2c6e5f] animate-pulse">Loading availability...</p>
+          <p className="text-sm font-semibold text-[#2c6e5f] animate-pulse">
+            Loading availability...
+          </p>
         </div>
       </div>
     );
@@ -238,7 +240,8 @@ const ExpertSessionsPage = () => {
       {/* Page Header */}
       <div className="max-w-6xl mx-auto mb-8 pb-4 border-b border-[#2c6e5f]/10">
         <h1 className="text-3xl font-extrabold text-[#1b4d42] tracking-tight flex items-center gap-2">
-          <FaCalendarAlt className="text-[#2c6e5f] shrink-0 animate-float" /> Availability & Sessions
+          <FaCalendarAlt className="text-[#2c6e5f] shrink-0 animate-float" /> Availability &
+          Sessions
         </h1>
         <p className="text-[#2c6e5f]/80 mt-1 font-medium max-w-2xl leading-relaxed text-sm md:text-base">
           Schedule upcoming sessions held so university students can view, book, and join them.
@@ -277,7 +280,7 @@ const ExpertSessionsPage = () => {
               <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 pb-3 border-b border-gray-100">
                 <FaPlusCircle className="text-[#2c6e5f]" /> Schedule a Session
               </h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
@@ -407,7 +410,9 @@ const ExpertSessionsPage = () => {
                   <div className="w-12 h-12 rounded-full bg-[#2c6e5f]/5 flex items-center justify-center text-xl mb-4 text-[#2c6e5f]">
                     📅
                   </div>
-                  <h3 className="text-sm font-bold text-gray-850 mb-1">No sessions scheduled yet</h3>
+                  <h3 className="text-sm font-bold text-gray-850 mb-1">
+                    No sessions scheduled yet
+                  </h3>
                   <p className="text-xs text-gray-400 max-w-xs">
                     Use the form on the left to add and schedule your first session.
                   </p>
@@ -437,19 +442,16 @@ const ExpertSessionsPage = () => {
                               <FaBookOpen className="text-[#2c6e5f] shrink-0" size={16} />
                               {session.topic}
                             </h3>
-                            
+
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-450 font-semibold">
                               <span className="flex items-center gap-1.5">
                                 <FaCalendarAlt className="text-gray-400" />
-                                {new Date(session.session_date).toLocaleDateString(
-                                  undefined,
-                                  {
-                                    weekday: "short",
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                  }
-                                )}
+                                {new Date(session.session_date).toLocaleDateString(undefined, {
+                                  weekday: "short",
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                })}
                               </span>
                               <span className="flex items-center gap-1.5">
                                 <FaClock className="text-gray-400" />
@@ -467,9 +469,13 @@ const ExpertSessionsPage = () => {
                             <div className="mt-4 pt-3 border-t border-gray-100">
                               {editingSessionId === session.id ? (
                                 <div className="space-y-3 bg-gray-50/60 p-4 rounded-xl border border-gray-150">
-                                  <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider">Update Meeting Details</h4>
+                                  <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    Update Meeting Details
+                                  </h4>
                                   <div>
-                                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Meeting Link</label>
+                                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                      Meeting Link
+                                    </label>
                                     <input
                                       type="url"
                                       name="meetingLink"
@@ -480,7 +486,9 @@ const ExpertSessionsPage = () => {
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Instructions / Details</label>
+                                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                      Instructions / Details
+                                    </label>
                                     <textarea
                                       name="meetingDetails"
                                       rows={2}
@@ -515,13 +523,16 @@ const ExpertSessionsPage = () => {
                                       onClick={() => startEditingMeeting(session)}
                                       className="text-xs text-[#2c6e5f] hover:text-[#1b4d42] hover:underline font-bold flex items-center gap-1 cursor-pointer"
                                     >
-                                      <FaEdit size={11} /> {session.meeting_link ? "Edit Link" : "Add Link"}
+                                      <FaEdit size={11} />{" "}
+                                      {session.meeting_link ? "Edit Link" : "Add Link"}
                                     </button>
                                   </div>
-                                  
+
                                   {session.meeting_link ? (
                                     <div className="text-xs bg-teal-50/20 border border-teal-100/30 p-3.5 rounded-xl">
-                                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Meeting Link:</p>
+                                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                                        Meeting Link:
+                                      </p>
                                       <a
                                         href={session.meeting_link}
                                         target="_blank"
@@ -532,13 +543,19 @@ const ExpertSessionsPage = () => {
                                       </a>
                                       {session.meeting_details && (
                                         <div className="mt-2 text-xs text-gray-650 leading-relaxed">
-                                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Instructions:</p>
-                                          <p className="mt-1 whitespace-pre-line bg-white/40 p-2 rounded-lg border border-gray-100/80">{session.meeting_details}</p>
+                                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                                            Instructions:
+                                          </p>
+                                          <p className="mt-1 whitespace-pre-line bg-white/40 p-2 rounded-lg border border-gray-100/80">
+                                            {session.meeting_details}
+                                          </p>
                                         </div>
                                       )}
                                     </div>
                                   ) : (
-                                    <p className="text-xs text-gray-400 italic font-medium">No meeting link provided yet.</p>
+                                    <p className="text-xs text-gray-400 italic font-medium">
+                                      No meeting link provided yet.
+                                    </p>
                                   )}
                                 </div>
                               )}
@@ -547,7 +564,8 @@ const ExpertSessionsPage = () => {
                             {/* Booked Students List */}
                             <div className="mt-4 pt-3 border-t border-gray-100 bg-gray-50/30 p-4 rounded-xl">
                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1 mb-3">
-                                <FaUsers className="text-[#2c6e5f]" /> Booked Students ({session.attendees?.length || 0})
+                                <FaUsers className="text-[#2c6e5f]" /> Booked Students (
+                                {session.attendees?.length || 0})
                               </span>
                               {session.attendees && session.attendees.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
@@ -560,7 +578,9 @@ const ExpertSessionsPage = () => {
                                         {attendee.name.charAt(0)}
                                       </div>
                                       <div className="min-w-0">
-                                        <p className="text-xs font-bold text-gray-700 truncate">{attendee.name}</p>
+                                        <p className="text-xs font-bold text-gray-700 truncate">
+                                          {attendee.name}
+                                        </p>
                                         <p className="text-[10px] text-gray-400 truncate flex items-center gap-1 mt-0.5 font-medium">
                                           <FaEnvelope size={9} /> {attendee.email}
                                         </p>
@@ -569,7 +589,9 @@ const ExpertSessionsPage = () => {
                                   ))}
                                 </div>
                               ) : (
-                                <p className="text-xs text-gray-400 italic font-medium">No student bookings yet.</p>
+                                <p className="text-xs text-gray-400 italic font-medium">
+                                  No student bookings yet.
+                                </p>
                               )}
                             </div>
                           </div>
@@ -614,7 +636,8 @@ const ExpertSessionsPage = () => {
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-2">Cancel Session?</h3>
               <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                Are you sure you want to cancel this scheduled session? This action will permanently remove it.
+                Are you sure you want to cancel this scheduled session? This action will permanently
+                remove it.
               </p>
               <div className="flex justify-center gap-3">
                 <button

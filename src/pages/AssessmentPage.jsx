@@ -15,37 +15,37 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
 const cardVariants = {
   hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 // Question slide variants
 const slideVariants = {
   enter: (direction) => ({
     x: direction > 0 ? 40 : -40,
-    opacity: 0
+    opacity: 0,
   }),
   center: {
     x: 0,
     opacity: 1,
     transition: {
       x: { type: "spring", stiffness: 320, damping: 25 },
-      opacity: { duration: 0.2 }
-    }
+      opacity: { duration: 0.2 },
+    },
   },
   exit: (direction) => ({
     x: direction < 0 ? 40 : -40,
     opacity: 0,
     transition: {
       x: { type: "spring", stiffness: 320, damping: 25 },
-      opacity: { duration: 0.2 }
-    }
-  })
+      opacity: { duration: 0.2 },
+    },
+  }),
 };
 
 // Animated statistic counters
@@ -59,10 +59,10 @@ const AnimatedCounter = ({ targetValue }) => {
       setCount(targetValue);
       return;
     }
-    
+
     const duration = 1000;
     const incrementTime = Math.max(Math.floor(duration / end), 15);
-    
+
     const timer = setInterval(() => {
       start += 1;
       if (start >= end) {
@@ -125,7 +125,6 @@ const AssessmentPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-10 px-6">
       <div className="max-w-6xl mx-auto">
-        
         {/* Header */}
         <div className="flex justify-between items-start mb-8 pb-4 border-b border-[#2c6e5f]/10">
           <div>
@@ -142,12 +141,10 @@ const AssessmentPage = () => {
         <div className="glass-card rounded-3xl p-6 mb-8 border border-gray-100 flex items-start gap-4">
           <span className="text-3xl animate-float shrink-0">🔒</span>
           <div>
-            <h2 className="font-extrabold text-gray-800 mb-1.5">
-              Confidential & Anonymous
-            </h2>
+            <h2 className="font-extrabold text-gray-800 mb-1.5">Confidential & Anonymous</h2>
             <p className="text-gray-500 text-sm font-semibold leading-relaxed">
-              Your responses are private and are only used to show you the
-              selected assessment result.
+              Your responses are private and are only used to show you the selected assessment
+              result.
             </p>
             {error && (
               <p className="mt-3 text-xs text-amber-700 bg-amber-50 rounded-xl px-4 py-2 font-bold shadow-inner">
@@ -175,15 +172,13 @@ const AssessmentPage = () => {
           </div>
         ) : assessments.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100 text-center">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              No assessments published yet
-            </h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">No assessments published yet</h3>
             <p className="text-gray-500 text-xs">
               Check back later when an expert publishes a public assessment.
             </p>
           </div>
         ) : (
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
@@ -203,17 +198,25 @@ const AssessmentPage = () => {
                       <p className="text-xs text-gray-500 mb-4 min-h-10 leading-relaxed font-semibold">
                         {assessment.description}
                       </p>
-                      
+
                       <div className="flex justify-center space-x-4 text-[10px] text-gray-400 font-bold mb-4">
-                        <span className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">📝 {assessment.questions.length} questions</span>
-                        <span className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">⏱ {assessment.duration} mins</span>
+                        <span className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
+                          📝 {assessment.questions.length} questions
+                        </span>
+                        <span className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
+                          ⏱ {assessment.duration} mins
+                        </span>
                       </div>
-                      
+
                       <div className="text-[9px] text-gray-400 font-bold mb-6 flex flex-col items-center gap-0.5">
                         <span>Published by: {assessment.authorName || "MindMate Team"}</span>
-                        {assessment.updatedAt && assessment.createdAt && Math.abs(new Date(assessment.updatedAt) - new Date(assessment.createdAt)) > 5000 ? (
+                        {assessment.updatedAt &&
+                        assessment.createdAt &&
+                        Math.abs(new Date(assessment.updatedAt) - new Date(assessment.createdAt)) >
+                          5000 ? (
                           <span>
-                            Modified at: {new Date(assessment.updatedAt).toLocaleDateString(undefined, {
+                            Modified at:{" "}
+                            {new Date(assessment.updatedAt).toLocaleDateString(undefined, {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
@@ -221,7 +224,8 @@ const AssessmentPage = () => {
                           </span>
                         ) : assessment.createdAt ? (
                           <span>
-                            Created at: {new Date(assessment.createdAt).toLocaleDateString(undefined, {
+                            Created at:{" "}
+                            {new Date(assessment.createdAt).toLocaleDateString(undefined, {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
@@ -230,8 +234,8 @@ const AssessmentPage = () => {
                         ) : null}
                       </div>
                     </div>
-                    
-                    <motion.span 
+
+                    <motion.span
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="inline-flex w-full justify-center py-2.5 bg-[#2c6e5f] text-white rounded-xl text-xs font-bold hover:bg-[#1b4d42] shadow-sm transition-all active:scale-95"
@@ -316,8 +320,7 @@ export const AssessmentTaking = () => {
   }, [assessment?.id]);
 
   const questions = assessment?.questions || [];
-  const progress =
-    questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
+  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
   const handleAnswer = (answerIndex) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion]: answerIndex }));
@@ -359,10 +362,10 @@ export const AssessmentTaking = () => {
       <div className="min-h-screen bg-[#f9f5e7] py-10 px-6 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-md text-center border border-gray-100">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2c6e5f] mx-auto mb-4"></div>
-          <h1 className="text-xl font-bold text-gray-800 mb-1">
-            Loading Assessment
-          </h1>
-          <p className="text-gray-400 text-xs font-semibold">Preparing your mental health check-in...</p>
+          <h1 className="text-xl font-bold text-gray-800 mb-1">Loading Assessment</h1>
+          <p className="text-gray-400 text-xs font-semibold">
+            Preparing your mental health check-in...
+          </p>
         </div>
       </div>
     );
@@ -373,9 +376,7 @@ export const AssessmentTaking = () => {
       <div className="min-h-screen bg-[#f9f5e7] py-10 px-6 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-md text-center border border-gray-100">
           <div className="text-4xl mb-4">⚠️</div>
-          <h1 className="text-xl font-bold text-gray-800 mb-2">
-            Assessment Not Found
-          </h1>
+          <h1 className="text-xl font-bold text-gray-800 mb-2">Assessment Not Found</h1>
           <p className="text-gray-500 text-xs leading-relaxed font-semibold mb-6">
             {fetchError || "No assessment template is available for this link."}
           </p>
@@ -395,9 +396,7 @@ export const AssessmentTaking = () => {
       <div className="min-h-screen bg-[#f9f5e7] py-10 px-6 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-md text-center border border-gray-100">
           <div className="text-4xl mb-4">📝</div>
-          <h1 className="text-xl font-bold text-gray-800 mb-2">
-            This assessment is empty
-          </h1>
+          <h1 className="text-xl font-bold text-gray-800 mb-2">This assessment is empty</h1>
           <p className="text-gray-500 text-xs font-semibold mb-6">
             The selected assessment does not have any questions yet.
           </p>
@@ -417,7 +416,7 @@ export const AssessmentTaking = () => {
       <div className="max-w-3xl mx-auto">
         <AnimatePresence mode="wait">
           {result ? (
-            <motion.div 
+            <motion.div
               key="result"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -435,15 +434,13 @@ export const AssessmentTaking = () => {
                 <div className="w-20 h-20 mx-auto mb-4 bg-emerald-50 rounded-2xl flex items-center justify-center text-4xl animate-float">
                   {assessment.icon}
                 </div>
-                <h1 className="text-2xl font-extrabold text-gray-800 mb-1">
-                  Assessment Complete
-                </h1>
+                <h1 className="text-2xl font-extrabold text-gray-800 mb-1">Assessment Complete</h1>
                 <p className="text-gray-500 text-sm font-semibold mb-8 max-w-xl mx-auto">
                   {assessment.title}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                  <motion.div 
+                  <motion.div
                     whileHover={{ y: -2 }}
                     className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 hover:shadow-sm transition-all"
                   >
@@ -454,29 +451,29 @@ export const AssessmentTaking = () => {
                       <AnimatedCounter targetValue={result.score} />/{result.maxScore}
                     </div>
                   </motion.div>
-                  
-                  <motion.div 
+
+                  <motion.div
                     whileHover={{ y: -2 }}
                     className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 hover:shadow-sm transition-all"
                   >
                     <div className="text-[10px] uppercase font-bold tracking-wider text-gray-400">
                       Severity
                     </div>
-                    <div className={`text-sm font-extrabold px-3 py-1 rounded-full mt-2 inline-block ${getSeverityBadgeClass(result.severity)}`}>
+                    <div
+                      className={`text-sm font-extrabold px-3 py-1 rounded-full mt-2 inline-block ${getSeverityBadgeClass(result.severity)}`}
+                    >
                       {scoreLabels[result.severity] || result.severity}
                     </div>
                   </motion.div>
-                  
-                  <motion.div 
+
+                  <motion.div
                     whileHover={{ y: -2 }}
                     className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 hover:shadow-sm transition-all"
                   >
                     <div className="text-[10px] uppercase font-bold tracking-wider text-gray-400">
                       Completion
                     </div>
-                    <div className="text-2xl font-extrabold text-gray-800 mt-1">
-                      100%
-                    </div>
+                    <div className="text-2xl font-extrabold text-gray-800 mt-1">100%</div>
                   </motion.div>
                 </div>
 
@@ -514,7 +511,7 @@ export const AssessmentTaking = () => {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               key="quiz"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -528,15 +525,17 @@ export const AssessmentTaking = () => {
                 >
                   <span className="mr-1">←</span> Back to Assessments
                 </Link>
-                <h1 className="text-xl font-extrabold text-[#1b4d42] mb-3">
-                  {assessment.title}
-                </h1>
-                
+                <h1 className="text-xl font-extrabold text-[#1b4d42] mb-3">{assessment.title}</h1>
+
                 <div className="flex justify-between items-center text-[10px] text-gray-400 font-bold mb-3">
                   <span>By: {assessment.authorName || "MindMate Team"}</span>
-                  {assessment.updatedAt && assessment.createdAt && Math.abs(new Date(assessment.updatedAt) - new Date(assessment.createdAt)) > 5000 ? (
+                  {assessment.updatedAt &&
+                  assessment.createdAt &&
+                  Math.abs(new Date(assessment.updatedAt) - new Date(assessment.createdAt)) >
+                    5000 ? (
                     <span>
-                      Modified: {new Date(assessment.updatedAt).toLocaleDateString(undefined, {
+                      Modified:{" "}
+                      {new Date(assessment.updatedAt).toLocaleDateString(undefined, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -544,7 +543,8 @@ export const AssessmentTaking = () => {
                     </span>
                   ) : assessment.createdAt ? (
                     <span>
-                      Published: {new Date(assessment.createdAt).toLocaleDateString(undefined, {
+                      Published:{" "}
+                      {new Date(assessment.createdAt).toLocaleDateString(undefined, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -552,7 +552,7 @@ export const AssessmentTaking = () => {
                     </span>
                   ) : null}
                 </div>
-                
+
                 {/* Smooth Progress Bar */}
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-2 shadow-inner">
                   <motion.div
@@ -621,7 +621,7 @@ export const AssessmentTaking = () => {
                 >
                   Previous
                 </motion.button>
-                
+
                 <motion.button
                   whileHover={answers[currentQuestion] !== undefined ? { scale: 1.02 } : {}}
                   whileTap={answers[currentQuestion] !== undefined ? { scale: 0.98 } : {}}

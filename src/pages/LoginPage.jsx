@@ -41,10 +41,7 @@ const LoginPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await authService.login(
-        formData.email,
-        formData.password,
-      );
+      const response = await authService.login(formData.email, formData.password);
 
       if (response.user) {
         // Redirect users by role
@@ -67,7 +64,10 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await authService.resendVerification(formData.email);
-      setErrors({ general: "Verification email resent successfully! Please check your inbox.", type: "success" });
+      setErrors({
+        general: "Verification email resent successfully! Please check your inbox.",
+        type: "success",
+      });
     } catch (err) {
       setErrors({ general: err.message || "Failed to resend verification email." });
     } finally {
@@ -80,16 +80,14 @@ const LoginPage = () => {
       <div className="w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Welcome to MindMate
-            </h1>
-            <p className="text-gray-500">
-              Sign in to access your mental health support
-            </p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to MindMate</h1>
+            <p className="text-gray-500">Sign in to access your mental health support</p>
           </div>
 
           {errors.general && (
-            <div className={`mb-6 p-4 rounded-xl text-sm border ${errors.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-600'}`}>
+            <div
+              className={`mb-6 p-4 rounded-xl text-sm border ${errors.type === "success" ? "bg-green-50 border-green-200 text-green-700" : "bg-red-50 border-red-200 text-red-600"}`}
+            >
               {errors.general}
               {errors.general === "Please verify your email address to log in." && (
                 <button
@@ -105,9 +103,7 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <input
                 type="email"
                 name="email"
@@ -118,15 +114,11 @@ const LoginPage = () => {
                 } focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent`}
                 placeholder=""
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -146,9 +138,7 @@ const LoginPage = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <button
@@ -162,10 +152,7 @@ const LoginPage = () => {
 
           <p className="mt-6 text-center text-gray-600">
             Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="text-[#5bb5a1] hover:underline font-medium"
-            >
+            <Link to="/register" className="text-[#5bb5a1] hover:underline font-medium">
               Register here
             </Link>
           </p>

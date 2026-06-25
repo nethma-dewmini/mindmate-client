@@ -9,13 +9,13 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
 const cardVariants = {
   hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 const isSessionConducted = (sessionDateStr, sessionTimeStr) => {
@@ -36,7 +36,7 @@ const isSessionConducted = (sessionDateStr, sessionTimeStr) => {
     if (sessionTimeStr) {
       const parts = sessionTimeStr.split(/-|to/);
       const endTimeStr = (parts[parts.length - 1] || "").trim();
-      
+
       const match = endTimeStr.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
       if (match) {
         let hours = parseInt(match[1]);
@@ -68,10 +68,10 @@ const ExpertsPage = () => {
   const [bookingLoading, setBookingLoading] = useState({});
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
+
   // State for tabs
   const [activeTab, setActiveTab] = useState("all"); // "all", "booked", "available"
-  
+
   // State for cancellation modal
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -172,7 +172,6 @@ const ExpertsPage = () => {
   return (
     <div className="min-h-screen bg-[#f9f5e7] py-10 px-6">
       <div className="max-w-6xl mx-auto">
-        
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 pb-4 border-b border-[#2c6e5f]/10">
           <div>
@@ -180,10 +179,11 @@ const ExpertsPage = () => {
               Live Group Sessions
             </h1>
             <p className="text-[#2c6e5f]/80 mt-1 font-medium max-w-2xl leading-relaxed text-sm md:text-base">
-              Engage in supportive live group sessions hosted by licensed professionals to nurture your emotional resilience and mental wellness.
+              Engage in supportive live group sessions hosted by licensed professionals to nurture
+              your emotional resilience and mental wellness.
             </p>
           </div>
-          
+
           {/* Dynamic Tab Filter Bar */}
           {!sessionsLoading && sessions.length > 0 && (
             <div className="bg-white/60 p-1 border border-[#2c6e5f]/15 rounded-2xl relative flex space-x-1 shadow-sm shrink-0">
@@ -214,7 +214,7 @@ const ExpertsPage = () => {
         {/* Status Alerts */}
         <AnimatePresence>
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -224,7 +224,7 @@ const ExpertsPage = () => {
             </motion.div>
           )}
           {success && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -241,7 +241,7 @@ const ExpertsPage = () => {
             <SkeletonCard count={4} />
           </div>
         ) : filteredSessions.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-3xl p-16 border-2 border-dashed border-[#2c6e5f]/15 text-center text-gray-400 shadow-sm"
@@ -254,7 +254,7 @@ const ExpertsPage = () => {
             </p>
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
@@ -271,26 +271,32 @@ const ExpertsPage = () => {
                   className={`glass-card p-6 rounded-3xl flex flex-col justify-between ${
                     conducted
                       ? "bg-gray-50/50 border-gray-200/65 opacity-85"
-                      : session.is_booked 
-                        ? "hover-glow-emerald border-emerald-100/40 bg-white" 
+                      : session.is_booked
+                        ? "hover-glow-emerald border-emerald-100/40 bg-white"
                         : "hover-glow-teal bg-white"
                   }`}
                 >
                   <div>
                     <div className="flex items-center gap-2 mb-3.5">
-                      <span className={`px-3 py-1 text-[10px] rounded-full font-bold flex items-center gap-1.5 ${
-                        conducted 
-                          ? "bg-gray-100 text-gray-500"
-                          : session.is_booked 
-                            ? "bg-emerald-50 text-emerald-600" 
-                            : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
-                      }`}>
+                      <span
+                        className={`px-3 py-1 text-[10px] rounded-full font-bold flex items-center gap-1.5 ${
+                          conducted
+                            ? "bg-gray-100 text-gray-500"
+                            : session.is_booked
+                              ? "bg-emerald-50 text-emerald-600"
+                              : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
+                        }`}
+                      >
                         <FaVideo size={9} /> Live Group Session
                       </span>
                       {session.is_booked && (
-                        <span className={`px-3 py-1 text-[10px] rounded-full font-extrabold shadow-sm ${
-                          conducted ? "bg-gray-100 text-gray-500" : "bg-emerald-100 text-emerald-800 animate-pulse"
-                        }`}>
+                        <span
+                          className={`px-3 py-1 text-[10px] rounded-full font-extrabold shadow-sm ${
+                            conducted
+                              ? "bg-gray-100 text-gray-500"
+                              : "bg-emerald-100 text-emerald-800 animate-pulse"
+                          }`}
+                        >
                           {conducted ? "✓ Attended" : "✓ Booked"}
                         </span>
                       )}
@@ -300,7 +306,7 @@ const ExpertsPage = () => {
                         </span>
                       )}
                     </div>
-                    
+
                     <h3 className="text-xl font-extrabold text-gray-800 mb-1 leading-tight group-hover:text-[#2c6e5f] transition-colors">
                       {session.topic}
                     </h3>
@@ -311,15 +317,12 @@ const ExpertsPage = () => {
                     <div className="flex flex-wrap gap-4 text-[10px] text-gray-400 font-bold mb-4">
                       <span className="flex items-center gap-1 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl">
                         <FaCalendarAlt className="text-slate-400" />
-                        {new Date(session.session_date).toLocaleDateString(
-                          undefined,
-                          {
-                            weekday: "short",
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          }
-                        )}
+                        {new Date(session.session_date).toLocaleDateString(undefined, {
+                          weekday: "short",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </span>
                       <span className="flex items-center gap-1 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl">
                         <FaClock className="text-slate-400" />
@@ -342,7 +345,11 @@ const ExpertsPage = () => {
                         }}
                         className="text-xs text-[#2c6e5f] hover:text-[#1b4d42] font-bold hover:underline flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 focus:outline-none"
                       >
-                        <span>{session.is_booked ? "View Details & Joining Info" : "Read Full Description"}</span>
+                        <span>
+                          {session.is_booked
+                            ? "View Details & Joining Info"
+                            : "Read Full Description"}
+                        </span>
                         <FaExternalLinkAlt size={8} />
                       </button>
                     </div>
@@ -364,7 +371,9 @@ const ExpertsPage = () => {
                         <span className="text-lg leading-none">✓</span> Booked the session
                       </div>
                       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 bg-gray-50 rounded-2xl border border-gray-100 text-[11px]">
-                        <span className="text-gray-500 font-semibold">Do you want to cancel the booking?</span>
+                        <span className="text-gray-500 font-semibold">
+                          Do you want to cancel the booking?
+                        </span>
                         <motion.button
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleCancelClick(session.id)}
@@ -390,8 +399,8 @@ const ExpertsPage = () => {
                       {bookingLoading[session.id]
                         ? "Booking..."
                         : !isStudent
-                        ? "Log in as student to book"
-                        : "Book Session"}
+                          ? "Log in as student to book"
+                          : "Book Session"}
                     </motion.button>
                   )}
                 </motion.div>
@@ -405,16 +414,16 @@ const ExpertsPage = () => {
           {showCancelModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
               {/* Backdrop */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity"
                 onClick={() => setShowCancelModal(false)}
               />
-              
+
               {/* Modal Content */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -422,9 +431,7 @@ const ExpertsPage = () => {
                 className="relative w-full max-w-md mx-auto my-6 p-6 bg-white rounded-3xl shadow-xl z-50 border border-gray-100"
               >
                 <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Cancel Session Booking
-                  </h3>
+                  <h3 className="text-lg font-bold text-gray-800">Cancel Session Booking</h3>
                   <button
                     onClick={() => setShowCancelModal(false)}
                     className="text-gray-400 hover:text-gray-650 transition-colors text-2xl font-bold cursor-pointer"
@@ -435,9 +442,13 @@ const ExpertsPage = () => {
 
                 <div className="my-4">
                   <p className="text-xs text-gray-500 mb-4 leading-relaxed font-semibold">
-                    Please let the expert know why you are cancelling your booking for this session. Your feedback helps them prepare or adjust future sessions.
+                    Please let the expert know why you are cancelling your booking for this session.
+                    Your feedback helps them prepare or adjust future sessions.
                   </p>
-                  <label htmlFor="cancel-reason" className="block text-[10px] font-extrabold text-gray-700 uppercase tracking-wide mb-1.5">
+                  <label
+                    htmlFor="cancel-reason"
+                    className="block text-[10px] font-extrabold text-gray-700 uppercase tracking-wide mb-1.5"
+                  >
                     Reason for Cancellation
                   </label>
                   <textarea
@@ -478,16 +489,16 @@ const ExpertsPage = () => {
           {showDetailsModal && detailsSession && (
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
               {/* Backdrop */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity"
                 onClick={() => setShowDetailsModal(false)}
               />
-              
+
               {/* Modal Content */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -496,13 +507,15 @@ const ExpertsPage = () => {
               >
                 <div className="flex justify-between items-start pb-4 border-b border-gray-100">
                   <div>
-                    <span className={`px-2.5 py-0.5 text-[9px] rounded-full font-bold flex items-center gap-1.5 w-max ${
-                      isSessionConducted(detailsSession.session_date, detailsSession.session_time)
-                        ? "bg-gray-100 text-gray-500" 
-                        : detailsSession.is_booked 
-                          ? "bg-emerald-50 text-emerald-600" 
-                          : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
-                    }`}>
+                    <span
+                      className={`px-2.5 py-0.5 text-[9px] rounded-full font-bold flex items-center gap-1.5 w-max ${
+                        isSessionConducted(detailsSession.session_date, detailsSession.session_time)
+                          ? "bg-gray-100 text-gray-500"
+                          : detailsSession.is_booked
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-[#2c6e5f]/10 text-[#2c6e5f]"
+                      }`}
+                    >
                       <FaVideo size={8} /> Live Group Session
                     </span>
                     <h3 className="text-xl font-extrabold text-gray-800 mt-2 leading-tight">
@@ -556,9 +569,13 @@ const ExpertsPage = () => {
                       <p className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1">
                         <FaVideo /> Joining Information
                       </p>
-                      {isSessionConducted(detailsSession.session_date, detailsSession.session_time) ? (
+                      {isSessionConducted(
+                        detailsSession.session_date,
+                        detailsSession.session_time
+                      ) ? (
                         <p className="text-gray-550 italic flex items-center gap-1.5 font-medium">
-                          <FaInfoCircle className="text-gray-400" /> The session has ended. Meeting links are no longer active.
+                          <FaInfoCircle className="text-gray-400" /> The session has ended. Meeting
+                          links are no longer active.
                         </p>
                       ) : detailsSession.meeting_link ? (
                         <div className="space-y-2">
@@ -568,7 +585,8 @@ const ExpertsPage = () => {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-bold bg-white px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm transition-all active:scale-95 w-max"
                           >
-                            Join Live Meeting <FaExternalLinkAlt size={10} className="text-emerald-600" />
+                            Join Live Meeting{" "}
+                            <FaExternalLinkAlt size={10} className="text-emerald-600" />
                           </a>
                           {detailsSession.meeting_details && (
                             <p className="text-gray-600 bg-white/70 p-3 rounded-xl border border-gray-100 mt-1.5 whitespace-pre-line leading-relaxed font-medium">
@@ -578,7 +596,8 @@ const ExpertsPage = () => {
                         </div>
                       ) : (
                         <p className="text-gray-550 italic flex items-center gap-1.5 font-medium">
-                          <FaInfoCircle className="text-emerald-600" /> Meeting link will be updated by the expert before the session.
+                          <FaInfoCircle className="text-emerald-600" /> Meeting link will be updated
+                          by the expert before the session.
                         </p>
                       )}
                     </div>

@@ -13,13 +13,10 @@ const RegisterPage = () => {
   const [submittedApplication, setSubmittedApplication] = useState(null);
   const [applicationLookupStatus, setApplicationLookupStatus] = useState("");
   const [applicationLookupMessage, setApplicationLookupMessage] = useState("");
-  const [checkingApplicationStatus, setCheckingApplicationStatus] =
-    useState(false);
+  const [checkingApplicationStatus, setCheckingApplicationStatus] = useState(false);
   const [expertAccountPassword, setExpertAccountPassword] = useState("");
-  const [expertAccountConfirmPassword, setExpertAccountConfirmPassword] =
-    useState("");
-  const [registeringExpertAccount, setRegisteringExpertAccount] =
-    useState(false);
+  const [expertAccountConfirmPassword, setExpertAccountConfirmPassword] = useState("");
+  const [registeringExpertAccount, setRegisteringExpertAccount] = useState(false);
   const [expertAccountMessage, setExpertAccountMessage] = useState("");
   const [showStudentPassword, setShowStudentPassword] = useState(false);
   const [showStudentConfirmPassword, setShowStudentConfirmPassword] = useState(false);
@@ -33,25 +30,20 @@ const RegisterPage = () => {
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpMessage, setOtpMessage] = useState("");
 
-  const isValidUomEmail = (value) =>
-    /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
+  const isValidUomEmail = (value) => /^[^\s@]+@uom\.lk$/i.test(String(value || "").trim());
 
-  const isValidRegistrationNo = (value) =>
-    /^\d{6}[A-Z]$/.test(String(value || "").trim());
+  const isValidRegistrationNo = (value) => /^\d{6}[A-Z]$/.test(String(value || "").trim());
 
-  const isValidPassword = (value) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+  const isValidPassword = (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
 
   const getFriendlyErrorMessage = (message, role) => {
     const normalizedMessage = String(message || "").toLowerCase();
 
     if (role === "student") {
       if (
+        normalizedMessage.includes("student record not found in university registry") ||
         normalizedMessage.includes(
-          "student record not found in university registry",
-        ) ||
-        normalizedMessage.includes(
-          "no matching student record was found for the entered registration number and email",
+          "no matching student record was found for the entered registration number and email"
         )
       ) {
         return "No matching student record was found for the entered registration number and email. Please check your details and try again.";
@@ -61,9 +53,7 @@ const RegisterPage = () => {
         return "This email is already registered. Please sign in instead.";
       }
 
-      if (
-        normalizedMessage.includes("this registration no is already registered")
-      ) {
+      if (normalizedMessage.includes("this registration no is already registered")) {
         return "This registration number is already linked to an account. Please sign in instead.";
       }
     }
@@ -161,7 +151,10 @@ const RegisterPage = () => {
     }
 
     if (!isValidPassword(expertAccountPassword)) {
-      setErrors({ general: "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number." });
+      setErrors({
+        general:
+          "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.",
+      });
       return;
     }
 
@@ -176,12 +169,12 @@ const RegisterPage = () => {
         expertData.name,
         expertData.title,
         expertData.email,
-        expertAccountPassword,
+        expertAccountPassword
       );
 
       setExpertAccountMessage(
         response.message ||
-          "You are approved. Your expert account has been created. Please sign in.",
+          "You are approved. Your expert account has been created. Please sign in."
       );
       setTimeout(() => navigate("/login"), 1500);
     } catch (error) {
@@ -196,10 +189,7 @@ const RegisterPage = () => {
   useEffect(() => {
     const email = String(expertData.email || "").trim();
     const timeoutId = setTimeout(async () => {
-      if (
-        step !== "expert" ||
-        (!isValidUomEmail(email) && !email.includes("@"))
-      ) {
+      if (step !== "expert" || (!isValidUomEmail(email) && !email.includes("@"))) {
         return;
       }
 
@@ -214,17 +204,17 @@ const RegisterPage = () => {
         if (application?.status === "approved") {
           setApplicationLookupStatus("approved");
           setApplicationLookupMessage(
-            "You are approved. Please sign in to continue using your expert account.",
+            "You are approved. Please sign in to continue using your expert account."
           );
         } else if (application?.status === "pending") {
           setApplicationLookupStatus("pending");
           setApplicationLookupMessage(
-            "Your application is pending admin review. Please wait for approval.",
+            "Your application is pending admin review. Please wait for approval."
           );
         } else if (application?.status === "rejected") {
           setApplicationLookupStatus("rejected");
           setApplicationLookupMessage(
-            "Your application was rejected. Please contact the admin team for more information.",
+            "Your application was rejected. Please contact the admin team for more information."
           );
         }
       } catch (err) {
@@ -242,7 +232,7 @@ const RegisterPage = () => {
   const handleSendOtp = async () => {
     setErrors({});
     setOtpMessage("");
-    
+
     if (!studentData.name) {
       setErrors({ name: "Name is required" });
       return;
@@ -260,7 +250,10 @@ const RegisterPage = () => {
       return;
     }
     if (!isValidRegistrationNo(studentData.studentId)) {
-      setErrors({ studentId: "Enter a valid registration number like 221234X. The last letter must be a capital letter." });
+      setErrors({
+        studentId:
+          "Enter a valid registration number like 221234X. The last letter must be a capital letter.",
+      });
       return;
     }
 
@@ -273,9 +266,13 @@ const RegisterPage = () => {
         studentDisplayName
       );
       setIsOtpSent(true);
-      setOtpMessage(response.message || "Verification code sent successfully to your university email.");
+      setOtpMessage(
+        response.message || "Verification code sent successfully to your university email."
+      );
     } catch (err) {
-      setErrors({ general: err.message || "Failed to send verification code. Please check your details." });
+      setErrors({
+        general: err.message || "Failed to send verification code. Please check your details.",
+      });
     } finally {
       setOtpLoading(false);
     }
@@ -284,7 +281,7 @@ const RegisterPage = () => {
   const handleVerifyOtp = async () => {
     setErrors({});
     setOtpMessage("");
-    
+
     if (!otpCode || otpCode.length !== 6) {
       setErrors({ general: "Please enter a valid 6-digit verification code." });
       return;
@@ -292,15 +289,15 @@ const RegisterPage = () => {
 
     setOtpLoading(true);
     try {
-      await authService.verifyRegistrationOtp(
-        studentData.email,
-        studentData.studentId,
-        otpCode
-      );
+      await authService.verifyRegistrationOtp(studentData.email, studentData.studentId, otpCode);
       setIsOtpVerified(true);
-      setOtpMessage("Email verified successfully! You can now set your password to complete registration.");
+      setOtpMessage(
+        "Email verified successfully! You can now set your password to complete registration."
+      );
     } catch (err) {
-      setErrors({ general: err.message || "Verification failed. The code may be incorrect or expired." });
+      setErrors({
+        general: err.message || "Verification failed. The code may be incorrect or expired.",
+      });
     } finally {
       setOtpLoading(false);
     }
@@ -332,8 +329,7 @@ const RegisterPage = () => {
         if (!studentData.email) {
           nextErrors.email = "Email is required";
         } else if (!isValidUomEmail(studentData.email)) {
-          nextErrors.email =
-            "Enter a valid University of Moratuwa email ending with @uom.lk";
+          nextErrors.email = "Enter a valid University of Moratuwa email ending with @uom.lk";
         }
 
         if (!studentData.studentId) {
@@ -375,13 +371,20 @@ const RegisterPage = () => {
           studentDisplayName,
           studentData.email,
           studentData.studentId,
-          studentData.password,
+          studentData.password
         );
 
         // Success - clear auto-login session and redirect to login page
         authService.logout();
         setSuccessMessage("Registration successful! Redirecting to login page...");
-        setStudentData({ title: "", name: "", email: "", studentId: "", password: "", confirmPassword: "" });
+        setStudentData({
+          title: "",
+          name: "",
+          email: "",
+          studentId: "",
+          password: "",
+          confirmPassword: "",
+        });
         setTimeout(() => navigate("/login"), 2000);
       } else if (step === "expert") {
         // Validate form
@@ -389,8 +392,7 @@ const RegisterPage = () => {
           !expertData.name ||
           !expertData.email ||
           !expertData.specialization ||
-          (expertData.specialization === "Other" &&
-            !expertData.specializationOther) ||
+          (expertData.specialization === "Other" && !expertData.specializationOther) ||
           !expertDocuments.length
         ) {
           setErrors({
@@ -417,8 +419,7 @@ const RegisterPage = () => {
 
         // Success - show message and display pending status
         setSuccessMessage(
-          response.message ||
-            "Application submitted successfully. Please wait for admin review.",
+          response.message || "Application submitted successfully. Please wait for admin review."
         );
         if (response.application) {
           setSubmittedApplication(response.application);
@@ -440,12 +441,8 @@ const RegisterPage = () => {
         <div className="w-full max-w-lg mx-4">
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                Join MindMate
-              </h1>
-              <p className="text-gray-500">
-                Select your account type to continue
-              </p>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">Join MindMate</h1>
+              <p className="text-gray-500">Select your account type to continue</p>
             </div>
 
             <div className="space-y-4">
@@ -458,12 +455,10 @@ const RegisterPage = () => {
                     <FaGraduationCap className="text-xl" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[#5bb5a1]">
-                      I'm a Student
-                    </h3>
+                    <h3 className="text-lg font-semibold text-[#5bb5a1]">I'm a Student</h3>
                     <p className="text-gray-500 text-sm mt-1">
-                      Access mental health support, connect with experts, and
-                      join peer support groups
+                      Access mental health support, connect with experts, and join peer support
+                      groups
                     </p>
                   </div>
                 </div>
@@ -482,8 +477,7 @@ const RegisterPage = () => {
                       I'm a Mental Health Expert
                     </h3>
                     <p className="text-gray-500 text-sm mt-1">
-                      Provide professional counseling, manage appointments, and
-                      support students
+                      Provide professional counseling, manage appointments, and support students
                     </p>
                   </div>
                 </div>
@@ -499,10 +493,7 @@ const RegisterPage = () => {
 
             <p className="mt-6 text-center text-gray-600">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-[#5bb5a1] hover:underline font-medium"
-              >
+              <Link to="/login" className="text-[#5bb5a1] hover:underline font-medium">
                 Sign in
               </Link>
             </p>
@@ -519,12 +510,8 @@ const RegisterPage = () => {
         <div className="w-full max-w-lg mx-4">
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold text-gray-800 mb-1">
-                Create Your Account
-              </h1>
-              <p className="text-gray-500">
-                Register as University of Moratuwa Student
-              </p>
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">Create Your Account</h1>
+              <p className="text-gray-500">Register as University of Moratuwa Student</p>
               <button
                 onClick={() => setStep("select")}
                 className="text-[#5bb5a1] text-sm mt-2 hover:underline flex items-center justify-center mx-auto"
@@ -566,9 +553,7 @@ const RegisterPage = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                   <select
                     name="title"
                     value={studentData.title}
@@ -586,9 +571,7 @@ const RegisterPage = () => {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
                   <input
                     type="text"
                     name="name"
@@ -599,9 +582,7 @@ const RegisterPage = () => {
                       errors.name ? "border-red-300" : "border-gray-200"
                     }`}
                   />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                  )}
+                  {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                 </div>
               </div>
 
@@ -623,9 +604,7 @@ const RegisterPage = () => {
                 <p className="text-xs text-gray-500 mt-1">
                   Use your University of Moratuwa email address
                 </p>
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                )}
+                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
               </div>
 
               <div>
@@ -643,19 +622,19 @@ const RegisterPage = () => {
                   }`}
                 />
                 {errors.studentId && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.studentId}
-                  </p>
+                  <p className="mt-1 text-sm text-red-600">{errors.studentId}</p>
                 )}
               </div>
 
               {/* Status and Notification messages */}
               {otpMessage && (
-                <div className={`rounded-xl px-4 py-3 text-sm border ${
-                  isOtpVerified 
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
-                    : "bg-teal-50 border-teal-200 text-teal-800"
-                }`}>
+                <div
+                  className={`rounded-xl px-4 py-3 text-sm border ${
+                    isOtpVerified
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                      : "bg-teal-50 border-teal-200 text-teal-800"
+                  }`}
+                >
                   <div className="flex justify-between items-center">
                     <span>{otpMessage}</span>
                     {isOtpVerified && (
@@ -678,7 +657,12 @@ const RegisterPage = () => {
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      disabled={otpLoading || !studentData.name || !studentData.email || !studentData.studentId}
+                      disabled={
+                        otpLoading ||
+                        !studentData.name ||
+                        !studentData.email ||
+                        !studentData.studentId
+                      }
                       className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-all disabled:opacity-50 cursor-pointer"
                     >
                       {otpLoading ? "Sending Verification Code..." : "Verify Email Address"}
@@ -786,10 +770,7 @@ const RegisterPage = () => {
 
             <p className="mt-6 text-center text-gray-600">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-[#5bb5a1] hover:underline font-medium"
-              >
+              <Link to="/login" className="text-[#5bb5a1] hover:underline font-medium">
                 Sign in
               </Link>
             </p>
@@ -806,9 +787,7 @@ const RegisterPage = () => {
         <div className="w-full max-w-lg mx-4">
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold text-gray-800 mb-1">
-                Create Your Account
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">Create Your Account</h1>
               <p className="text-gray-500">Register as Mental Health Expert</p>
               <button
                 onClick={() => setStep("select")}
@@ -854,11 +833,9 @@ const RegisterPage = () => {
                   Set a password to create your expert account.
                 </div>
 
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Password
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                     <div className="relative">
                       <input
                         type={showExpertPassword ? "text" : "password"}
@@ -883,9 +860,7 @@ const RegisterPage = () => {
                       <input
                         type={showExpertConfirmPassword ? "text" : "password"}
                         value={expertAccountConfirmPassword}
-                        onChange={(e) =>
-                          setExpertAccountConfirmPassword(e.target.value)
-                        }
+                        onChange={(e) => setExpertAccountConfirmPassword(e.target.value)}
                         className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                       />
                       <button
@@ -904,9 +879,7 @@ const RegisterPage = () => {
                   disabled={registeringExpertAccount}
                   className="w-full py-3 bg-[#5bb5a1] text-white rounded-xl font-medium hover:bg-[#4a9d8b] transition-colors disabled:opacity-50"
                 >
-                  {registeringExpertAccount
-                    ? "Creating Account..."
-                    : "Create Expert Account"}
+                  {registeringExpertAccount ? "Creating Account..." : "Create Expert Account"}
                 </button>
 
                 {expertAccountMessage && (
@@ -920,9 +893,7 @@ const RegisterPage = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                   <select
                     name="title"
                     value={expertData.title}
@@ -939,9 +910,7 @@ const RegisterPage = () => {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                   <input
                     type="text"
                     name="name"
@@ -976,20 +945,12 @@ const RegisterPage = () => {
                   className="w-full px-3 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="">Select specialization</option>
-                  <option value="Clinical Psychology">
-                    Clinical Psychology
-                  </option>
-                  <option value="Counseling Psychology">
-                    Counseling Psychology
-                  </option>
+                  <option value="Clinical Psychology">Clinical Psychology</option>
+                  <option value="Counseling Psychology">Counseling Psychology</option>
                   <option value="Psychiatry">Psychiatry</option>
                   <option value="Social Work">Social Work</option>
-                  <option value="Psychiatric Nursing">
-                    Psychiatric Nursing
-                  </option>
-                  <option value="Marriage & Family Therapy">
-                    Marriage & Family Therapy
-                  </option>
+                  <option value="Psychiatric Nursing">Psychiatric Nursing</option>
+                  <option value="Marriage & Family Therapy">Marriage & Family Therapy</option>
                   <option value="Other">Other</option>
                 </select>
 
@@ -1035,8 +996,7 @@ const RegisterPage = () => {
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Upload your CV, license, certificates, or other verification
-                  documents.
+                  Upload your CV, license, certificates, or other verification documents.
                 </p>
               </div>
 
@@ -1061,8 +1021,7 @@ const RegisterPage = () => {
                   Application Submitted — Pending Review
                 </h3>
                 <p className="text-sm text-gray-700 mb-2">
-                  Your application is pending admin review. We'll notify you
-                  when it's reviewed.
+                  Your application is pending admin review. We'll notify you when it's reviewed.
                 </p>
                 <div className="text-xs text-gray-600">
                   <div>
@@ -1077,10 +1036,7 @@ const RegisterPage = () => {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <Link
-                    to="/login"
-                    className="text-sm text-[#5bb5a1] hover:underline"
-                  >
+                  <Link to="/login" className="text-sm text-[#5bb5a1] hover:underline">
                     Go to Sign in
                   </Link>
                 </div>
@@ -1088,10 +1044,7 @@ const RegisterPage = () => {
             )}
             <p className="mt-6 text-center text-gray-600">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-[#5bb5a1] hover:underline font-medium"
-              >
+              <Link to="/login" className="text-[#5bb5a1] hover:underline font-medium">
                 Sign in
               </Link>
             </p>

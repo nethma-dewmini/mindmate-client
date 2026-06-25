@@ -18,13 +18,13 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
 const cardVariants = {
   hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 const PeerSupportPage = () => {
@@ -95,15 +95,16 @@ const PeerSupportPage = () => {
 
   // Real-time group filtering
   const filteredGroups = useMemo(() => {
-    return groups.filter((group) =>
-      group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (group.description && group.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    return groups.filter(
+      (group) =>
+        group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (group.description && group.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   }, [groups, searchQuery]);
 
   const selectedGroupData = useMemo(
     () => groups.find((group) => group.id === selectedGroup) || null,
-    [groups, selectedGroup],
+    [groups, selectedGroup]
   );
 
   useEffect(() => {
@@ -151,16 +152,13 @@ const PeerSupportPage = () => {
 
   const activeGroup = groupDetails || selectedGroupData;
   const isMember = Boolean(
-    groupDetails?.members?.some((member) => member.user_id === currentUserId),
+    groupDetails?.members?.some((member) => member.user_id === currentUserId)
   );
   const canParticipate = isStudent && isMember;
 
   const mainMessages = useMemo(
-    () =>
-      groupMessages.filter(
-        (message) => !message.metadata || !message.metadata.replyTo,
-      ),
-    [groupMessages],
+    () => groupMessages.filter((message) => !message.metadata || !message.metadata.replyTo),
+    [groupMessages]
   );
 
   const repliesByParentId = useMemo(() => {
@@ -175,9 +173,7 @@ const PeerSupportPage = () => {
     });
 
     Object.keys(groupedReplies).forEach((parentId) => {
-      groupedReplies[parentId].sort(
-        (a, b) => new Date(a.created_at) - new Date(b.created_at),
-      );
+      groupedReplies[parentId].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     });
 
     return groupedReplies;
@@ -200,17 +196,16 @@ const PeerSupportPage = () => {
       ...current,
       [messageId]: true,
     }));
-    
+
     // Trigger pop bounce animation temporarily
     setAnimatingReactionMessageId(messageId);
     setTimeout(() => setAnimatingReactionMessageId(null), 350);
 
     try {
-      const updatedMessage = await authService.reactToPeerGroupMessage(
-        selectedGroup,
-        messageId,
-        { userId: currentUserId, type },
-      );
+      const updatedMessage = await authService.reactToPeerGroupMessage(selectedGroup, messageId, {
+        userId: currentUserId,
+        type,
+      });
 
       setGroupMessages((currentMessages) =>
         currentMessages.map((message) =>
@@ -219,8 +214,8 @@ const PeerSupportPage = () => {
                 ...message,
                 metadata: updatedMessage.metadata,
               }
-            : message,
-        ),
+            : message
+        )
       );
     } catch (err) {
       setGroupError(err.message || "Failed to react to message");
@@ -247,14 +242,11 @@ const PeerSupportPage = () => {
     setGroupError("");
 
     try {
-      const postedReply = await authService.postPeerGroupMessage(
-        selectedGroup,
-        {
-          userId: currentUserId,
-          content: replyText.trim(),
-          metadata: { replyTo: parentMessageId, isAnonymous: true },
-        },
-      );
+      const postedReply = await authService.postPeerGroupMessage(selectedGroup, {
+        userId: currentUserId,
+        content: replyText.trim(),
+        metadata: { replyTo: parentMessageId, isAnonymous: true },
+      });
 
       setGroupMessages((currentMessages) => [postedReply, ...currentMessages]);
       setReplyText("");
@@ -384,9 +376,10 @@ const PeerSupportPage = () => {
             ) : (
               filteredGroups.map((group) => {
                 const isActive = group.id === selectedGroup;
-                const isGroupMember = group.members?.some(m => m.user_id === currentUserId) || 
-                                      (selectedGroup === group.id && isMember);
-                
+                const isGroupMember =
+                  group.members?.some((m) => m.user_id === currentUserId) ||
+                  (selectedGroup === group.id && isMember);
+
                 return (
                   <motion.div
                     key={group.id}
@@ -406,20 +399,28 @@ const PeerSupportPage = () => {
                       <span className="text-2xl mt-0.5">💬</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 justify-between">
-                          <h4 className={`text-sm font-extrabold truncate ${isActive ? "text-white" : "text-gray-800"}`}>
+                          <h4
+                            className={`text-sm font-extrabold truncate ${isActive ? "text-white" : "text-gray-800"}`}
+                          >
                             {group.name}
                           </h4>
                           {isGroupMember && (
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 ${
-                              isActive ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                            }`}>
+                            <span
+                              className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 ${
+                                isActive
+                                  ? "bg-white/20 text-white"
+                                  : "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                              }`}
+                            >
                               Joined
                             </span>
                           )}
                         </div>
-                        <p className={`text-xs line-clamp-2 mt-1 font-semibold leading-normal ${
-                          isActive ? "text-white/80" : "text-gray-500"
-                        }`}>
+                        <p
+                          className={`text-xs line-clamp-2 mt-1 font-semibold leading-normal ${
+                            isActive ? "text-white/80" : "text-gray-500"
+                          }`}
+                        >
                           {group.description}
                         </p>
                       </div>
@@ -437,7 +438,9 @@ const PeerSupportPage = () => {
             <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gray-50/20">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2c6e5f]"></div>
-                <p className="text-xs text-gray-400 font-bold animate-pulse">Loading discussion thread...</p>
+                <p className="text-xs text-gray-400 font-bold animate-pulse">
+                  Loading discussion thread...
+                </p>
               </div>
             </div>
           ) : activeGroup ? (
@@ -463,12 +466,12 @@ const PeerSupportPage = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                   <span className="hidden sm:inline-flex items-center text-xs bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-xl text-gray-400 font-bold gap-1">
                     <FaUsers className="text-[#2c6e5f]" /> Public group
                   </span>
-                  
+
                   {isStudent && !isMember && (
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -481,12 +484,8 @@ const PeerSupportPage = () => {
 
                         setJoining(true);
                         try {
-                          await authService.joinPeerGroup(
-                            selectedGroup,
-                            currentUserId,
-                          );
-                          const detail =
-                            await authService.getPeerGroup(selectedGroup);
+                          await authService.joinPeerGroup(selectedGroup, currentUserId);
+                          const detail = await authService.getPeerGroup(selectedGroup);
                           setGroupDetails(detail);
                         } catch (err) {
                           alert(err.message || "Failed to join group");
@@ -500,7 +499,7 @@ const PeerSupportPage = () => {
                       {joining ? "Joining..." : "Join Group"}
                     </motion.button>
                   )}
-                  
+
                   {isStudent && isMember && (
                     <div className="flex items-center gap-2">
                       <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-100 text-emerald-800 px-2.5 py-1 text-sm font-bold shadow-sm">
@@ -565,18 +564,12 @@ const PeerSupportPage = () => {
 
                           setPosting(true);
                           try {
-                            const posted = await authService.postPeerGroupMessage(
-                              selectedGroup,
-                              {
-                                userId: currentUserId,
-                                content: newPost.trim(),
-                                metadata: { isAnonymous: true },
-                              },
-                            );
-                            setGroupMessages((currentMessages) => [
-                              posted,
-                              ...currentMessages,
-                            ]);
+                            const posted = await authService.postPeerGroupMessage(selectedGroup, {
+                              userId: currentUserId,
+                              content: newPost.trim(),
+                              metadata: { isAnonymous: true },
+                            });
+                            setGroupMessages((currentMessages) => [posted, ...currentMessages]);
                             setNewPost("");
                           } catch (err) {
                             alert(err.message || "Failed to post message");
@@ -599,11 +592,11 @@ const PeerSupportPage = () => {
                     <h3 className="text-sm font-extrabold text-[#1b4d42] mb-4 uppercase tracking-wider">
                       Recent Discussions
                     </h3>
-                    
+
                     {groupError && (
                       <div className="text-sm text-red-650 font-semibold p-2">{groupError}</div>
                     )}
-                    
+
                     {groupMessages.length === 0 ? (
                       <div className="text-sm text-gray-500 font-semibold bg-gray-55 p-4 rounded-xl text-center border border-dashed border-gray-150">
                         No messages yet. Be the first to start the conversation!
@@ -614,18 +607,13 @@ const PeerSupportPage = () => {
                           {mainMessages.map((post) => {
                             const replies = repliesByParentId[post.id] || [];
                             const reactions = post.metadata?.reactions || {};
-                            const likeUsers = Array.isArray(reactions.like)
-                              ? reactions.like
-                              : [];
+                            const likeUsers = Array.isArray(reactions.like) ? reactions.like : [];
                             const supportUsers = Array.isArray(reactions.support)
                               ? reactions.support
                               : [];
                             const likedByCurrentUser = likeUsers.includes(currentUserId);
-                            const supportedByCurrentUser =
-                              supportUsers.includes(currentUserId);
-                            const isReactionLoading = Boolean(
-                              reactionLoadingByMessage[post.id],
-                            );
+                            const supportedByCurrentUser = supportUsers.includes(currentUserId);
+                            const isReactionLoading = Boolean(reactionLoadingByMessage[post.id]);
                             const isPopAnimating = animatingReactionMessageId === post.id;
 
                             return (
@@ -658,11 +646,11 @@ const PeerSupportPage = () => {
                                     </span>
                                   </div>
                                 </div>
-                                
+
                                 <p className="text-gray-700 text-sm leading-relaxed font-semibold mb-3 bg-gray-50/40 p-3.5 rounded-xl border border-gray-50">
                                   {post.content}
                                 </p>
-                                
+
                                 <div className="flex items-center space-x-4 text-xs text-gray-450 font-bold">
                                   <motion.button
                                     onClick={() => handleReaction(post.id, "like")}
@@ -677,18 +665,13 @@ const PeerSupportPage = () => {
                                   >
                                     <FaThumbsUp />
                                     <span>
-                                      Like{" "}
-                                      {likeUsers.length > 0
-                                        ? `(${likeUsers.length})`
-                                        : ""}
+                                      Like {likeUsers.length > 0 ? `(${likeUsers.length})` : ""}
                                     </span>
                                   </motion.button>
-                                  
+
                                   <motion.button
                                     onClick={() => {
-                                      setReplyingTo(
-                                        replyingTo === post.id ? null : post.id,
-                                      );
+                                      setReplyingTo(replyingTo === post.id ? null : post.id);
                                       setReplyText("");
                                     }}
                                     whileHover={{ scale: 1.05 }}
@@ -701,11 +684,10 @@ const PeerSupportPage = () => {
                                   >
                                     <FaReply />
                                     <span>
-                                      Reply{" "}
-                                      {replies.length > 0 ? `(${replies.length})` : ""}
+                                      Reply {replies.length > 0 ? `(${replies.length})` : ""}
                                     </span>
                                   </motion.button>
-                                  
+
                                   <motion.button
                                     onClick={() => handleReaction(post.id, "support")}
                                     disabled={isReactionLoading}
@@ -720,9 +702,7 @@ const PeerSupportPage = () => {
                                     <FaHeart />
                                     <span>
                                       Support{" "}
-                                      {supportUsers.length > 0
-                                        ? `(${supportUsers.length})`
-                                        : ""}
+                                      {supportUsers.length > 0 ? `(${supportUsers.length})` : ""}
                                     </span>
                                   </motion.button>
                                 </div>
@@ -806,7 +786,8 @@ const PeerSupportPage = () => {
                     <div>
                       <p className="text-gray-800 font-extrabold mb-1">Locked Discussion Board</p>
                       <p className="text-xs text-gray-450 leading-relaxed max-w-xs font-semibold">
-                        You have not joined this group yet. Join the group using the button above to view past discussions and share posts.
+                        You have not joined this group yet. Join the group using the button above to
+                        view past discussions and share posts.
                       </p>
                     </div>
                   </div>
@@ -821,7 +802,8 @@ const PeerSupportPage = () => {
                 </div>
                 <h3 className="text-base font-extrabold text-gray-800">No Group Selected</h3>
                 <p className="text-xs text-gray-500 font-semibold leading-relaxed">
-                  Select a support group from the left sidebar to load the conversation thread. Connect and share anonymously with other students!
+                  Select a support group from the left sidebar to load the conversation thread.
+                  Connect and share anonymously with other students!
                 </p>
               </div>
             </div>
@@ -833,15 +815,15 @@ const PeerSupportPage = () => {
       <AnimatePresence>
         {showLeaveConfirm && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/40"
               onClick={() => setShowLeaveConfirm(false)}
             />
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 15 }}
@@ -851,12 +833,9 @@ const PeerSupportPage = () => {
               <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4 mx-auto animate-bounce">
                 <span className="text-xl font-bold">🚪</span>
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-2">
-                Leave this group?
-              </h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-2">Leave this group?</h3>
               <p className="text-xs text-gray-500 mb-6 leading-relaxed font-semibold">
-                You can rejoin later, but you will lose access to posting
-                until you join again.
+                You can rejoin later, but you will lose access to posting until you join again.
               </p>
               <div className="flex justify-center gap-3">
                 <button

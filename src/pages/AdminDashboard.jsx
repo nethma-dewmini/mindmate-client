@@ -27,7 +27,8 @@ const AdminDashboard = () => {
   const adminActions = [
     {
       title: "Expert Applications",
-      description: "Review expert submissions, inspect attached documents, and approve or reject applications.",
+      description:
+        "Review expert submissions, inspect attached documents, and approve or reject applications.",
       icon: FaUserCheck,
       path: "/admin/expert-applications",
       linkText: "Review Applications",
@@ -57,9 +58,7 @@ const AdminDashboard = () => {
             <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
               Admin Workspace
             </p>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Welcome back, {user.name}!
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-800">Welcome back, {user.name}!</h1>
             <p className="text-gray-600">
               Your professional workspace for managing student wellness.
             </p>
@@ -98,9 +97,7 @@ const AdminDashboard = () => {
                     <h3 className="font-bold text-gray-800 mb-1 group-hover:text-[#5bb5a1] transition-colors duration-200 text-lg">
                       {action.title}
                     </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      {action.description}
-                    </p>
+                    <p className="text-sm text-gray-500 leading-relaxed">{action.description}</p>
                   </div>
                   <div className="mt-5 text-xs font-semibold text-[#5bb5a1] flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
                     {action.linkText} <span>→</span>

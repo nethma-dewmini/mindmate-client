@@ -10,18 +10,15 @@ const DEFAULT_ASSESSMENTS = [
     visibility: "public",
     questions: [
       {
-        prompt:
-          "How often have deadlines or workload felt overwhelming recently?",
+        prompt: "How often have deadlines or workload felt overwhelming recently?",
         options: ["Never", "Rarely", "Sometimes", "Often", "Very often"],
       },
       {
-        prompt:
-          "How much tension do you feel in your body during a typical day?",
+        prompt: "How much tension do you feel in your body during a typical day?",
         options: ["None", "A little", "Moderate", "A lot", "Extreme"],
       },
       {
-        prompt:
-          "How easy is it for you to switch off from academic or personal worries?",
+        prompt: "How easy is it for you to switch off from academic or personal worries?",
         options: ["Very easy", "Easy", "Mixed", "Hard", "Very hard"],
       },
       {
@@ -30,13 +27,7 @@ const DEFAULT_ASSESSMENTS = [
       },
       {
         prompt: "How confident do you feel in managing pressure right now?",
-        options: [
-          "Very confident",
-          "Confident",
-          "Somewhat",
-          "Not much",
-          "Not at all",
-        ],
+        options: ["Very confident", "Confident", "Somewhat", "Not much", "Not at all"],
       },
     ],
   },
@@ -44,15 +35,13 @@ const DEFAULT_ASSESSMENTS = [
     id: "anxiety",
     key: "anxiety",
     title: "Anxiety Screening",
-    description:
-      "Check for recurring worry, nervousness, and body symptoms linked with anxiety.",
+    description: "Check for recurring worry, nervousness, and body symptoms linked with anxiety.",
     icon: "😟",
     duration: 7,
     visibility: "public",
     questions: [
       {
-        prompt:
-          "How often have you felt nervous or on edge in the last two weeks?",
+        prompt: "How often have you felt nervous or on edge in the last two weeks?",
         options: [
           "Never",
           "Several days",
@@ -70,20 +59,12 @@ const DEFAULT_ASSESSMENTS = [
         options: ["Not at all", "A little", "Moderately", "A lot", "Severely"],
       },
       {
-        prompt:
-          "How often do you notice physical symptoms like a racing heart or restlessness?",
+        prompt: "How often do you notice physical symptoms like a racing heart or restlessness?",
         options: ["Never", "Rarely", "Sometimes", "Often", "Very often"],
       },
       {
-        prompt:
-          "How much does fear of future events affect your day-to-day mood?",
-        options: [
-          "Not at all",
-          "A little",
-          "Somewhat",
-          "Quite a bit",
-          "Extremely",
-        ],
+        prompt: "How much does fear of future events affect your day-to-day mood?",
+        options: ["Not at all", "A little", "Somewhat", "Quite a bit", "Extremely"],
       },
     ],
   },
@@ -91,15 +72,13 @@ const DEFAULT_ASSESSMENTS = [
     id: "depression",
     key: "depression",
     title: "Depression Screening (PHQ-9 style)",
-    description:
-      "Review mood, interest, motivation, and energy patterns associated with low mood.",
+    description: "Review mood, interest, motivation, and energy patterns associated with low mood.",
     icon: "😔",
     duration: 8,
     visibility: "public",
     questions: [
       {
-        prompt:
-          "How often have you had little interest or pleasure in doing things?",
+        prompt: "How often have you had little interest or pleasure in doing things?",
         options: [
           "Not at all",
           "Several days",
@@ -119,8 +98,7 @@ const DEFAULT_ASSESSMENTS = [
         ],
       },
       {
-        prompt:
-          "How often have you felt low energy or struggled to get started?",
+        prompt: "How often have you felt low energy or struggled to get started?",
         options: [
           "Not at all",
           "Several days",
@@ -140,8 +118,7 @@ const DEFAULT_ASSESSMENTS = [
         ],
       },
       {
-        prompt:
-          "How difficult has it been to handle daily tasks because of your mood?",
+        prompt: "How difficult has it been to handle daily tasks because of your mood?",
         options: [
           "Not difficult",
           "A little difficult",
@@ -171,23 +148,15 @@ const DEFAULT_ASSESSMENTS = [
         options: ["Never", "Rarely", "Sometimes", "Often", "Very often"],
       },
       {
-        prompt:
-          "How often do you wake up during the night and struggle to sleep again?",
+        prompt: "How often do you wake up during the night and struggle to sleep again?",
         options: ["Never", "Rarely", "Sometimes", "Often", "Very often"],
       },
       {
         prompt: "How refreshed do you feel when you wake up?",
-        options: [
-          "Very refreshed",
-          "Refreshed",
-          "Neutral",
-          "Tired",
-          "Exhausted",
-        ],
+        options: ["Very refreshed", "Refreshed", "Neutral", "Tired", "Exhausted"],
       },
       {
-        prompt:
-          "How much does poor sleep affect your concentration in the daytime?",
+        prompt: "How much does poor sleep affect your concentration in the daytime?",
         options: ["Not at all", "A little", "Somewhat", "A lot", "Extremely"],
       },
     ],
@@ -198,9 +167,7 @@ function cloneQuestion(question) {
   return {
     prompt: String(question?.prompt || "").trim(),
     options: Array.isArray(question?.options)
-      ? question.options
-          .map((option) => String(option || "").trim())
-          .filter(Boolean)
+      ? question.options.map((option) => String(option || "").trim()).filter(Boolean)
       : [],
   };
 }
@@ -211,9 +178,7 @@ export function normalizeAssessment(assessment) {
   }
 
   const questions = Array.isArray(assessment.questions)
-    ? assessment.questions
-        .map(cloneQuestion)
-        .filter((question) => question.prompt)
+    ? assessment.questions.map(cloneQuestion).filter((question) => question.prompt)
     : [];
 
   return {
@@ -233,15 +198,11 @@ export function normalizeAssessment(assessment) {
 }
 
 export function normalizeAssessmentList(assessments) {
-  return (Array.isArray(assessments) ? assessments : [])
-    .map(normalizeAssessment)
-    .filter(Boolean);
+  return (Array.isArray(assessments) ? assessments : []).map(normalizeAssessment).filter(Boolean);
 }
 
 export function getDefaultAssessmentCatalog() {
-  return DEFAULT_ASSESSMENTS.map((assessment) =>
-    normalizeAssessment(assessment),
-  );
+  return DEFAULT_ASSESSMENTS.map((assessment) => normalizeAssessment(assessment));
 }
 
 export function createAssessmentDraft() {
@@ -267,9 +228,7 @@ export function buildAssessmentResult(assessment, answers) {
   const maxScore = questions.length * 4;
 
   const score = questions.reduce((total, _question, index) => {
-    const answer = Number.isFinite(Number(answers[index]))
-      ? Number(answers[index])
-      : 0;
+    const answer = Number.isFinite(Number(answers[index])) ? Number(answers[index]) : 0;
     return total + answer;
   }, 0);
 

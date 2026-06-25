@@ -87,11 +87,12 @@ const ExpertAccountRegisterPage = () => {
       return;
     }
 
-    const isValidPassword = (value) =>
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+    const isValidPassword = (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
 
     if (!isValidPassword(password)) {
-      setError("Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number.");
+      setError(
+        "Password must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, and one number."
+      );
       return;
     }
 
@@ -106,12 +107,10 @@ const ExpertAccountRegisterPage = () => {
         application.name,
         application.title,
         application.email,
-        password,
+        password
       );
 
-      setMessage(
-        response.message || "You are approved. Account created successfully.",
-      );
+      setMessage(response.message || "You are approved. Account created successfully.");
       navigate("/login");
     } catch (err) {
       setError(err.message || "Unable to create expert account");
@@ -125,12 +124,8 @@ const ExpertAccountRegisterPage = () => {
       <div className="w-full max-w-lg">
         <div className="bg-white rounded-3xl shadow-xl p-8">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-1">
-              Expert Account Registration
-            </h1>
-            <p className="text-gray-500">
-              Approved experts can create their login here
-            </p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-1">Expert Account Registration</h1>
+            <p className="text-gray-500">Approved experts can create their login here</p>
           </div>
 
           {error && (
@@ -179,9 +174,7 @@ const ExpertAccountRegisterPage = () => {
           {application?.status === "approved" && (
             <form onSubmit={registerAccount} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
                 <input
                   type="text"
                   value={application.name || ""}
@@ -191,9 +184,7 @@ const ExpertAccountRegisterPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
                   value={application.email || ""}
@@ -202,11 +193,9 @@ const ExpertAccountRegisterPage = () => {
                 />
               </div>
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
@@ -257,10 +246,7 @@ const ExpertAccountRegisterPage = () => {
 
           <p className="mt-6 text-center text-gray-600">
             Back to{" "}
-            <Link
-              to="/login"
-              className="text-[#5bb5a1] hover:underline font-medium"
-            >
+            <Link to="/login" className="text-[#5bb5a1] hover:underline font-medium">
               Sign in
             </Link>
           </p>

@@ -38,11 +38,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
-              <img
-                src={mindmateLogo}
-                alt="MindMate"
-                className="w-10 h-10 rounded-xl"
-              />
+              <img src={mindmateLogo} alt="MindMate" className="w-10 h-10 rounded-xl" />
               <span className="text-xl font-bold">MindMate</span>
             </Link>
             <p className="text-slate-400 text-sm mb-4">
@@ -64,9 +60,7 @@ const Footer = () => {
           {/* Links Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
-                {category}
-              </h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">{category}</h3>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.name}>
@@ -89,22 +83,13 @@ const Footer = () => {
             © {new Date().getFullYear()} MindMate. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link
-              to="/privacy"
-              className="text-slate-400 hover:text-white text-sm"
-            >
+            <Link to="/privacy" className="text-slate-400 hover:text-white text-sm">
               Privacy
             </Link>
-            <Link
-              to="/terms"
-              className="text-slate-400 hover:text-white text-sm"
-            >
+            <Link to="/terms" className="text-slate-400 hover:text-white text-sm">
               Terms
             </Link>
-            <Link
-              to="/cookies"
-              className="text-slate-400 hover:text-white text-sm"
-            >
+            <Link to="/cookies" className="text-slate-400 hover:text-white text-sm">
               Cookies
             </Link>
           </div>

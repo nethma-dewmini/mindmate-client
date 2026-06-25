@@ -107,7 +107,8 @@ const ChatPage = () => {
             {
               id: "default-greeting",
               type: "bot",
-              content: "Hello! I'm MindMate, your mental health companion. How are you feeling today?",
+              content:
+                "Hello! I'm MindMate, your mental health companion. How are you feeling today?",
               timestamp: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -121,7 +122,8 @@ const ChatPage = () => {
           {
             id: "default-greeting",
             type: "bot",
-            content: "Hello! I'm MindMate, your mental health companion. How are you feeling today?",
+            content:
+              "Hello! I'm MindMate, your mental health companion. How are you feeling today?",
             timestamp: new Date().toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
@@ -159,7 +161,7 @@ const ChatPage = () => {
 
     try {
       await authService.deleteChatbotSession(deleteSessionId);
-      
+
       const updatedSessions = sessions.filter((s) => s.id !== deleteSessionId);
       setSessions(updatedSessions);
 
@@ -199,7 +201,10 @@ const ChatPage = () => {
     setIsTyping(true);
 
     try {
-      const response = await authService.sendMessageToChatbotSession(activeSessionId, message.trim());
+      const response = await authService.sendMessageToChatbotSession(
+        activeSessionId,
+        message.trim()
+      );
       const botMsg = response.botMessage;
       const userMsg = response.userMessage;
 
@@ -228,7 +233,10 @@ const ChatPage = () => {
       });
 
       const activeSession = sessions.find((s) => s.id === activeSessionId);
-      if (activeSession && (activeSession.title === "New Conversation" || activeSession.title === "New Chat")) {
+      if (
+        activeSession &&
+        (activeSession.title === "New Conversation" || activeSession.title === "New Chat")
+      ) {
         const trimmedMsg = message.trim();
         const newTitle = trimmedMsg.length > 25 ? trimmedMsg.slice(0, 25) + "..." : trimmedMsg;
         setSessions((prev) =>
@@ -264,9 +272,7 @@ const ChatPage = () => {
       <div className="min-h-screen bg-[#f9f5e7] flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c6e5f]"></div>
-          <p className="text-gray-500 font-bold animate-pulse">
-            Loading MindMate companion...
-          </p>
+          <p className="text-gray-500 font-bold animate-pulse">Loading MindMate companion...</p>
         </div>
       </div>
     );
@@ -311,7 +317,15 @@ const ChatPage = () => {
             className="hidden md:flex p-1.5 text-gray-400 hover:text-[#2c6e5f] hover:bg-white/65 rounded-lg transition-all cursor-pointer border border-gray-200/60 bg-white shadow-sm"
             title="Close sidebar"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
               <line x1="9" y1="3" x2="9" y2="21" />
               <path d="M16 15l-3-3 3-3" />
@@ -394,7 +408,15 @@ const ChatPage = () => {
                 className="hidden md:flex p-2 text-gray-500 hover:text-[#2c6e5f] hover:bg-white/60 rounded-xl transition-all cursor-pointer border border-[#2c6e5f]/15 shadow-sm bg-white"
                 title="Open sidebar"
               >
-                <svg className="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  className="w-5 h-5 animate-pulse"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
                   <line x1="9" y1="3" x2="9" y2="21" />
                   <path d="M13 9l3 3-3 3" />
@@ -408,7 +430,9 @@ const ChatPage = () => {
               <h1 className="font-extrabold text-[#1b4d42] text-base leading-tight">
                 MindMate AI Assistant
               </h1>
-              <p className="text-[10px] text-gray-500 font-semibold mt-0.5">Always here to support you</p>
+              <p className="text-[10px] text-gray-500 font-semibold mt-0.5">
+                Always here to support you
+              </p>
             </div>
           </div>
           <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
@@ -480,7 +504,7 @@ const ChatPage = () => {
               </AnimatePresence>
 
               {isTyping && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex justify-start"
@@ -559,8 +583,12 @@ const ChatPage = () => {
             />
             <motion.button
               onClick={() => handleSendMessage()}
-              whileHover={inputMessage.trim() && !isTyping && !isLoadingMessages ? { scale: 1.05 } : {}}
-              whileTap={inputMessage.trim() && !isTyping && !isLoadingMessages ? { scale: 0.95 } : {}}
+              whileHover={
+                inputMessage.trim() && !isTyping && !isLoadingMessages ? { scale: 1.05 } : {}
+              }
+              whileTap={
+                inputMessage.trim() && !isTyping && !isLoadingMessages ? { scale: 0.95 } : {}
+              }
               disabled={!inputMessage.trim() || isTyping || isLoadingMessages}
               className={`px-5 py-3 rounded-xl font-bold text-sm flex items-center space-x-1.5 transition-all shadow-md active:scale-95 cursor-pointer ${
                 inputMessage.trim() && !isTyping && !isLoadingMessages
@@ -579,14 +607,14 @@ const ChatPage = () => {
       <AnimatePresence>
         {deleteSessionId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity" 
+              className="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity"
               onClick={() => setDeleteSessionId(null)}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -598,7 +626,8 @@ const ChatPage = () => {
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-2">Delete Conversation?</h3>
               <p className="text-sm text-gray-500 mb-6 leading-relaxed font-semibold">
-                Are you sure you want to delete this conversation? This will clear all history in this chat session.
+                Are you sure you want to delete this conversation? This will clear all history in
+                this chat session.
               </p>
               <div className="flex justify-center gap-3">
                 <button

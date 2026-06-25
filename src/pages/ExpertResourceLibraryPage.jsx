@@ -211,20 +211,20 @@ const ExpertResourceLibraryPage = () => {
         <div className="glass-card rounded-3xl p-6 md:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 pb-4 border-b border-gray-100">
             <div>
-              <h2 className="text-xl font-bold text-gray-805">
-                Your Uploaded Resources
-              </h2>
+              <h2 className="text-xl font-bold text-gray-805">Your Uploaded Resources</h2>
               <p className="text-xs text-gray-400 mt-1 font-semibold">
                 Update or delete the items you uploaded.
               </p>
             </div>
-            
+
             <button
               type="button"
               onClick={loadMyResources}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-extrabold text-gray-650 hover:bg-gray-50 active:scale-95 transition-all shadow-sm shrink-0 cursor-pointer"
             >
-              <FaSpinner className={loadingResources ? "animate-spin text-[#2c6e5f]" : "text-gray-400"} />
+              <FaSpinner
+                className={loadingResources ? "animate-spin text-[#2c6e5f]" : "text-gray-400"}
+              />
               Refresh
             </button>
           </div>
@@ -256,7 +256,9 @@ const ExpertResourceLibraryPage = () => {
           {loadingResources ? (
             <div className="py-20 text-center flex flex-col items-center justify-center">
               <div className="w-10 h-10 border-4 border-[#2c6e5f] border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-sm font-semibold text-gray-500 animate-pulse">Loading your resources...</p>
+              <p className="text-sm font-semibold text-gray-500 animate-pulse">
+                Loading your resources...
+              </p>
             </div>
           ) : resources.length === 0 ? (
             <div className="text-center py-16 border border-dashed border-gray-200 rounded-3xl bg-gray-50/20 shadow-sm flex flex-col items-center">
@@ -304,23 +306,27 @@ const ExpertResourceLibraryPage = () => {
                                 {resource.type || "GUIDE"}
                               </span>
                             </div>
-                            
+
                             <p className="text-xs font-semibold text-gray-400 capitalize">
                               Category: {resource.category || "Uncategorized"}
                             </p>
-                            
+
                             <p className="text-xs text-gray-500 max-w-3xl leading-relaxed">
                               {resource.summary || "No summary provided."}
                             </p>
-                            
+
                             {resource.contentUrl && (
                               <a
-                                href={resource.contentUrl.startsWith("http") ? resource.contentUrl : `http://localhost:5000${resource.contentUrl}`}
+                                href={
+                                  resource.contentUrl.startsWith("http")
+                                    ? resource.contentUrl
+                                    : `http://localhost:5000${resource.contentUrl}`
+                                }
                                 target="_blank"
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2c6e5f] hover:text-[#1b4d42] transition-colors group/link cursor-pointer mt-1"
                               >
-                                <FaExternalLinkAlt className="text-[10px]" /> 
+                                <FaExternalLinkAlt className="text-[10px]" />
                                 <span>View uploaded file</span>
                               </a>
                             )}
@@ -334,38 +340,29 @@ const ExpertResourceLibraryPage = () => {
                             >
                               <FaEdit /> Update
                             </button>
-                            
+
                             <button
                               type="button"
                               onClick={async () => {
                                 const newVis =
-                                  resource.visibility === "public"
-                                    ? "private"
-                                    : "public";
+                                  resource.visibility === "public" ? "private" : "public";
                                 setResourcesError("");
                                 setMessage("");
                                 setSavingResourceId(resource.id);
                                 try {
-                                  await authService.updateClinicalResource(
-                                    resource.id,
-                                    {
-                                      title: resource.title,
-                                      category: resource.category,
-                                      summary: resource.summary,
-                                      type: resource.type,
-                                      visibility: newVis,
-                                    },
-                                  );
+                                  await authService.updateClinicalResource(resource.id, {
+                                    title: resource.title,
+                                    category: resource.category,
+                                    summary: resource.summary,
+                                    type: resource.type,
+                                    visibility: newVis,
+                                  });
                                   setMessage(
-                                    newVis === "public"
-                                      ? "Resource published."
-                                      : "Resource hidden.",
+                                    newVis === "public" ? "Resource published." : "Resource hidden."
                                   );
                                   await loadMyResources();
                                 } catch (err) {
-                                  setResourcesError(
-                                    err.message || "Failed to change visibility.",
-                                  );
+                                  setResourcesError(err.message || "Failed to change visibility.");
                                 } finally {
                                   setSavingResourceId("");
                                 }
@@ -373,11 +370,9 @@ const ExpertResourceLibraryPage = () => {
                               disabled={savingResourceId === resource.id}
                               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white text-gray-705 border border-gray-200 font-bold text-xs hover:bg-gray-50 transition-all cursor-pointer active:scale-95"
                             >
-                              {resource.visibility === "public"
-                                ? "Hide"
-                                : "Publish"}
+                              {resource.visibility === "public" ? "Hide" : "Publish"}
                             </button>
-                            
+
                             <button
                               type="button"
                               onClick={() => handleResourceDelete(resource.id)}
@@ -390,9 +385,7 @@ const ExpertResourceLibraryPage = () => {
                         </div>
                       ) : (
                         <form
-                          onSubmit={(event) =>
-                            handleResourceUpdate(resource.id, event)
-                          }
+                          onSubmit={(event) => handleResourceUpdate(resource.id, event)}
                           className="space-y-4"
                         >
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -404,9 +397,7 @@ const ExpertResourceLibraryPage = () => {
                                 type="text"
                                 name="title"
                                 value={editForm.title || ""}
-                                onChange={(event) =>
-                                  handleEditChange(resource.id, event)
-                                }
+                                onChange={(event) => handleEditChange(resource.id, event)}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none bg-white font-medium text-gray-750 transition-all duration-300 placeholder-gray-405 text-xs"
                               />
                             </div>
@@ -419,9 +410,7 @@ const ExpertResourceLibraryPage = () => {
                                 type="text"
                                 name="category"
                                 value={editForm.category || ""}
-                                onChange={(event) =>
-                                  handleEditChange(resource.id, event)
-                                }
+                                onChange={(event) => handleEditChange(resource.id, event)}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none bg-white font-medium text-gray-750 transition-all duration-300 placeholder-gray-405 text-xs"
                               />
                             </div>
@@ -434,9 +423,7 @@ const ExpertResourceLibraryPage = () => {
                             <textarea
                               name="summary"
                               value={editForm.summary || ""}
-                              onChange={(event) =>
-                                handleEditChange(resource.id, event)
-                              }
+                              onChange={(event) => handleEditChange(resource.id, event)}
                               rows={3}
                               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none bg-white font-medium text-gray-750 transition-all duration-300 placeholder-gray-405 text-xs resize-none leading-relaxed"
                             />
@@ -450,9 +437,7 @@ const ExpertResourceLibraryPage = () => {
                               <select
                                 name="type"
                                 value={editForm.type || "GUIDE"}
-                                onChange={(event) =>
-                                  handleEditChange(resource.id, event)
-                                }
+                                onChange={(event) => handleEditChange(resource.id, event)}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none bg-white font-bold text-gray-700 transition-all duration-300 text-xs cursor-pointer"
                               >
                                 {RESOURCE_TYPES.map((option) => (
@@ -470,9 +455,7 @@ const ExpertResourceLibraryPage = () => {
                               <input
                                 type="file"
                                 accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
-                                onChange={(event) =>
-                                  handleEditFileChange(resource.id, event)
-                                }
+                                onChange={(event) => handleEditFileChange(resource.id, event)}
                                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:border-[#2c6e5f] focus:ring-4 focus:ring-[#2c6e5f]/10 focus:outline-none transition-all text-xs file:mr-4 file:py-1.5 file:px-3.5 file:rounded-xl file:border-0 file:text-[10px] file:font-extrabold file:bg-teal-50 file:text-[#2c6e5f] hover:file:bg-teal-100/70 file:cursor-pointer"
                               />
                             </div>
@@ -483,7 +466,7 @@ const ExpertResourceLibraryPage = () => {
                               <FaFileAlt className="text-[#2c6e5f]" />
                               Current file stays unchanged unless you upload a new one.
                             </div>
-                            
+
                             <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                               <button
                                 type="button"
@@ -492,7 +475,7 @@ const ExpertResourceLibraryPage = () => {
                               >
                                 Cancel
                               </button>
-                              
+
                               <button
                                 type="submit"
                                 disabled={isSaving}
